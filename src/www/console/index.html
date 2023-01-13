@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <title>WebSocket console</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <script src="./js/functions.js"></script>
+ </head>
+ <body>
+  <div id="addressbar">
+   <div class="label bold">Address:</div>
+   <div id="addressbox"><input id="address" type="text" onkeydown="keypressAddress()" /></div>
+   <a id="connect" onclick="connect()">Connect</a>
+   <a id="autoconnect" onclick="autoconnect()">Enable autoconnect</a>
+  </div>
+  <div id="output"></div>
+  <div id="commandbar">
+   <div class="label bold">Command:</div>
+   <div id="textbox"><input id="text" type="text" onkeydown="keypressCommand()" /></div>
+   <div><a id="send" onclick="send()">Send</a></div>
+  </div>
+ </body>
+</html>

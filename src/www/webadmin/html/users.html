@@ -1,0 +1,10 @@
+<div><a class="button space" onclick="addUser()">Add user</a></div>
+<select id="domains" onchange="getUsers()">
+ <option value="" disabled selected hidden>-- Domain --</option>
+</select>
+<table>
+ <thead>
+  <tr><th>Photo</th><th>Name</th><th>Visible name</th><th>Messages</th><th>Files size</th><th>Created</th><th>Action</th></tr>
+ </thead>
+ <tbody id="users"></tbody>
+</table>
