@@ -1,4 +1,4 @@
-# Installation and configuration of NEMP server
+# Installation and configuration of the NEMP server
 
 ## Before the installation
 
