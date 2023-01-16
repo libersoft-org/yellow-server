@@ -4,13 +4,13 @@
 
 Before you start the server installation, you need to have Linux server with root access and your own domain name.
 
-Then add this domain record in your DNS for your new mail server:
+Then add this domain record in your DNS for your NEMP server:
 
-- **A** record of your new mail server, eg.: **A - mail.domain.tld** targeting your new mail server IP address
+- **A** record of your NEMP server, eg.: **A - nemp.domain.tld** targeting your NEMP server IP address
 
-Now for each domain you'd like to use with your new mail server add this record:
+Now for each domain you'd like to use with your NEMP server add this record:
 
-- **TXT** record that identifies your new mail server, eg.: **domain.tld TXT nemp=mail.domain.tld**
+- **TXT** record that identifies your NEMP server, eg.: **domain.tld TXT nemp=nemp.domain.tld**
 
 ## Installation
 
@@ -68,12 +68,12 @@ This script will automatically replace the path to the certificate in your serve
 - Manually:
 
 ```console
-certbot certonly --standalone --register-unsafely-without-email --agree-tos -d **mail.domain.tld**
+certbot certonly --standalone --register-unsafely-without-email --agree-tos -d **nemp.domain.tld**
 ```
 
-(replace **mail.domain.tld** with your new e-mail server domain address)
+(replace **nemp.domain.tld** with your NEMP server domain address)
 
-Then edit the **settings.json** file and replace **$DOMAIN** to your new e-mail server domain address as well.
+Then edit the **settings.json** file and replace **$DOMAIN** to your NEMP server domain address as well.
 
 **3. To set up the certificate auto renewal edit crontab using:**
 
@@ -120,13 +120,13 @@ node index.js
 To stop the server just press **CTRL+C**.
 
 ## Web Admin
-Open the Web Admin in your browser (by default: **https://mail.domain.tld/webadmin/**): and log in as **admin** with default password **123456**
+Open the Web Admin in your browser (by default: **https://nemp.domain.tld/webadmin/**): and log in as **admin** with default password **123456**
 
 When you're logged in, change the admin password in **Admins** section.
 Then add domains, users, aliases and other admins if needed.
 
 ## Web Mail
-Open the Web Mail in your browser (by default: **https://mail.domain.tld/webmail/**): To access your mailbox, just add a your newly created user account. User name is in e-mail address format (**user@domain.tld**).
+Open the Web Mail in your browser (by default: **https://nemp.domain.tld/webmail/**): To access your mailbox, just add a your newly created user account. User name is in e-mail address format (**user@domain.tld**).
 
 ## Developer Console
-Open the Developer Console in your browser (by default: **https://mail.domain.tld/console/**). This will let you to send WebSocket commands to server.
+Open the Developer Console in your browser (by default: **https://nemp.domain.tld/console/**). This will let you to send WebSocket commands to server.
