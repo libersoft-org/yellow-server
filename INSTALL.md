@@ -68,7 +68,7 @@ This script will automatically replace the path to the certificate in your serve
 - Manually:
 
 ```console
-letsencrypt certonly --standalone --register-unsafely-without-email --agree-tos -d **mail.domain.tld**
+certbot certonly --standalone --register-unsafely-without-email --agree-tos -d **mail.domain.tld**
 ```
 
 (replace **mail.domain.tld** with your new e-mail server domain address)
@@ -84,7 +84,7 @@ crontab -e
 ... and add this line at the end:
 
 ```console
-0 12 * * * /usr/bin/letsencrypt renew --quiet
+0 12 * * * /usr/bin/certbot renew --quiet
 ```
 
 **4. Create a new database file using:**

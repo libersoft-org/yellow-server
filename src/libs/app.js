@@ -83,8 +83,8 @@ class App {
     ],
     webadmin_ttl: 600,
     log_to_file: true,
-    log_file: 'newmail.log',
-    db_file: 'newmail.db'
+    log_file: 'nemp.log',
+    db_file: 'nemp.db'
    }
    fs.writeFileSync(this.settingsFile, JSON.stringify(settings, null, ' '));
    Common.addLog('Settings file was created sucessfully.');
