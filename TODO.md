@@ -11,6 +11,7 @@
 - when menu is hidden on mobile size and then window resized to desktop, menu is missing
 
 # NEW
+- web console - prefify the json commands (if it's not a valid json, just show it normaly) - http://jsfiddle.net/KJQ9K/554/
 - web admin URL paths (eg. /webadmin/domains, /webadmin/stats etc...)
 - web admin - stats
 - web admin - users - add dialog
