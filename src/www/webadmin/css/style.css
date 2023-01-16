@@ -1,5 +1,5 @@
 :root {
- --background-hue: 225;
+ --background-hue: 255;
  --background-sat: 50%;
  --background-lig: 50%;
  --primary-color: hsl(var(--background-hue), var(--background-sat), var(--background-lig));
