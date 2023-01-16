@@ -68,7 +68,7 @@ This script will automatically replace the path to the certificate in your serve
 - Manually:
 
 ```console
-certbot certonly --standalone --register-unsafely-without-email --agree-tos -d **nemp.domain.tld**
+certbot certonly --standalone --register-unsafely-without-email --agree-tos -d nemp.domain.tld
 ```
 
 (replace **nemp.domain.tld** with your NEMP server domain address)
