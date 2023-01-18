@@ -86,7 +86,7 @@ class App {
     log_file: 'nemp.log',
     db_file: 'nemp.db'
    }
-   fs.writeFileSync(this.settingsFile, JSON.stringify(settings, null, ' '));
+   fs.writeFileSync(Common.settingsFile, JSON.stringify(settings, null, ' '));
    Common.addLog('Settings file was created sucessfully.');
    Common.addLog('');
   }
