@@ -68,7 +68,7 @@ class Data {
  }
 
  async adminSetDomain(id, name) {
-  await this.db.write('UPDATE domains SET name = "' + name + '" WHERE id = "' + id + '"');
+    await this.db.write('UPDATE domains SET name = "' + name + '" WHERE id = "' + id + '"');
  }
 
  async adminDelDomains(id) {
@@ -115,7 +115,7 @@ class Data {
   await this.db.write('INSERT INTO admins (user, pass) VALUES ("' + user + '", "' + this.getHash(pass) + '")');
  }
 
- async adminSetDomain(id, user, pass) {
+ async adminSetDomain_(id, user, pass) {
   await this.db.write('UPDATE admins SET name = "' + user + '"' + (pass != '' ? ', pass = "' + pass + '"' : '') + ' WHERE id = "' + id + '"');
  }
 
