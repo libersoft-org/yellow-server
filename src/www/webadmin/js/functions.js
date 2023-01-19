@@ -93,7 +93,7 @@ async function editDomain(id, name) {
 }
 async function domainUpdate() {
     let updated_name = document.querySelector('#updated_domain_name');
-    let add_domain_message = document.querySelector('#add_domain_message');\
+    let add_domain_message = document.querySelector('#add_domain_message');
     wsSend({
      command: 'admin_set_domain',
      id: id_data.id,
