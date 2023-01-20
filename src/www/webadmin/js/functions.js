@@ -17,8 +17,8 @@ async function getPage(name) {
  document.querySelector('#content').innerHTML = await getFileContent('html/' + name + '.html');
  if (name == 'stats') getStats();
  if (name == 'domains') getDomains();
- if (name == 'users') getDomains();
- if (name == 'aliases') getDomains();
+ if (name == 'users') getUsers();
+ if (name == 'aliases') getAliases();
  if (name == 'admins') getAdmins();
  menuHide();
 }
@@ -53,8 +53,62 @@ async function logout() {
 }
 
 async function addDomain() {
- await getDialog('Add domain', await getFileContent('html/domains_add.html'));
- document.querySelector('#domain_name').focus();
+    await getDialog('Add domain', await getFileContent('html/domains_add.html'));
+    document.querySelector('#domain_name').focus();
+}
+async function domainAdd() {
+    let domain_name = document.querySelector('#domain_name');
+    let add_domain_message = document.querySelector('#add_domain_message');
+    wsSend({
+     command: 'admin_add_domain',
+     name: domain_name.value,
+     admin_token: localStorage.getItem('admin_token')
+    });
+    add_domain_message.style.display = 'block';
+    add_domain_message.innerHTML = 'Domain has been added';
+    getPage('domains');
+    dialogClose();
+}
+async function delDomain(id) {
+    wsSend({
+     command: 'admin_del_domain',
+     id: id,
+     admin_token: localStorage.getItem('admin_token')
+    });
+    add_domain_message.style.display = 'block';
+    add_domain_message.innerHTML = 'Domain has been removed';
+    getPage('domains')
+}
+
+let id_data = {
+    id: 0
+}
+
+async function editDomain(id, name) {
+    await getDialog('Edit domain', await getFileContent('html/domains_update.html'));
+    let updated_name = document.querySelector('#updated_domain_name');
+    updated_name.value = name;
+    updated_name.focus();
+    id_data.id = id;
+}
+async function domainUpdate() {
+    let updated_name = document.querySelector('#updated_domain_name');
+    let add_domain_message = document.querySelector('#add_domain_message');
+    wsSend({
+     command: 'admin_set_domain',
+     id: id_data.id,
+     name: updated_name.value,
+     admin_token: localStorage.getItem('admin_token')
+    });
+    add_domain_message.style.display = 'block';
+    add_domain_message.innerHTML = 'Domain has been updated';
+    dialogClose();
+    getPage('domains');
+}
+
+async function addUser() {
+ await getDialog('Add user', await getFileContent('html/users_add.html'));
+ document.querySelector('#user_name').focus();
 }
 
 async function getStats() {
@@ -136,7 +190,7 @@ async function wsOnMessage(data) {
  console.log('FROM SERVER:');
  console.log(data);
  data = JSON.parse(data);
- console.log(data);
+ console.log('data......', data);
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
  } else {
