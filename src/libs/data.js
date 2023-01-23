@@ -28,6 +28,7 @@ class Data {
 
  async adminGetLogin(user, pass) {
   var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = "' + user.toLowerCase() + '"');
+
   if (res.length == 1) {
    if (await this.verifyHash(res[0].pass, pass)) {
     var token = this.getToken(64);
@@ -76,11 +77,12 @@ class Data {
  }
 
  async adminGetUsers(id) {
-  return await this.db.read('SELECT id, name, visible_name, photo, created FROM users WHERE id_domain = "' + id + '"');
+  console.log('domain id is ', id, ' with type ', typeof id)
+   return await this.db.read('SELECT id, name, visible_name, photo, created FROM users WHERE id_domain = "' + id + '"');
  }
 
- async adminAddUser(domainID, name, visibleName) {
-  await this.db.write("INSERT INTO users (id_domain, name, visible_name) VALUES ('" + domainID + "', '" + name + "', '" + visibleName + "')");
+ async adminAddUser(domainID, name, visibleName, pass) {
+   await this.db.write("INSERT INTO users (id_domain, name, visible_name, pass) VALUES ('" + domainID + "', '" + name + "', '" + visibleName + "', '" + pass + "')");
  }
 
  async adminSetUser(id, domainID, name, visibleName, photo) {

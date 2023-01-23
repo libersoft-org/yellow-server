@@ -2,6 +2,9 @@ var page = '';
 var ws;
 var server = 'wss://' + window.location.host + (window.location.port != '' ? ':' + window.location.port : '') + '/';
 
+let id_data = {
+    id: 0
+}, domains_data = []; 
 window.onload = async function() {
  wsConnect(server);
  var login = localStorage.getItem('admin_token') ? false : true;
@@ -57,58 +60,72 @@ async function addDomain() {
     document.querySelector('#domain_name').focus();
 }
 async function domainAdd() {
-    let domain_name = document.querySelector('#domain_name');
-    let add_domain_message = document.querySelector('#add_domain_message');
-    wsSend({
-     command: 'admin_add_domain',
-     name: domain_name.value,
-     admin_token: localStorage.getItem('admin_token')
-    });
-    add_domain_message.style.display = 'block';
-    add_domain_message.innerHTML = 'Domain has been added';
-    getPage('domains');
-    dialogClose();
+ let domain_name = document.querySelector('#domain_name');
+ let add_domain_message = document.querySelector('#add_domain_message');
+ wsSend({
+  command: 'admin_add_domain',
+  name: domain_name.value,
+  admin_token: localStorage.getItem('admin_token')
+ });
+ add_domain_message.style.display = 'block';
+ add_domain_message.innerHTML = 'Domain has been added';
+ getPage('domains');
+ dialogClose();
 }
 async function delDomain(id) {
-    wsSend({
-     command: 'admin_del_domain',
-     id: id,
-     admin_token: localStorage.getItem('admin_token')
-    });
-    add_domain_message.style.display = 'block';
-    add_domain_message.innerHTML = 'Domain has been removed';
-    getPage('domains')
-}
-
-let id_data = {
-    id: 0
+ wsSend({
+  command: 'admin_del_domain',
+  id: id,
+  admin_token: localStorage.getItem('admin_token')
+ });
+ add_domain_message.style.display = 'block';
+ add_domain_message.innerHTML = 'Domain has been removed';
+ domains_data = domains_data.splice(domains_data.indexOf(id), 1)
+ getPage('domains')
 }
 
 async function editDomain(id, name) {
-    await getDialog('Edit domain', await getFileContent('html/domains_update.html'));
-    let updated_name = document.querySelector('#updated_domain_name');
-    updated_name.value = name;
-    updated_name.focus();
-    id_data.id = id;
+ await getDialog('Edit domain', await getFileContent('html/domains_update.html'));
+ let updated_name = document.querySelector('#updated_domain_name');
+ updated_name.value = name;
+ updated_name.focus();
+ id_data.id = id;
 }
 async function domainUpdate() {
-    let updated_name = document.querySelector('#updated_domain_name');
-    let add_domain_message = document.querySelector('#add_domain_message');
-    wsSend({
-     command: 'admin_set_domain',
-     id: id_data.id,
-     name: updated_name.value,
-     admin_token: localStorage.getItem('admin_token')
-    });
-    add_domain_message.style.display = 'block';
-    add_domain_message.innerHTML = 'Domain has been updated';
-    dialogClose();
-    getPage('domains');
+ let updated_name = document.querySelector('#updated_domain_name');
+ let add_domain_message = document.querySelector('#add_domain_message');
+ wsSend({
+  command: 'admin_set_domain',
+  id: id_data.id,
+  name: updated_name.value,
+  admin_token: localStorage.getItem('admin_token')
+ });
+ add_domain_message.style.display = 'block';
+ add_domain_message.innerHTML = 'Domain has been updated';
+ dialogClose();
+ getPage('domains');
 }
 
 async function addUser() {
  await getDialog('Add user', await getFileContent('html/users_add.html'));
  document.querySelector('#user_name').focus();
+}
+async function userAdd() {
+ let add_user_message = document.querySelector('#add_user_message');
+ let password = document.querySelector('#password');
+ let user_name = document.querySelector('#user_name');
+ let visible_name = document.querySelector('#visible_name');
+ wsSend({
+  command: 'admin_add_user',
+  domain_id: id_data.id,
+  name: user_name.value,
+  visible_name: visible_name.value,
+  password: password.value,
+  admin_token: localStorage.getItem('admin_token')
+ });
+ add_user_message.style.display = 'block';
+ add_user_message.innerHTML = 'User has been added';
+ dialogClose();
 }
 
 async function getStats() {
@@ -125,11 +142,16 @@ async function getDomains() {
  });
 }
 
-async function getUsers() {
+setTimeout(() => {
+    getDomains()
+}, 2000);
+
+async function getUsers(domain_id) {
+ id_data.id = domain_id;
  wsSend({
   command: 'admin_get_users',
+  domain_id: domain_id,
   admin_token: localStorage.admin_token,
-  domain_id: document.querySelector('#domains').value
  });
 }
 
@@ -187,10 +209,10 @@ function wsOnError(error) {
 }
 
 async function wsOnMessage(data) {
- console.log('FROM SERVER:');
- console.log(data);
+//  console.log('FROM SERVER:');
+//  console.log(data);
  data = JSON.parse(data);
- console.log('data......', data);
+//  console.log('data......', data);
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
  } else {
@@ -198,6 +220,9 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_logout') setAdminLogout(data);
   if (data.command == 'admin_sysinfo') setSysInfo(data);
   if (data.command == 'admin_get_domains') {
+   data.data.forEach((item) => {
+    domains_data.push(item.id)
+   });
    if (page == 'domains') setDomains(data);
    if (page == 'users') setUsersDomains(data);
    if (page == 'aliases') setAliasesDomains(data);
@@ -210,8 +235,8 @@ async function wsOnMessage(data) {
 
 async function wsSend(data) {
  if (ws.readyState === 1) {
-  console.log('TO SERVER:');
-  console.log(data);
+//   console.log('TO SERVER:');
+//   console.log(data);
   ws.send(JSON.stringify(data));
  }
 }
@@ -259,6 +284,7 @@ async function setSysInfo(res) {
 async function setDomains(res) {
  var rows = '';
  var rowTemp = await getFileContent('html/domains_row.html');
+ domains_data = [...new Set(domains_data)]
  for (var i = 0; i < res.data.length; i++) {
   rows += translate(rowTemp, {
    '{ID}': res.data[i].id,
@@ -294,8 +320,17 @@ async function setAliasesDomains(res) {
 }
 
 async function setUsers(res) {
+ document.querySelector('#users').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/users_row.html');
+ let domainsSelect = document.querySelector('#select_domains');
+ for(let i = 0; i < domains_data.length; i++) {
+  let option = document.createElement('option');
+  option.value = domains_data[i];
+  option.innerHTML = domains_data[i];
+  if(domainsSelect.children.length - 1 === domains_data.length) break;
+  domainsSelect.append(option);
+ }
  for (var i = 0; i < res.data.length; i++) {
   rows += translate(rowTemp, {
    '{ID}': res.data[i].id,
