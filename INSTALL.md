@@ -27,7 +27,8 @@ apt update
 apt -y upgrade
 apt -y install curl git screen certbot
 curl -fsSL https://deb.nodesource.com/setup_19.x | bash -
-apt -y install nodejs 
+apt -y install nodejs
+npm i -g npm
 git clone https://github.com/libersoft-org/nemp-server.git
 cd nemp-server/src/
 npm i
@@ -42,6 +43,7 @@ dnf -y update
 dnf -y install git curl screen certbot
 curl -fsSL https://rpm.nodesource.com/setup_19.x | bash -
 dnf -y install nodejs
+npm i -g npm
 git clone https://github.com/libersoft-org/nemp-server.git
 cd nemp-server/src/
 npm i

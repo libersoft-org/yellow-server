@@ -12,7 +12,7 @@ fi
 
 if [ -f $SETTINGS_FILE ]; then
  sed -i "s/{DOMAIN}/$DOMAIN/g" $SETTINGS_FILE
- letsencrypt certonly --standalone --register-unsafely-without-email --agree-tos -d $DOMAIN
+ certbot certonly --standalone --register-unsafely-without-email --agree-tos -d $DOMAIN
 else
  echo ""
  echo "Error: cannot find settings file."
