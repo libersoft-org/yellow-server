@@ -4,7 +4,15 @@ var server = 'wss://' + window.location.host + (window.location.port != '' ? ':'
 
 let id_data = {
     id: 0
-}, domains_data = []; 
+}, domains_data = [], time = 1500;
+
+function close_message(message_container) {
+    setTimeout(() => {
+        if(!message_container instanceof HTMLElement) return;
+        message_container.style.display = 'none';
+    }, time);
+}
+
 window.onload = async function() {
  wsConnect(server);
  var login = localStorage.getItem('admin_token') ? false : true;
@@ -69,8 +77,11 @@ async function domainAdd() {
  });
  add_domain_message.style.display = 'block';
  add_domain_message.innerHTML = 'Domain has been added';
- getPage('domains');
  dialogClose();
+ close_message(add_domain_message);
+ setTimeout(() => {
+    getPage('domains')
+ }, 2200);
 }
 async function delDomain(id) {
  wsSend({
@@ -81,7 +92,11 @@ async function delDomain(id) {
  add_domain_message.style.display = 'block';
  add_domain_message.innerHTML = 'Domain has been removed';
  domains_data = domains_data.splice(domains_data.indexOf(id), 1)
- getPage('domains')
+ console.log('domains_data after splice -> ', domains_data)
+ close_message(add_domain_message);
+ setTimeout(() => {
+    getPage('domains')
+ }, time);
 }
 
 async function editDomain(id, name) {
@@ -103,7 +118,10 @@ async function domainUpdate() {
  add_domain_message.style.display = 'block';
  add_domain_message.innerHTML = 'Domain has been updated';
  dialogClose();
- getPage('domains');
+ close_message(add_domain_message);
+ setTimeout(() => {
+    getPage('domains')
+ }, time);
 }
 
 async function addUser() {
@@ -126,6 +144,10 @@ async function userAdd() {
  add_user_message.style.display = 'block';
  add_user_message.innerHTML = 'User has been added';
  dialogClose();
+ close_message(add_user_message);
+ setTimeout(() => {
+    getPage('users')
+ }, time);
 }
 
 async function getStats() {
@@ -330,6 +352,7 @@ async function setUsers(res) {
   option.innerHTML = domains_data[i];
   if(domainsSelect.children.length - 1 === domains_data.length) break;
   domainsSelect.append(option);
+  console.log('children is', domainsSelect.children);
  }
  for (var i = 0; i < res.data.length; i++) {
   rows += translate(rowTemp, {
