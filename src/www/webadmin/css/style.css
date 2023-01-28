@@ -204,7 +204,7 @@ table tbody tr td, table thead tr th {
  40% { box-shadow: 0 2.5em 0 0 }
 }
 
-#error, #add_domain_message {
+#error, #add_domain_message, #add_user_message {
  position: absolute;
  display: none;
  width: calc(100% - 42px);
