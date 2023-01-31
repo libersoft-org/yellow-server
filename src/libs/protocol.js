@@ -29,27 +29,27 @@ class Protocol {
     return { command: req.command, data: { logged: false, message: 'Logged out' } }
     } else {
     if (await this.data.adminIsTokenValid(req.admin_token)) {
-        await this.data.adminUpdateTokenTime(req.admin_token);
-        if (req.command == 'admin_get_domains') return { command: req.command, data: await this.data.adminGetDomains() };
-        else if (req.command == 'admin_add_domain') return { command: req.command, data: await this.data.adminAddDomain(req.name) };
-        else if (req.command == 'admin_set_domain') return { command: req.command, data: await this.data.adminSetDomain(req.id, req.name) };
-        else if (req.command == 'admin_del_domain') return { command: req.command, data: await this.data.adminDelDomains(req.id) };
-        else if (req.command == 'admin_get_users') return { command: req.command, data: await this.data.adminGetUsers(req.domain_id) };
-        else if (req.command == 'admin_add_user') return { command: req.command, data: await this.data.adminAddUser(req.domain_id, req.name) };
-        else if (req.command == 'admin_set_user') return { command: req.command, data: await this.data.adminSetUser(req.id, req.name) };
-        else if (req.command == 'admin_del_user') return { command: req.command, data: await this.data.adminDelUser(req.id) };
-        else if (req.command == 'admin_get_aliases') return { command: req.command, data: await this.data.adminGetAliases(req.domain_id) };
-        else if (req.command == 'admin_add_aliases') return { command: req.command, data: await this.data.adminAddAlias(req.alias, req.domain_id, req.name) };
-        else if (req.command == 'admin_set_aliases') return { command: req.command, data: await this.data.adminSetAlias(req.id, req.alias, req.mail) };
-        else if (req.command == 'admin_del_aliases') return { command: req.command, data: await this.data.adminDelAlias(req.id) };
-        else if (req.command == 'admin_get_admins') return { command: req.command, data: await this.data.adminGetAdmins() };
-        else if (req.command == 'admin_add_admin') return { command: req.command, data: await this.data.adminAddAdmin(req.name) };
-        else if (req.command == 'admin_set_admin') return { command: req.command, data: await this.data.adminSetAdmin(req.id, req.name) };
-        else if (req.command == 'admin_del_admin') return { command: req.command, data: await this.data.adminDelAdmin(req.id) };
-        else if (req.command == 'admin_sysinfo') return { command: req.command, data: this.getSysInfo() };
-        //else if (req.command == 'admin_dns') return this.dns.getDomainInfo(domain);
-        else return { error: 'command_unknown', message: 'Command is unknown' }
-        } else return { error: 'admin_token_invalid', message: 'Invalid or expired admin login token' }
+    await this.data.adminUpdateTokenTime(req.admin_token);
+    if (req.command == 'admin_get_domains') return { command: req.command, data: await this.data.adminGetDomains() };
+    else if (req.command == 'admin_add_domain') return { command: req.command, data: await this.data.adminAddDomain(req.name) };
+    else if (req.command == 'admin_set_domain') return { command: req.command, data: await this.data.adminSetDomain(req.id, req.name) };
+    else if (req.command == 'admin_del_domain') return { command: req.command, data: await this.data.adminDelDomains(req.id) };
+    else if (req.command == 'admin_get_users') return { command: req.command, data: await this.data.adminGetUsers(req.domain_id) };
+    else if (req.command == 'admin_add_user') return { command: req.command, data: await this.data.adminAddUser(req.domain_id, req.name, req.visible_name, req.password) };
+    else if (req.command == 'admin_set_user') return { command: req.command, data: await this.data.adminSetUser(req.id, req.name) };
+    else if (req.command == 'admin_del_user') return { command: req.command, data: await this.data.adminDelUser(req.id) };
+    else if (req.command == 'admin_get_aliases') return { command: req.command, data: await this.data.adminGetAliases(req.domain_id) };
+    else if (req.command == 'admin_add_aliases') return { command: req.command, data: await this.data.adminAddAlias(req.alias, req.domain_id, req.name) };
+    else if (req.command == 'admin_set_aliases') return { command: req.command, data: await this.data.adminSetAlias(req.id, req.alias, req.mail) };
+    else if (req.command == 'admin_del_aliases') return { command: req.command, data: await this.data.adminDelAlias(req.id) };
+    else if (req.command == 'admin_get_admins') return { command: req.command, data: await this.data.adminGetAdmins() };
+    else if (req.command == 'admin_add_admin') return { command: req.command, data: await this.data.adminAddAdmin(req.name) };
+    else if (req.command == 'admin_set_admin') return { command: req.command, data: await this.data.adminSetAdmin(req.id, req.name) };
+    else if (req.command == 'admin_del_admin') return { command: req.command, data: await this.data.adminDelAdmin(req.id) };
+    else if (req.command == 'admin_sysinfo') return { command: req.command, data: this.getSysInfo() };
+    //else if (req.command == 'admin_dns') return this.dns.getDomainInfo(domain);
+    else return { error: 'command_unknown', message: 'Command is unknown' }
+    } else return { error: 'admin_token_invalid', message: 'Invalid or expired admin login token' }
     }
  }
 

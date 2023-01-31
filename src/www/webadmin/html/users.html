@@ -1,5 +1,5 @@
-<div><a class="button space" onclick="addUser()">Add user</a></div>
-<select id="domains" onchange="getUsers()">
+<div id="add_user_message"></div><div><a class="button space" onclick="addUser()">Add user</a></div>
+<select id="select_domains" onchange="getUsers(this.value)">
  <option value="" disabled selected hidden>-- Domain --</option>
 </select>
 <table>
