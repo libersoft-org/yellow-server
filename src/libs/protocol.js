@@ -36,7 +36,7 @@ class Protocol {
     else if (req.command == 'admin_del_domain') return { command: req.command, data: await this.data.adminDelDomains(req.id) };
     else if (req.command == 'admin_get_users') return { command: req.command, data: await this.data.adminGetUsers(req.domain_id) };
     else if (req.command == 'admin_add_user') return { command: req.command, data: await this.data.adminAddUser(req.domain_id, req.name, req.visible_name, req.password) };
-    else if (req.command == 'admin_set_user') return { command: req.command, data: await this.data.adminSetUser(req.id, req.name) };
+    else if (req.command == 'admin_set_user') return { command: req.command, data: await this.data.adminSetUser(req.id, req.domain_id, req.name, req.visible_name, req.photo, req.password) };
     else if (req.command == 'admin_del_user') return { command: req.command, data: await this.data.adminDelUser(req.id) };
     else if (req.command == 'admin_get_aliases') return { command: req.command, data: await this.data.adminGetAliases(req.domain_id) };
     else if (req.command == 'admin_add_aliases') return { command: req.command, data: await this.data.adminAddAlias(req.alias, req.domain_id, req.name) };
