@@ -62,6 +62,9 @@ Encrypt your data!
 | imo                                 |          :x:          |        optional       |         :x:        |	PageBites Inc., USA                           |
 | LINE                                |          :x:          |   :heavy_check_mark:  |         :x:        |	Line Corporation, Japan                       |
 | Hike                                |          :x:          |   :heavy_check_mark:  |         :x:        |	Hike Private Limited, India                   |
+| Zalo                                |          :x:          |          :x:          |         :x:        | Zalo Group, Vietnam                           |
 | Signal                              |          :x:          |   :heavy_check_mark:  | :heavy_check_mark: |	Signal Foundation, USA                        |
 | Matrix protocol (Element etc.)      |   :heavy_check_mark:  |   :heavy_check_mark:  | :heavy_check_mark: |	The Matrix.org Foundation CIC, United Kingdom |
 | ICQ                                 |          :x:          |     AV files only     |         :x:        |	Mail.ru Group, Russia                         |
+
+Please note that information in the table above might not be up to date.
