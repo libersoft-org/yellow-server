@@ -65,15 +65,17 @@ class Data {
  }
 
  async adminAddDomain(name) {
-  await this.db.write('INSERT INTO domains (name) VALUES ("' + name + '")');
+  return await this.db.write('INSERT INTO domains (name) VALUES ("' + name + '")');
  }
 
  async adminSetDomain(id, name) {
-    await this.db.write('UPDATE domains SET name = "' + name + '" WHERE id = "' + id + '"');
+  return await this.db.write('UPDATE domains SET name = "' + name + '" WHERE id = "' + id + '"');
  }
 
  async adminDelDomains(id) {
-  await this.db.write('DELETE FROM domains WHERE id = "' + id + '"');
+  let hasUsers = await this.db.read('SELECT id FROM users WHERE id_domain = "' + id + '"');
+  if(hasUsers.length > 0) return 'Cannot remove domain with users';
+  return await this.db.write('DELETE FROM domains WHERE id = "' + id + '"');
  }
 
  async adminGetUsers(id) {
@@ -82,15 +84,15 @@ class Data {
  }
 
  async adminAddUser(domainID, name, visibleName, pass) {
-   await this.db.write("INSERT INTO users (id_domain, name, visible_name, pass) VALUES ('" + domainID + "', '" + name + "', '" + visibleName + "', '" + pass + "')");
+  return await this.db.write("INSERT INTO users (id_domain, name, visible_name, pass) VALUES ('" + domainID + "', '" + name + "', '" + visibleName + "', '" + pass + "')");
  }
 
- async adminSetUser(id, domainID, name, visibleName, photo) {
-  await this.db.write('UPDATE users SET name = "' + name + '", visible_name = "' + visibleName + '", photo = "' + photo + '" WHERE id = "' + id + '"');
+ async adminSetUser(id, domainID, name, visibleName, photo, pass) {
+  return await this.db.write('UPDATE users SET id_domain = "' + domainID + '",name = "' + name + '", visible_name = "' + visibleName + '", pass = "' + pass + '", photo = "' + photo + '" WHERE id = "' + id + '"');
  }
 
  async adminDelUser(id) {
-  await this.db.write('DELETE FROM users WHERE id="' + id + '"');
+  return await this.db.write('DELETE FROM users WHERE id="' + id + '"');
  }
 
  async adminGetAliases(domainID) {

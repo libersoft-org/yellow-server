@@ -2,16 +2,10 @@ var page = '';
 var ws;
 var server = 'wss://' + window.location.host + (window.location.port != '' ? ':' + window.location.port : '') + '/';
 
-let id_data = {
-    id: 0
-}, domains_data = [], time = 1500;
-
-function close_message(message_container) {
-    setTimeout(() => {
-        if(!message_container instanceof HTMLElement) return;
-        message_container.style.display = 'none';
-    }, time);
-}
+let idData = {
+    id: 0,
+    secondary_id: 0
+}, domainsData = [], usersInDomain = [], time = 700;
 
 window.onload = async function() {
  wsConnect(server);
@@ -69,59 +63,55 @@ async function addDomain() {
 }
 async function domainAdd() {
  let domain_name = document.querySelector('#domain_name');
- let add_domain_message = document.querySelector('#add_domain_message');
  wsSend({
   command: 'admin_add_domain',
   name: domain_name.value,
   admin_token: localStorage.getItem('admin_token')
  });
- add_domain_message.style.display = 'block';
- add_domain_message.innerHTML = 'Domain has been added';
  dialogClose();
- close_message(add_domain_message);
  setTimeout(() => {
     getPage('domains')
  }, 2200);
 }
-async function delDomain(id) {
+
+async function delDomainDialog(id) {
+    idData.id = id;
+    await getDialog('Delete domain ' + id, await getFileContent('html/domain_delete.html'));
+}
+
+async function delDomain() {
  wsSend({
   command: 'admin_del_domain',
-  id: id,
+  id: idData.id,
   admin_token: localStorage.getItem('admin_token')
  });
- add_domain_message.style.display = 'block';
- add_domain_message.innerHTML = 'Domain has been removed';
- domains_data = domains_data.splice(domains_data.indexOf(id), 1)
- console.log('domains_data after splice -> ', domains_data)
- close_message(add_domain_message);
  setTimeout(() => {
     getPage('domains')
  }, time);
+ dialogClose()
+ domainsData.splice(domainsData.indexOf(idData.id), 1)
 }
 
 async function editDomain(id, name) {
- await getDialog('Edit domain', await getFileContent('html/domains_update.html'));
+ await getDialog('Edit domain', await getFileContent('html/domain_update.html'));
  let updated_name = document.querySelector('#updated_domain_name');
  updated_name.value = name;
  updated_name.focus();
- id_data.id = id;
+ idData.id = id;
 }
+
 async function domainUpdate() {
  let updated_name = document.querySelector('#updated_domain_name');
- let add_domain_message = document.querySelector('#add_domain_message');
  wsSend({
   command: 'admin_set_domain',
-  id: id_data.id,
+  id: idData.id,
   name: updated_name.value,
   admin_token: localStorage.getItem('admin_token')
  });
- add_domain_message.style.display = 'block';
- add_domain_message.innerHTML = 'Domain has been updated';
- dialogClose();
- close_message(add_domain_message);
  setTimeout(() => {
     getPage('domains')
  }, time);
+ dialogClose();
 }
 
 async function addUser() {
@@ -129,25 +119,68 @@ async function addUser() {
  document.querySelector('#user_name').focus();
 }
 async function userAdd() {
- let add_user_message = document.querySelector('#add_user_message');
  let password = document.querySelector('#password');
  let user_name = document.querySelector('#user_name');
  let visible_name = document.querySelector('#visible_name');
  wsSend({
   command: 'admin_add_user',
-  domain_id: id_data.id,
+  domain_id: idData.id,
   name: user_name.value,
   visible_name: visible_name.value,
   password: password.value,
   admin_token: localStorage.getItem('admin_token')
  });
- add_user_message.style.display = 'block';
- add_user_message.innerHTML = 'User has been added';
- dialogClose();
- close_message(add_user_message);
  setTimeout(() => {
     getPage('users')
  }, time);
+ dialogClose();
+}
+
+async function editUser(id, name, v_name) {
+ await getDialog('Edit user', await getFileContent('html/user_update.html'));
+ let updated_name = document.querySelector('#updated_user_name');
+ let updated_v_name = document.querySelector('#updated_visible_name');
+ updated_name.value = name;
+ updated_v_name.value = v_name;
+ updated_name.focus();
+ idData.secondary_id = id;
+}
+
+async function userUpdate() {
+ let updated_name = document.querySelector('#updated_user_name');
+ let updated_v_name = document.querySelector('#updated_visible_name');
+ let updated_password = document.querySelector('#updated_password');
+ wsSend({
+  command: 'admin_set_user',
+  id: idData.secondary_id,
+  domain_id: idData.id,
+  name: updated_name.value,
+  visible_name: updated_v_name.value,
+  photo: null,
+  pass: updated_password.value,
+  admin_token: localStorage.getItem('admin_token')
+ });
+ setTimeout(() => {
+    getPage('users')
+ }, time);
+ dialogClose();
+}
+
+async function delUserDialog(id) {
+    idData.secondary_id = id;
+    await getDialog('Delete user ' + id, await getFileContent('html/user_delete.html'));
+}
+
+async function delUser() {
+ wsSend({
+  command: 'admin_del_user',
+  id: idData.secondary_id,
+  admin_token: localStorage.getItem('admin_token')
+ });
+ setTimeout(() => {
+    getPage('users')
+ }, time);
+ dialogClose();
 }
 
 async function getStats() {
@@ -164,12 +197,14 @@ async function getDomains() {
  });
 }
 
+// below to set domain options on load
 setTimeout(() => {
     getDomains()
 }, 2000);
 
 async function getUsers(domain_id) {
- id_data.id = domain_id;
+ idData.id = domain_id;
+//  document.querySelector('#select_domains').value = idData.id;
  wsSend({
   command: 'admin_get_users',
   domain_id: domain_id,
@@ -242,9 +277,10 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_logout') setAdminLogout(data);
   if (data.command == 'admin_sysinfo') setSysInfo(data);
   if (data.command == 'admin_get_domains') {
-   data.data.forEach((item) => {
-    domains_data.push(item.id)
-   });
+   if(data.data.length > 0)
+    data.data.forEach((item) => {
+        domainsData.push(item.id)
+    });
    if (page == 'domains') setDomains(data);
    if (page == 'users') setUsersDomains(data);
    if (page == 'aliases') setAliasesDomains(data);
@@ -252,6 +288,15 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_get_users') setUsers(data);
   if (data.command == 'admin_get_aliases') setAliases(data);
   if (data.command == 'admin_get_admins') setAdmins(data);
+  if (data.command == 'admin_del_domain') {
+    if(data.data === 'Cannot remove domain with users') await getDialog('Delete domain', data.data);
+    else await getDialog('Delete domain', 'Removed successfully');
+  }
+  if (data.command == 'admin_add_domain') await getDialog('Add domain', 'Added successfully');
+  if (data.command == 'admin_set_domain') await getDialog('Update domain', 'Updated successfully');
+  if (data.command == 'admin_add_user') await getDialog('Add User', 'Added successfully');
+  if (data.command == 'admin_set_user') await getDialog('Update User', 'Updated successfully');
+  if (data.command == 'admin_del_user') await getDialog('Delete User', 'Removed successfully');
  }
 }
 
@@ -306,7 +351,7 @@ async function setSysInfo(res) {
 async function setDomains(res) {
  var rows = '';
  var rowTemp = await getFileContent('html/domains_row.html');
- domains_data = [...new Set(domains_data)]
+ domainsData = [...new Set(domainsData)]
  for (var i = 0; i < res.data.length; i++) {
   rows += translate(rowTemp, {
    '{ID}': res.data[i].id,
@@ -346,13 +391,12 @@ async function setUsers(res) {
  var rows = '';
  var rowTemp = await getFileContent('html/users_row.html');
  let domainsSelect = document.querySelector('#select_domains');
- for(let i = 0; i < domains_data.length; i++) {
+ for(let i = 0; i < domainsData.length; i++) {
   let option = document.createElement('option');
-  option.value = domains_data[i];
-  option.innerHTML = domains_data[i];
-  if(domainsSelect.children.length - 1 === domains_data.length) break;
+  option.value = domainsData[i];
+  option.innerHTML = domainsData[i];
+  if(domainsSelect.children.length - 1 === domainsData.length) break;
   domainsSelect.append(option);
-  console.log('children is', domainsSelect.children);
  }
  for (var i = 0; i < res.data.length; i++) {
   rows += translate(rowTemp, {
