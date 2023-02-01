@@ -82,7 +82,8 @@ class Data {
  }
 
  async adminGetUsers(id) {
-  return await this.db.read('SELECT id, name, visible_name, photo, created FROM users WHERE id_domain = "' + id + '"');
+  console.log('domain id is ', id, ' with type ', typeof id)
+   return await this.db.read('SELECT id, name, visible_name, photo, created FROM users WHERE id_domain = "' + id + '"');
  }
 
  async adminAddUser(domainID, name, visibleName, pass) {
