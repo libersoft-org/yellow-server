@@ -114,6 +114,23 @@ async function domainUpdate() {
  dialogClose();
 }
 
+async function delAliasDialog(id) {
+    idData.id = id;
+    await getDialog('Delete alias ' + id, await getFileContent('html/alias_delete.html'));
+}
+
+async function delAlias() {
+ wsSend({
+  command: 'admin_del_aliases',
+  id: idData.id,
+  admin_token: localStorage.getItem('admin_token')
+ });
+ setTimeout(() => {
+    getPage('aliases')
+ }, time);
+ dialogClose()
+}
+
 async function addUser() {
  await getDialog('Add user', await getFileContent('html/users_add.html'));
  document.querySelector('#user_name').focus();
@@ -171,6 +188,53 @@ async function delUserDialog(id) {
     await getDialog('Delete user ' + id, await getFileContent('html/user_delete.html'));
 }
 
+async function addAlias() {
+ await getDialog('Add user', await getFileContent('html/alias_add.html'));
+ document.querySelector('#alias_name').focus();
+}
+
+async function aliasAdd() {
+    let alias_name = document.querySelector('#alias_name');
+    let mail = document.querySelector('#mail');
+    wsSend({
+     command: 'admin_add_aliases',
+     domain_id: idData.id,
+     alias: alias_name.value,
+     mail: mail.value,
+     admin_token: localStorage.getItem('admin_token')
+    });
+    setTimeout(() => {
+       getPage('aliases');
+    }, time);
+    dialogClose();
+}
+
+async function editAlias(id, alias, mail) {
+ await getDialog('Edit alias', await getFileContent('html/alias_update.html'));
+ let updated_name = document.querySelector('#updated_alias_name');
+ let updated_mail = document.querySelector('#updated_mail');
+ updated_name.value = alias;
+ updated_mail.value = mail;
+ updated_name.focus();
+ idData.secondary_id = id;
+}
+
+async function aliasUpdate() {
+ let updated_name = document.querySelector('#updated_alias_name');
+ let updated_mail = document.querySelector('#updated_mail');
+ wsSend({
+    command: 'admin_set_aliases',
+    id: idData.secondary_id,
+    alias: updated_name.value,
+    mail: updated_mail.value,
+    admin_token: localStorage.getItem('admin_token')
+ });
+ setTimeout(() => {
+    getPage('aliases');
+ }, time);
+ dialogClose();
+}
+
 async function delUser() {
  wsSend({
   command: 'admin_del_user',
@@ -212,11 +276,13 @@ async function getUsers(domain_id) {
  });
 }
 
-async function getAliases() {
+async function getAliases(domain_id) {
+ idData.id = domain_id;
  wsSend({
   command: 'admin_get_aliases',
   admin_token: localStorage.admin_token,
-  domain_id: document.querySelector('#domains').value
+//   domain_id: document.querySelector('#select_domains').value
+  domain_id: domain_id
  });
 }
 
@@ -289,7 +355,7 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_get_aliases') setAliases(data);
   if (data.command == 'admin_get_admins') setAdmins(data);
   if (data.command == 'admin_del_domain') {
-    if(data.data === 'Cannot remove domain with users') await getDialog('Delete domain', data.data);
+    if(data.data.error) await getDialog('Delete domain', data.data.message);
     else await getDialog('Delete domain', 'Removed successfully');
   }
   if (data.command == 'admin_add_domain') await getDialog('Add domain', 'Added successfully');
@@ -297,6 +363,9 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_add_user') await getDialog('Add User', 'Added successfully');
   if (data.command == 'admin_set_user') await getDialog('Update User', 'Updated successfully');
   if (data.command == 'admin_del_user') await getDialog('Delete User', 'Removed successfully');
+  if (data.command == 'admin_add_aliases') await getDialog('Add Alias', 'Added successfully');
+  if (data.command == 'admin_set_aliases') await getDialog('Update Alias', 'Updated successfully');
+  if (data.command == 'admin_del_aliases') await getDialog('Delete Alias', 'Deleted successfully');
  }
 }
 
@@ -349,17 +418,20 @@ async function setSysInfo(res) {
 }
 
 async function setDomains(res) {
+ document.querySelector('#domains').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/domains_row.html');
  domainsData = [...new Set(domainsData)]
- for (var i = 0; i < res.data.length; i++) {
-  rows += translate(rowTemp, {
-   '{ID}': res.data[i].id,
-   '{NAME}': res.data[i].name,
-   '{CREATED}': new Date(res.data[i].created).toLocaleString()
-  });
- }
- document.querySelector('#domains').innerHTML = rows;
+ if(res.data.length > 0) {
+  for (var i = 0; i < res.data.length; i++) {
+    rows += translate(rowTemp, {
+    '{ID}': res.data[i].id,
+    '{NAME}': res.data[i].name,
+    '{CREATED}': new Date(res.data[i].created).toLocaleString()
+    });
+  }
+  document.querySelector('#domains').innerHTML = rows;
+ } else document.querySelector('#domains').innerHTML = '<br/>&emsp;No data...<br/><br/>';
 }
 
 async function setUsersDomains(res) {
@@ -398,32 +470,45 @@ async function setUsers(res) {
   if(domainsSelect.children.length - 1 === domainsData.length) break;
   domainsSelect.append(option);
  }
- for (var i = 0; i < res.data.length; i++) {
-  rows += translate(rowTemp, {
-   '{ID}': res.data[i].id,
-   '{NAME}': res.data[i].name,
-   '{VISIBLE_NAME}': res.data[i].visible_name,
-   '{PHOTO}': res.data[i].photo,
-   '{MESSAGES}': '?',
-   '{FILES_SIZE}': '?',
-   '{CREATED}': new Date(res.data[i].created).toLocaleString()
-  });
- }
- document.querySelector('#users').innerHTML = rows;
+ if(res.data.length > 0) {
+  for (var i = 0; i < res.data.length; i++) {
+   rows += translate(rowTemp, {
+    '{ID}': res.data[i].id,
+    '{NAME}': res.data[i].name,
+    '{VISIBLE_NAME}': res.data[i].visible_name,
+    '{PHOTO}': res.data[i].photo,
+    '{MESSAGES}': '?',
+    '{FILES_SIZE}': '?',
+    '{CREATED}': new Date(res.data[i].created).toLocaleString()
+   });
+  }
+  document.querySelector('#users').innerHTML = rows;
+ } else document.querySelector('#users').innerHTML = '<br/>&emsp;No data...<br/><br/>';
 }
 
 async function setAliases(res) {
+ document.querySelector('#aliases').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/aliases_row.html');
- for (var i = 0; i < res.data.length; i++) {
-  rows += translate (rowTemp, {
-   '{ID}': res.data[i].id,
-   '{ALIAS}': res.data[i].alias,
-   '{MAIL}': res.data[i].mail,
-   '{CREATED}': new Date(res.data[i].created).toLocaleString()
-  });
+ let domainsSelect = document.querySelector('#select_domains');
+ for(let i = 0; i < domainsData.length; i++) {
+  let option = document.createElement('option');
+  option.value = domainsData[i];
+  option.innerHTML = domainsData[i];
+  if(domainsSelect.children.length - 1 === domainsData.length) break;
+  domainsSelect.append(option);
  }
- document.querySelector('#aliases').innerHTML = rows;
+ if(res.data.length > 0) {
+    for (var i = 0; i < res.data.length; i++) {
+     rows += translate (rowTemp, {
+      '{ID}': res.data[i].id,
+      '{ALIAS}': res.data[i].alias,
+      '{MAIL}': res.data[i].mail,
+      '{CREATED}': new Date(res.data[i].created).toLocaleString()
+     });
+    }
+    document.querySelector('#aliases').innerHTML = rows;
+ } else document.querySelector('#aliases').innerHTML = '<br/>&emsp;No data...<br/><br/>';
 }
 
 async function setAdmins(res) {

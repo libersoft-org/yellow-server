@@ -1,5 +1,5 @@
 <div><a class="button space" onclick="addAlias()">Add alias</a></div>
-<select id="domains" onchange="getAliases()">
+<select id="select_domains" onchange="getAliases(this.value)">
  <option value="" disabled selected hidden>-- Domain --</option>
 </select>
 <table>

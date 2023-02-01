@@ -74,7 +74,10 @@ class Data {
 
  async adminDelDomains(id) {
   let hasUsers = await this.db.read('SELECT id FROM users WHERE id_domain = "' + id + '"');
-  if(hasUsers.length > 0) return 'Cannot remove domain with users';
+  if(hasUsers.length > 0) return {
+    'error': true,
+    'message': 'Cannot remove domain with users'
+    };
   return await this.db.write('DELETE FROM domains WHERE id = "' + id + '"');
  }
 
@@ -95,11 +98,13 @@ class Data {
  }
 
  async adminGetAliases(domainID) {
+//   let users = await this.db.read('SELECT *, COUNT(*) FROM aliases ');
+//   console.log('aliases data..... ', users);
   return await this.db.read('SELECT id, alias, mail, created FROM aliases WHERE id_domain = "' + domainID + '"');
  }
 
  async adminAddAlias(domainID, alias, mail) {
-  await this.db.write("INSERT INTO users (id_domain, alias, mail) VALUES ('" + domainID + "', '" + alias + "', '" + mail + "')");
+  await this.db.write("INSERT INTO aliases (id_domain, alias, mail) VALUES ('" + domainID + "', '" + alias + "', '" + mail + "')");
  }
 
  async adminSetAlias(id, alias, mail) {
