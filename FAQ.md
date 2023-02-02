@@ -1,3 +1,5 @@
+## Frequently asked questions
+
 ## Is NEMP an e-mail or instant messenger?
 
 NEMP is primarily the new generation of e-mail protocol. It replaces the old e-mail protocols (SMTP, IMAP, POP3 etc.). It combines the advantages of classic e-mail protocols with modern instant messaging features.
@@ -25,7 +27,7 @@ The modern features:
 - Modern looking UI
 - etc.
 
-## Is end-to-end encryption really necessary?
+## Is end-to-end encryption important?
 
 The end-to-end encryption is really recommended for everyone. Your personal and business data are potentially exploitable.
 
@@ -39,7 +41,13 @@ For example:
 
 These are just few examples, there are many more.
 
-Encrypt your data!
+Encrypt your data and don't trust the software that's not open source!
+
+## Is decentralization important?
+
+In today world, some governments and big corporations are continously censoring users' content, decentralization is extremely important. Even if you run centrally a free and open source service like Signal, some governments can push you to censor some content or they can easily block your servers.
+For example WhatsApp and many other centraly run messaging services are blocked in China which leads to inaccessibility of such service for more than 1 billion of people in China.
+Running the decentralized network of messaging servers can resolve this problem. Classic e-mail servers are decentralized. Everyone is able to buy a domain and VPS for cheap and run their own e-mail server. Most of the e-mail servers are not banned even in countries like China, where government is hugely blocking many foreign servers. This is why NEMP is also decentralized.
 
 ## Comparison with other messaging software
 
@@ -68,3 +76,13 @@ Encrypt your data!
 | ICQ                                 |          :x:          |     AV files only     |         :x:        |	Mail.ru Group, Russia                         |
 
 Please note that information in the table above might not be up to date.
+
+## Matrix protocol is also open source, decentralized and has end-to-end encryption. How does it differ from NEMP?
+
+Matrix protocol is really an interesting software and together with NEMP it is probably the only software that is open source, has end-to-end encryption and a decentralized server structure. Here are the differences between NEMP and Matrix:
+
+- NEMP is primarily a new generation of e-mail, not just an instant messenger
+- Running your own NEMP server is easier than [**Synapse server**](https://matrix.org/docs/projects/server/synapse) (software for running Matrix server). You can compare it here:
+  - [**NEMP server installation instructions**](./INSTALL.md)
+  - [**Synapse installation instructions**](https://matrix-org.github.io/synapse/latest/setup/installation.html)
+- NEMP web client has a nicer and more user friendly UI than Element (the most popular Matrix protocol client) :-)
