@@ -1,4 +1,4 @@
-## Frequently asked questions
+# Frequently asked questions
 
 ## Is NEMP an e-mail or instant messenger?
 
@@ -85,4 +85,5 @@ Matrix protocol is really an interesting software and together with NEMP it is p
 - Running your own NEMP server is easier than [**Synapse server**](https://matrix.org/docs/projects/server/synapse) (software for running Matrix server). You can compare it here:
   - [**NEMP server installation instructions**](./INSTALL.md)
   - [**Synapse installation instructions**](https://matrix-org.github.io/synapse/latest/setup/installation.html)
-- NEMP web client has a nicer and more user friendly UI than Element (the most popular Matrix protocol client) :-)
+- NEMP has more features like newsfeed, video messages, large file transfers etc.
+- NEMP client has a nicer and more user friendly UI than Element (the most popular Matrix protocol client) :-)
