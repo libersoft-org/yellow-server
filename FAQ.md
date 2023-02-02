@@ -82,7 +82,7 @@ Please note that information in the table above might not be up to date.
 Matrix protocol is really an interesting software and together with NEMP it is probably the only software that is open source, has end-to-end encryption and a decentralized server structure. Here are the differences between NEMP and Matrix:
 
 - NEMP is primarily a new generation of e-mail, not just an instant messenger
-- NEMP has more features like newsfeed, video messages, large file transfers etc.
+- NEMP has different features like newsfeed, video messages, large file transfers etc.
 - NEMP client has a nicer and more user friendly UI than Element (the most popular Matrix protocol client) :-)
 
 ## Is NEMP client backward compatible with classic e-mail protocols (SMTP, IMAP, POP3)?
