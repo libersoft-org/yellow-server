@@ -46,7 +46,9 @@ Encrypt your data and don't trust the software that's not open source!
 ## Is decentralization important?
 
 In today world, some governments and big corporations are continously censoring users' content, decentralization is extremely important. Even if you run centrally a free and open source service like Signal, some governments can push you to censor some content or they can easily block your servers.
+
 For example WhatsApp and many other centraly run messaging services are blocked in China which leads to inaccessibility of such service for more than 1 billion of people in China.
+
 Running the decentralized network of messaging servers can resolve this problem. Classic e-mail servers are decentralized. Everyone is able to buy a domain and VPS for cheap and run their own e-mail server. Most of the e-mail servers are not banned even in countries like China, where government is hugely blocking many foreign servers. This is why NEMP is also decentralized.
 
 ## Comparison with other messaging software
