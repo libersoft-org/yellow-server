@@ -84,3 +84,7 @@ Matrix protocol is really an interesting software and together with NEMP it is p
 - NEMP is primarily a new generation of e-mail, not just an instant messenger
 - NEMP has more features like newsfeed, video messages, large file transfers etc.
 - NEMP client has a nicer and more user friendly UI than Element (the most popular Matrix protocol client) :-)
+
+## Is NEMP client backward compatible with classic e-mail protocols (SMTP, IMAP, POP3)?
+
+Right now it is not compatible, but in theory, it can be done in client software to support both old and new e-mail protocol. Maybe in future this feature will be added to NEMP client, but it is not our priority for now.
