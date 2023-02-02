@@ -82,8 +82,5 @@ Please note that information in the table above might not be up to date.
 Matrix protocol is really an interesting software and together with NEMP it is probably the only software that is open source, has end-to-end encryption and a decentralized server structure. Here are the differences between NEMP and Matrix:
 
 - NEMP is primarily a new generation of e-mail, not just an instant messenger
-- Running your own NEMP server is easier than [**Synapse server**](https://matrix.org/docs/projects/server/synapse) (software for running Matrix server). You can compare it here:
-  - [**NEMP server installation instructions**](./INSTALL.md)
-  - [**Synapse installation instructions**](https://matrix-org.github.io/synapse/latest/setup/installation.html)
 - NEMP has more features like newsfeed, video messages, large file transfers etc.
 - NEMP client has a nicer and more user friendly UI than Element (the most popular Matrix protocol client) :-)
