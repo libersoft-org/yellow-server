@@ -64,7 +64,7 @@ Running the decentralized network of messaging servers can resolve this problem.
 | Telegram                            |          :x:          |        optional       |  client apps only  | Telegram Group, UK                       |
 | QQ                                  |          :x:          |          :x:          |         :x:        | Tencent Holdings Ltd., China             |
 | iMessage                            |          :x:          |   :heavy_check_mark:  |         :x:        | Apple Inc., USA                          |
-| SnapChat                            |          :x:          |   :heavy_check_mark:  |         :x:        |	Snap Inc., USA                           |
+| SnapChat                            |          :x:          |          :x:          |         :x:        |	Snap Inc., USA                           |
 | Kik                                 |          :x:          |          :x:          |         :x:        |	MediaLab AI Inc., France                 |
 | Skype                               |          :x:          |   :heavy_check_mark:  |         :x:        |	Microsoft Corporation, USA               |
 | Discord                             |          :x:          |          :x:          |         :x:        | Discord Inc., USA                        |
