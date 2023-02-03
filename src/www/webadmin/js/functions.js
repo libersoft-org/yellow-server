@@ -45,7 +45,6 @@ function login() {
   user: document.querySelector('#user').value,
   pass: document.querySelector('#pass').value
  });
- document.querySelector('#logbutton').onclick = '';
  document.querySelector('#logbutton').style.backgroundColor = '#A0A0A0';
  document.querySelector('#logbutton').innerHTML = '<span class="loader"></span>';
 }
@@ -385,8 +384,7 @@ async function setAdminLogin(res) {
  } else {
   var error = document.querySelector('#error');
   error.style.display = 'block';
-  error.innerHTML = res.message;
-  document.querySelector('#logbutton').onclick = 'login()';
+  error.innerHTML = res.data.message;
   document.querySelector('#logbutton').style.backgroundColor = 'var(--primary-color)';
   document.querySelector('#logbutton').innerHTML = 'Login';
  }
@@ -427,7 +425,7 @@ async function setDomains(res) {
     rows += translate(rowTemp, {
     '{ID}': res.data[i].id,
     '{NAME}': res.data[i].name,
-    '{CREATED}': new Date(res.data[i].created).toLocaleString()
+    '{CREATED}': new Date(res.data[i].created).toString()
     });
   }
   document.querySelector('#domains').innerHTML = rows;
@@ -479,7 +477,7 @@ async function setUsers(res) {
     '{PHOTO}': res.data[i].photo,
     '{MESSAGES}': '?',
     '{FILES_SIZE}': '?',
-    '{CREATED}': new Date(res.data[i].created).toLocaleString()
+    '{CREATED}': new Date(res.data[i].created).toString()
    });
   }
   document.querySelector('#users').innerHTML = rows;
@@ -504,7 +502,7 @@ async function setAliases(res) {
       '{ID}': res.data[i].id,
       '{ALIAS}': res.data[i].alias,
       '{MAIL}': res.data[i].mail,
-      '{CREATED}': new Date(res.data[i].created).toLocaleString()
+      '{CREATED}': new Date(res.data[i].created).toString()
      });
     }
     document.querySelector('#aliases').innerHTML = rows;
@@ -518,7 +516,7 @@ async function setAdmins(res) {
   rows += translate (rowTemp, {
    '{ID}': res.data[i].id,
    '{USER}': res.data[i].user,
-   '{CREATED}': new Date(res.data[i].created).toLocaleString()
+   '{CREATED}': new Date(res.data[i].created).toString()
   });
  }
  document.querySelector('#admins').innerHTML = rows;

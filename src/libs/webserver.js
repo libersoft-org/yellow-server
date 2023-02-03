@@ -21,12 +21,16 @@ class WebServer {
     next();
    });
    for (var i = 0; i < Common.settings.webs.length; i++) {
-    if (Common.settings.webs[i].run) app.use(Common.settings.webs[i].url, express.static(Common.settings.webs[i].path));
-    if (Common.settings.webs[i].run) app.get(Common.settings.webs[i].url + '/:page', (req, res) => {
-     res.send('OK');
-     console.log(Common.settings.webs[i]); // TODO - returns undefined
-     //res.sendfile(Common.settings.webs[i].path + '/index.html');
-    });
+    if (Common.settings.webs[i].run) {
+     (function(i) {
+        app.use(Common.settings.webs[i].url, express.static(Common.settings.webs[i].path));
+        app.get(Common.settings.webs[i].url + '/:page', (req, res) => {
+         console.log(Common.settings.webs[i]); // fixed
+         res.send('ok');
+       //   res.sendfile(Common.settings.webs[i].path + '/index.html');
+        });
+     })(i);
+    }
    }
    app.use('*', express.static(Common.settings.web_notfound_path));
    this.httpServer = http.createServer(app).listen(Common.settings.http_port);

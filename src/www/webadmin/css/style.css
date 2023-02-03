@@ -370,3 +370,6 @@ table tbody tr td, table thead tr th {
   display: block;
  }
 }
+.small {
+    font-size: 12px;
+}
