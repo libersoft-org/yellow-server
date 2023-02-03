@@ -45,7 +45,6 @@ function login() {
   user: document.querySelector('#user').value,
   pass: document.querySelector('#pass').value
  });
-//  document.querySelector('#logbutton').onclick = '';
  document.querySelector('#logbutton').style.backgroundColor = '#A0A0A0';
  document.querySelector('#logbutton').innerHTML = '<span class="loader"></span>';
 }
@@ -386,7 +385,6 @@ async function setAdminLogin(res) {
   var error = document.querySelector('#error');
   error.style.display = 'block';
   error.innerHTML = res.data.message;
-//   document.querySelector('#logbutton').onclick = 'login()';
   document.querySelector('#logbutton').style.backgroundColor = 'var(--primary-color)';
   document.querySelector('#logbutton').innerHTML = 'Login';
  }
