@@ -27,7 +27,15 @@ The modern features:
 - Modern looking UI
 - etc.
 
-## Is end-to-end encryption important?
+## Why is decentralization important?
+
+In today world, some governments and big corporations are continously censoring users' content, decentralization is extremely important. Even if you run centrally a free and open source service like Signal, some governments can push you to censor some content or they can easily block your servers.
+
+For example WhatsApp and many other centraly run messaging services are blocked in China which leads to inaccessibility of such service for more than 1 billion of people in China.
+
+Running the decentralized network of messaging servers can resolve this problem. Classic e-mail servers are decentralized. Everyone is able to buy a domain and VPS for cheap and run their own e-mail server. Most of the e-mail servers are not banned even in countries like China, where government is hugely blocking many foreign servers. This is why NEMP is also decentralized.
+
+## Why is end-to-end encryption important?
 
 The end-to-end encryption is really recommended for everyone. Your personal and business data are potentially exploitable.
 
@@ -41,15 +49,13 @@ For example:
 
 These are just few examples, there are many more.
 
-Encrypt your data and don't trust the software that's not open source!
+It's highly recommended not to use messaging software that does not use end-to-end encryption.
 
-## Is decentralization important?
+## Why is important to use open source software?
 
-In today world, some governments and big corporations are continously censoring users' content, decentralization is extremely important. Even if you run centrally a free and open source service like Signal, some governments can push you to censor some content or they can easily block your servers.
+Open source means that the source code of the software is published to everyone for free. Everyone can check the code, point out its potential vulnerabilities and also propose how to fix it. This way developers can easily adopt the fix and publish the new verison. Everyone can also check that there is no malicious code in the software. This is not possible in case of proprietary (opposite of open source) software.
 
-For example WhatsApp and many other centraly run messaging services are blocked in China which leads to inaccessibility of such service for more than 1 billion of people in China.
-
-Running the decentralized network of messaging servers can resolve this problem. Classic e-mail servers are decentralized. Everyone is able to buy a domain and VPS for cheap and run their own e-mail server. Most of the e-mail servers are not banned even in countries like China, where government is hugely blocking many foreign servers. This is why NEMP is also decentralized.
+It's highly recommended not to trust and not to use messaging software that is not open source (both server and client software).
 
 ## Comparison with other messaging software
 
@@ -74,6 +80,7 @@ Running the decentralized network of messaging servers can resolve this problem.
 | Hike                                |          :x:          |   :heavy_check_mark:  |         :x:        |	Hike Private Limited, India              |
 | Zalo                                |          :x:          |          :x:          |         :x:        | Zalo Group, Vietnam                      |
 | Signal                              |          :x:          |   :heavy_check_mark:  | :heavy_check_mark: |	Signal Foundation, USA                   |
+| Threema                             |          :x:          |   :heavy_check_mark:  |  client apps only  | Threema GmbH, Switzerland                |
 | Matrix protocol (Element etc.)      |   :heavy_check_mark:  |   :heavy_check_mark:  | :heavy_check_mark: |	The Matrix.org Foundation CIC, UK        |
 | ICQ                                 |          :x:          |     AV files only     |         :x:        |	Mail.ru Group, Russia                    |
 
