@@ -49,13 +49,13 @@ For example:
 
 These are just few examples, there are many more.
 
-It's highly recommended not to use messaging software that does not use end-to-end encryption.
+It is **highly recommended not to use messaging software that does not use end-to-end encryption**.
 
 ## Why is important to use open source software?
 
-Open source means that the source code of the software is published to everyone for free. Everyone can check the code, point out its potential vulnerabilities and also propose how to fix it. This way developers can easily adopt the fix and publish the new verison. Everyone can also check that there is no malicious code in the software. This is not possible in case of proprietary (opposite of open source) software.
+Open source means that the source code of the software is published for free to everyone. This way you can check the code, point out its potential vulnerabilities and also propose how to fix it. Developers can easily adopt such fix and publish the new fixed verison. Everyone can also check that there is no malicious code in the software. This is not possible in case of proprietary (opposite of open source) software.
 
-It's highly recommended not to trust and not to use messaging software that is not open source (both server and client software).
+It is **highly recommended not to trust and not to use messaging software that is not open source** (both server and client software).
 
 ## Comparison with other messaging software
 
