@@ -33,7 +33,9 @@ In today world, some governments and big corporations are continously censoring 
 
 For example WhatsApp and many other centraly run messaging services are blocked in China which leads to inaccessibility of such service for more than 1 billion of people in China.
 
-Running the decentralized network of messaging servers can resolve this problem. Classic e-mail servers are decentralized. Everyone is able to buy a domain and VPS for cheap and run their own e-mail server. Most of the e-mail servers are not banned even in countries like China, where government is hugely blocking many foreign servers. This is why NEMP is also decentralized.
+Running the decentralized network of messaging servers can resolve this problem. Classic e-mail servers are decentralized. Everyone is able to buy a domain and VPS for cheap and run their own e-mail server. Most of the e-mail servers are not banned even in countries like China, where government is hugely blocking many foreign servers.
+
+It is **highly recommended not to use messaging software that is not decentralized**. If you run your own server software, no one can ever block you. It is recommend to use [**high availability solution**](https://en.wikipedia.org/wiki/High_availability) for your server so you'll run your own decentralized network just to be sure you'll never lose your data.
 
 ## Why is end-to-end encryption important?
 
