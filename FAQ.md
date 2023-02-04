@@ -81,6 +81,7 @@ It is **highly recommended not to trust and not to use messaging software that i
 | LINE                                |          :x:          |   :heavy_check_mark:  |         :x:        |	Line Corporation, Japan                  |
 | Hike                                |          :x:          |   :heavy_check_mark:  |         :x:        |	Hike Private Limited, India              |
 | Zalo                                |          :x:          |          :x:          |         :x:        | Zalo Group, Vietnam                      |
+| KakaoTalk                           |          :x:          |        optional       |         :x:        | Kakao Corp., South Korea                 |
 | Signal                              |          :x:          |   :heavy_check_mark:  | :heavy_check_mark: |	Signal Foundation, USA                   |
 | Threema                             |          :x:          |   :heavy_check_mark:  |  client apps only  | Threema GmbH, Switzerland                |
 | Matrix protocol (Element etc.)      |   :heavy_check_mark:  |   :heavy_check_mark:  | :heavy_check_mark: |	The Matrix.org Foundation CIC, UK        |
