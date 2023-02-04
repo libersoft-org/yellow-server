@@ -354,16 +354,35 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_get_aliases') setAliases(data);
   if (data.command == 'admin_get_admins') setAdmins(data);
   if (data.command == 'admin_del_domain') {
-    if(data.data.error) await getDialog('Delete domain', data.data.message);
-    else await getDialog('Delete domain', 'Removed successfully');
+   if(data.data !== undefined && data.data.error) await getDialog('Delete domain Error', data.data.message);
+   else await getDialog('Delete domain', 'Removed successfully');
   }
-  if (data.command == 'admin_add_domain') await getDialog('Add domain', 'Added successfully');
-  if (data.command == 'admin_set_domain') await getDialog('Update domain', 'Updated successfully');
-  if (data.command == 'admin_add_user') await getDialog('Add User', 'Added successfully');
-  if (data.command == 'admin_set_user') await getDialog('Update User', 'Updated successfully');
+  if (data.command == 'admin_add_domain') {
+   console.log(data);
+   if(data.data !== undefined && data.data.error) await getDialog('Add domain Error', data.data.message);
+   else await getDialog('Add domain', 'Added successfully');
+  }
+  if (data.command == 'admin_set_domain') {
+   if(data.data !== undefined && data.data.error) await getDialog('Update domain Error', data.data.message);
+   else await getDialog('Update domain', 'Updated successfully');
+  }
+  if (data.command == 'admin_add_user') {
+   if(data.data !== undefined && data.data.error) await getDialog('Add user Error', data.data.message);
+   else await getDialog('Add User', 'Added successfully');
+  }
+  if (data.command == 'admin_set_user') {
+   if(data.data !== undefined && data.data.error) await getDialog('Update user Error', data.data.message);
+   else await getDialog('Update User', 'Updated successfully');
+  }
   if (data.command == 'admin_del_user') await getDialog('Delete User', 'Removed successfully');
-  if (data.command == 'admin_add_aliases') await getDialog('Add Alias', 'Added successfully');
-  if (data.command == 'admin_set_aliases') await getDialog('Update Alias', 'Updated successfully');
+  if (data.command == 'admin_add_aliases') {
+   if(data.data !== undefined && data.data.error) await getDialog('Add alias Error', data.data.message);
+   else await getDialog('Add Alias', 'Added successfully');
+  }
+  if (data.command == 'admin_set_aliases') {
+   if(data.data !== undefined && data.data.error) await getDialog('Update alias Error', data.data.message);
+   else await getDialog('Update Alias', 'Updated successfully');
+}
   if (data.command == 'admin_del_aliases') await getDialog('Delete Alias', 'Deleted successfully');
  }
 }
@@ -425,7 +444,7 @@ async function setDomains(res) {
     rows += translate(rowTemp, {
     '{ID}': res.data[i].id,
     '{NAME}': res.data[i].name,
-    '{CREATED}': new Date(res.data[i].created).toString()
+    '{CREATED}': new Date(res.data[i].created)
     });
   }
   document.querySelector('#domains').innerHTML = rows;
@@ -477,7 +496,7 @@ async function setUsers(res) {
     '{PHOTO}': res.data[i].photo,
     '{MESSAGES}': '?',
     '{FILES_SIZE}': '?',
-    '{CREATED}': new Date(res.data[i].created).toString()
+    '{CREATED}': new Date(res.data[i].created)
    });
   }
   document.querySelector('#users').innerHTML = rows;
@@ -502,7 +521,7 @@ async function setAliases(res) {
       '{ID}': res.data[i].id,
       '{ALIAS}': res.data[i].alias,
       '{MAIL}': res.data[i].mail,
-      '{CREATED}': new Date(res.data[i].created).toString()
+      '{CREATED}': new Date(res.data[i].created)
      });
     }
     document.querySelector('#aliases').innerHTML = rows;
@@ -516,7 +535,7 @@ async function setAdmins(res) {
   rows += translate (rowTemp, {
    '{ID}': res.data[i].id,
    '{USER}': res.data[i].user,
-   '{CREATED}': new Date(res.data[i].created).toString()
+   '{CREATED}': new Date(res.data[i].created)
   });
  }
  document.querySelector('#admins').innerHTML = rows;

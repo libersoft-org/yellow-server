@@ -11,10 +11,12 @@ class Database {
   this.db.close();
  }
 
- async read(query) {
+ async read(query, params) {
   try {
    await this.open();
-   var res = await this.db.all(query);
+   var res = await this.db.all(query, params, (err, success) => {
+    if(err) throw new Error(err) && Common.addLog(err);
+   });
    this.close();
    return res;
   } catch (ex) {
@@ -22,10 +24,12 @@ class Database {
   }
  }
 
- async write(query) {
+ async write(query, params) {
   try {
    await this.open();
-   await this.db.run(query);
+   await this.db.run(query, params, (err, success) => {
+    if(err) throw new Error(err) && Common.addLog(err);
+   });
    this.close();
   } catch (ex) {
    Common.addLog(ex);
