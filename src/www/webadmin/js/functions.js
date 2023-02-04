@@ -444,7 +444,7 @@ async function setDomains(res) {
     rows += translate(rowTemp, {
     '{ID}': res.data[i].id,
     '{NAME}': res.data[i].name,
-    '{CREATED}': new Date(res.data[i].created)
+    '{CREATED}': new Date(res.data[i].created).toLocaleString()
     });
   }
   document.querySelector('#domains').innerHTML = rows;
@@ -496,7 +496,7 @@ async function setUsers(res) {
     '{PHOTO}': res.data[i].photo,
     '{MESSAGES}': '?',
     '{FILES_SIZE}': '?',
-    '{CREATED}': new Date(res.data[i].created)
+    '{CREATED}': new Date(res.data[i].created).toLocaleString()
    });
   }
   document.querySelector('#users').innerHTML = rows;
@@ -521,7 +521,7 @@ async function setAliases(res) {
       '{ID}': res.data[i].id,
       '{ALIAS}': res.data[i].alias,
       '{MAIL}': res.data[i].mail,
-      '{CREATED}': new Date(res.data[i].created)
+      '{CREATED}': new Date(res.data[i].created).toLocaleString()
      });
     }
     document.querySelector('#aliases').innerHTML = rows;
@@ -535,7 +535,7 @@ async function setAdmins(res) {
   rows += translate (rowTemp, {
    '{ID}': res.data[i].id,
    '{USER}': res.data[i].user,
-   '{CREATED}': new Date(res.data[i].created)
+   '{CREATED}': new Date(res.data[i].created).toLocaleString()
   });
  }
  document.querySelector('#admins').innerHTML = rows;
