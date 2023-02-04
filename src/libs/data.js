@@ -25,111 +25,121 @@ class Data {
    process.exit(1);
   }
  }
+ res = {
+  'error': true,
+  'message': 'Missing input fields'
+};
 
  async adminGetLogin(user, pass) {
-  var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = "' + user.toLowerCase() + '"');
+  var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = $1', [user.toLowerCase()]);
 
   if (res.length == 1) {
    if (await this.verifyHash(res[0].pass, pass)) {
     var token = this.getToken(64);
-    await this.db.write('INSERT INTO admins_login (id_admin, token) VALUES ("' + res[0].id + '","' + token + '")');
+    await this.db.write('INSERT INTO admins_login (id_admin, token) VALUES ($1, $2)', [res[0].id, token]);
     return { logged: true, token: token };
    } else return { logged: false, message: 'Wrong username or password' }
   } else return { logged: false, message: 'Wrong username or password' }
  }
 
  async adminGetTokenExists(token) {
-  var res = await this.db.read('SELECT id FROM admins_login WHERE token = "' + token + '"');
+  var res = await this.db.read('SELECT id FROM admins_login WHERE token = $1', [token]);
   return res.length == 1 ? true : false;
  }
 
  async adminIsTokenValid(token) {
-  var res = await this.db.read('SELECT token, updated FROM admins_login WHERE token = "' + token + '"');
+  var res = await this.db.read('SELECT token, updated FROM admins_login WHERE token = $1', [token]);
   return res.length > 0 ? true : false;
  }
 
  async adminDeleteToken(token) {
-  await this.db.write('DELETE FROM admins_login WHERE token = "' + token + '"');
+  return await this.db.write('DELETE FROM admins_login WHERE token = $1', [token]);
  }
 
  async adminDeleteOldTokens() {
-  await this.db.write('DELETE FROM admins_login WHERE DATETIME(updated, "+' + Common.settings.webadmin_ttl + ' seconds") < DATETIME("now")');
+  return await this.db.write('DELETE FROM admins_login WHERE DATETIME(updated, "$1 seconds") < DATETIME("now")', [Common.settings.webadmin_ttl]);
  }
 
  async adminUpdateTokenTime(token) {
-  await this.db.write('UPDATE admins_login SET updated = "' + Common.getDateTime(new Date()) + '" WHERE token = "' + token + '"');
+  return await this.db.write('UPDATE admins_login SET updated = $1 WHERE token = $2', [Common.getDateTime(new Date()), token]);
  }
 
  async adminGetDomains() {
-  return await this.db.read('SELECT id, name, created FROM domains');
+  return await this.db.read('SELECT id, name, created FROM domains', []);
  }
 
  async adminAddDomain(name) {
-  return await this.db.write('INSERT INTO domains (name) VALUES ("' + name + '")');
+  if(!name) return this.res;
+  return await this.db.write('INSERT INTO domains (name) VALUES ($1)', [name]);
  }
 
  async adminSetDomain(id, name) {
-  return await this.db.write('UPDATE domains SET name = "' + name + '" WHERE id = "' + id + '"');
+  if(!id && !name) return this.res;
+  return await this.db.write('UPDATE domains SET name = $1 WHERE id = $2', [name, id]);
  }
 
  async adminDelDomains(id) {
-  let hasUsers = await this.db.read('SELECT id FROM users WHERE id_domain = "' + id + '"');
+  let hasUsers = await this.db.read('SELECT id FROM users WHERE id_domain = $1', [id]);
   if(hasUsers.length > 0) return {
     'error': true,
     'message': 'Cannot remove domain with users'
-    };
-  return await this.db.write('DELETE FROM domains WHERE id = "' + id + '"');
+  };
+  return await this.db.write('DELETE FROM domains WHERE id = $1', [id]);
  }
 
  async adminGetUsers(id) {
-  console.log('domain id is ', id, ' with type ', typeof id)
-   return await this.db.read('SELECT id, name, visible_name, photo, created FROM users WHERE id_domain = "' + id + '"');
+  if(id === undefined) id = 0; // to help with sql undefined column name
+  return await this.db.read('SELECT id, name, visible_name, photo, created FROM users WHERE id_domain = $1', [id]);
  }
 
  async adminAddUser(domainID, name, visibleName, pass) {
-  return await this.db.write("INSERT INTO users (id_domain, name, visible_name, pass) VALUES ('" + domainID + "', '" + name + "', '" + visibleName + "', '" + pass + "')");
+  if(!domainID && !name && !visibleName && !pass) return this.res;
+  return await this.db.write("INSERT INTO users (id_domain, name, visible_name, pass) VALUES ($1, $2, $3, $4)", [domainID, name, visibleName, pass]);
  }
 
  async adminSetUser(id, domainID, name, visibleName, photo, pass) {
-  return await this.db.write('UPDATE users SET id_domain = "' + domainID + '",name = "' + name + '", visible_name = "' + visibleName + '", pass = "' + pass + '", photo = "' + photo + '" WHERE id = "' + id + '"');
+  if(!id && !domainID && !name && !visibleName) return this.res;
+  return await this.db.write('UPDATE users SET id_domain = $1, name = $2, visible_name = $3, photo = $4, pass = $5', [domainID, name, visibleName, photo, pass]);
  }
 
  async adminDelUser(id) {
-  return await this.db.write('DELETE FROM users WHERE id="' + id + '"');
+  return await this.db.write('DELETE FROM users WHERE id= $1', [id]);
  }
 
  async adminGetAliases(domainID) {
-//   let users = await this.db.read('SELECT *, COUNT(*) FROM aliases ');
-//   console.log('aliases data..... ', users);
-  return await this.db.read('SELECT id, alias, mail, created FROM aliases WHERE id_domain = "' + domainID + '"');
+  if(id === undefined) id = 0; // to help with sql undefined column name
+  return await this.db.read('SELECT id, alias, mail, created FROM aliases WHERE id_domain = $1', [domainID]);
  }
 
  async adminAddAlias(domainID, alias, mail) {
-  await this.db.write("INSERT INTO aliases (id_domain, alias, mail) VALUES ('" + domainID + "', '" + alias + "', '" + mail + "')");
+  if(!domainID && !alias && !mail) return this.res;
+  return await this.db.write("INSERT INTO aliases (id_domain, alias, mail) VALUES ($1, $2, $3)", [domainID, alias, mail]);
  }
 
  async adminSetAlias(id, alias, mail) {
-  await this.db.write('UPDATE aliases SET alias = "' + alias + '", mail = "' + mail + '" WHERE id = "' + id + '"');
+  if(!domainID && !alias && !mail) return this.res;
+  return await this.db.write('UPDATE aliases SET alias = $1, mail = $2 WHERE id = $3', [alias, mail, id]);
  }
 
  async adminDelAlias(id) {
-  await this.db.write('DELETE FROM aliases WHERE id="' + id + '"');
+  return await this.db.write('DELETE FROM aliases WHERE id= $1', [id]);
  }
 
  async adminGetAdmins() {
-  return await this.db.read('SELECT id, user, created FROM admins');
+  return await this.db.read('SELECT id, user, created FROM admins', []);
  }
 
  async adminAddAdmin(user, pass) {
-  await this.db.write('INSERT INTO admins (user, pass) VALUES ("' + user + '", "' + this.getHash(pass) + '")');
+  if(!user && !pass) this.res;
+  return await this.db.write('INSERT INTO admins (user, pass) VALUES ($1, $2)', [user, this.getHash(pass)]);
  }
 
- async adminSetDomain_(id, user, pass) {
-  await this.db.write('UPDATE admins SET name = "' + user + '"' + (pass != '' ? ', pass = "' + pass + '"' : '') + ' WHERE id = "' + id + '"');
+ async adminSetAdmin(id, user, pass) {
+  return await this.db.write('UPDATE admins SET name = $1 WHERE id = $2', [user, pass != '' ? ', pass = "' + pass + '"' : '']);
  }
 
  async adminDelAdmin(id) {
-  await this.db.write('DELETE FROM admin WHERE id = "' + id + '"');
+  return await this.db.write('DELETE FROM admin WHERE id = $1', [id]);
  }
 
  getToken(len) {
@@ -139,7 +149,8 @@ class Data {
   return res;
  }
 
- async getHash(password, memoryCost = 2 ** 16, hashLength = 64, timeCost = 20, parallelism = 1) { // default: 64 MB RAM, 64 characters length, 20 difficulty to calculate, 1 thread needed
+ async getHash(password, memoryCost = 2 ** 16, hashLength = 64, timeCost = 20, parallelism = 1) {
+  // default: 64 MB RAM, 64 characters length, 20 difficulty to calculate, 1 thread needed
   return await Argon2.hash(password, { memoryCost: memoryCost, hashLength: hashLength, timeCost: timeCost, parallelism: parallelism });
  }
 
