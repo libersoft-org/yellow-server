@@ -25,6 +25,12 @@ class Data {
    process.exit(1);
   }
  }
+
+ async createAdmin(user, pass) {
+  if(!user && !pass) this.res;
+  return await this.db.write('INSERT INTO admins (user, pass) VALUES ($1, $2)', [user, this.getHash(pass)]);
+ }
+
  res = {
   'error': true,
   'message': 'Missing input fields'
@@ -107,7 +113,7 @@ class Data {
  }
 
  async adminGetAliases(domainID) {
-  if(id === undefined) id = 0; // to help with sql undefined column name
+  if(domainID === undefined) domainID = 0; // to help with sql undefined column name
   return await this.db.read('SELECT id, alias, mail, created FROM aliases WHERE id_domain = $1', [domainID]);
  }
 
@@ -127,11 +133,6 @@ class Data {
 
  async adminGetAdmins() {
   return await this.db.read('SELECT id, user, created FROM admins', []);
- }
-
- async adminAddAdmin(user, pass) {
-  if(!user && !pass) this.res;
-  return await this.db.write('INSERT INTO admins (user, pass) VALUES ($1, $2)', [user, this.getHash(pass)]);
  }
 
  async adminSetAdmin(id, user, pass) {

@@ -1,6 +1,7 @@
 const Common = require('./common.js').Common;
 const WebServer = require('./webserver.js');
 const fs = require('fs');
+let prompt = require('prompt');
 
 class App {
  run() {
@@ -10,8 +11,9 @@ class App {
     this.startServer();
     break;
    case 1:
-    if (args[0] == '--create-settings') this.createSettings();
-    if (args[0] == '--create-database') this.createDatabase();
+    if (args[0] === '--create-settings') this.createSettings();
+    if (args[0] === '--create-database') this.createDatabase();
+    if (args[0] === '--create-admin') this.createAdmin();
     else this.getHelp();
     break;
    default:
@@ -98,6 +100,35 @@ class App {
   const data = new Data();
   data.createDB();
   Common.addLog('Database was created sucessfully.');
+  Common.addLog('');
+ }
+
+createAdmin() {
+  var username = '', password = '';
+  this.loadSettings();
+  const Data = require('./data.js');
+  const data = new Data();
+  var schema = {
+    properties: {
+      username: {
+        pattern: /^[a-zA-Z\s\-]+$/,
+        message: 'Name must be only letters, spaces, or dashes',
+        required: true
+      },
+      password: {
+        hidden: true,
+        required: true
+      }
+    }
+  };
+  prompt.start();
+  prompt.get(schema, function (err, result) {
+    if(err) throw err;
+    username = result.username;
+    password = result.password;
+    data.createAdmin(username, password);
+    Common.addLog('Admin was created sucessfully.');
+  });
   Common.addLog('');
  }
 }

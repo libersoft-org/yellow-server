@@ -20,24 +20,43 @@ async function getPage(name) {
  if (document.querySelectorAll('.active').length >= 1) document.querySelectorAll('.active')[0].classList.remove('active');
  document.querySelector('#menu-' + name).classList.add('active');
  document.querySelector('#content').innerHTML = await getFileContent('html/' + name + '.html');
- if (name == 'stats') getStats();
- if (name == 'domains') getDomains();
- if (name == 'users') getUsers();
- if (name == 'aliases') getAliases();
- if (name == 'admins') getAdmins();
+ if (name == 'stats') {
+   window.history.replaceState(null, null, "/webadmin/stats");
+   getStats();
+ }
+ if (name == 'domains') {
+   window.history.replaceState(null, null, "/webadmin/domains");
+   getDomains();
+ }
+ if (name == 'users') {
+   window.history.replaceState(null, null, "/webadmin/users");
+   getUsers();
+ }
+ if (name == 'aliases') {
+   window.history.replaceState(null, null, "/webadmin/aliases");
+   getAliases();
+ }
+ if (name == 'admins') {
+   window.history.replaceState(null, null, "/webadmin/admins");
+   getAdmins();
+ }
  menuHide();
 }
 
 function menuShowHide() {
- if (window.matchMedia('(max-width: 1000px)').matches) {
-  var menu = document.querySelector('#page #menu');
-  menu.style.display = menu.style.display == 'none' ? 'block' : 'none';
- }
+   if (window.matchMedia('(max-width: 1000px)').matches) {
+    var menu = document.querySelector('#page #menu');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+   }
 }
 
 function menuHide() {
  if (window.matchMedia('(max-width: 1000px)').matches) document.querySelector('#page #menu').style.display = 'none';
 }
+window.addEventListener("resize", function(event) {
+   if (window.matchMedia('(max-width: 1000px)').matches) document.querySelector('#page #menu').style.display = 'none';
+   else document.querySelector('#page #menu').style.display = 'block';
+});
 
 function login() {
  wsSend({
