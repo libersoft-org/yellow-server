@@ -3,6 +3,7 @@ const https = require('http2');
 const http2express = require('http2-express-bridge');
 const express = require('express');
 const fs = require('fs');
+const path = require('path');
 const WebSocketServer = require('ws').Server;
 const Common = require('./common.js').Common;
 const Protocol = require('./protocol.js');
@@ -25,9 +26,10 @@ class WebServer {
      (function(i) {
         app.use(Common.settings.webs[i].url, express.static(Common.settings.webs[i].path));
         app.get(Common.settings.webs[i].url + '/:page', (req, res) => {
-         console.log(Common.settings.webs[i]); // fixed
+         console.log(Common.settings.webs[i]);
+         // res.sendFile(__dirname + '/' + Common.settings.webs[i].path + '/index.html');
+         path.resolve('/' + Common.settings.webs[i].path + '/index.html')
          res.send('ok');
-       //   res.sendfile(Common.settings.webs[i].path + '/index.html');
         });
      })(i);
     }

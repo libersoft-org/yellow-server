@@ -113,7 +113,7 @@ class Data {
  }
 
  async adminGetAliases(domainID) {
-  if(id === undefined) id = 0; // to help with sql undefined column name
+  if(domainID === undefined) domainID = 0; // to help with sql undefined column name
   return await this.db.read('SELECT id, alias, mail, created FROM aliases WHERE id_domain = $1', [domainID]);
  }
 
