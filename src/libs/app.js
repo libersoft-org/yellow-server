@@ -126,7 +126,7 @@ createAdmin() {
     if(err) throw err;
     username = result.username;
     password = result.password;
-    data.createAdmin(username, password);
+    data.adminAddAdmin(username, password);
     Common.addLog('Admin was created sucessfully.');
   });
   Common.addLog('');

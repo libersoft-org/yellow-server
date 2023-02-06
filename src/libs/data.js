@@ -26,11 +26,6 @@ class Data {
   }
  }
 
- async createAdmin(user, pass) {
-  if(!user && !pass) this.res;
-  return await this.db.write('INSERT INTO admins (user, pass) VALUES ($1, $2)', [user, this.getHash(pass)]);
- }
-
  res = {
   'error': true,
   'message': 'Missing input fields'
@@ -50,7 +45,7 @@ class Data {
 
  async adminGetTokenExists(token) {
   var res = await this.db.read('SELECT id FROM admins_login WHERE token = $1', [token]);
-  return res.length == 1 ? true : false;
+  return res.length === 1 ? true : false;
  }
 
  async adminIsTokenValid(token) {
@@ -94,7 +89,7 @@ class Data {
  }
 
  async adminGetUsers(id) {
-  if(id === undefined) id = 0; // to help with sql undefined column name
+  if(id === undefined) return [];
   return await this.db.read('SELECT id, name, visible_name, photo, created FROM users WHERE id_domain = $1', [id]);
  }
 
@@ -113,7 +108,7 @@ class Data {
  }
 
  async adminGetAliases(domainID) {
-  if(domainID === undefined) domainID = 0; // to help with sql undefined column name
+  if(domainID === undefined) return [];
   return await this.db.read('SELECT id, alias, mail, created FROM aliases WHERE id_domain = $1', [domainID]);
  }
 
@@ -123,7 +118,7 @@ class Data {
  }
 
  async adminSetAlias(id, alias, mail) {
-  if(!domainID && !alias && !mail) return this.res;
+  if(!id && !alias && !mail) return this.res;
   return await this.db.write('UPDATE aliases SET alias = $1, mail = $2 WHERE id = $3', [alias, mail, id]);
  }
 
@@ -135,12 +130,17 @@ class Data {
   return await this.db.read('SELECT id, user, created FROM admins', []);
  }
 
+ async adminAddAdmin(user, pass) {
+  if(!user && !pass) this.res;
+  return await this.db.write('INSERT INTO admins (user, pass) VALUES ($1, $2)', [user, this.getHash(pass)]);
+ }
+
  async adminSetAdmin(id, user, pass) {
-  return await this.db.write('UPDATE admins SET name = $1 WHERE id = $2', [user, pass != '' ? ', pass = "' + pass + '"' : '']);
+  return await this.db.write('UPDATE admins SET user = $1, pass = $2 WHERE id = $3', [user, pass != '' ? ', pass = "' + pass + '"' : '', id]);
  }
 
  async adminDelAdmin(id) {
-  return await this.db.write('DELETE FROM admin WHERE id = $1', [id]);
+  return await this.db.write('DELETE FROM admins WHERE id = $1', [id]);
  }
 
  getToken(len) {
