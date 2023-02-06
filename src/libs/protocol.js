@@ -9,14 +9,19 @@ class Protocol {
  }
 
  async protocolHandler(data) {
-  var req = JSON.parse(data);
-  var res = {}
-  if (req.command) {
-   if (req.command.startsWith('admin_')) res = await this.processAdminCommand(req);
-   else if (req.command.startsWith('user_')) res = await this.processUserCommand(req);
-   else res = { error: 'command_unknown', message: 'Command is unknown' }
-  } else res = { error: 'command_missing', message: 'Command was not specified' }
-  return JSON.stringify(res);
+   try {
+    console.log(data);
+    var req = JSON.parse(data);
+    var res = {}
+    if (req.command) {
+    if (req.command.startsWith('admin_')) res = await this.processAdminCommand(req);
+    else if (req.command.startsWith('user_')) res = await this.processUserCommand(req);
+    else res = { error: 'command_unknown', message: 'Command is unknown' }
+    } else res = { error: 'command_missing', message: 'Command was not specified' }
+    return JSON.stringify(res);
+   } catch (error) {
+      return JSON.stringify({ error: 'invalid command', message: 'expected valid json', "error": error.message })
+   }
  }
 
  async processAdminCommand(req) {
@@ -43,7 +48,7 @@ class Protocol {
     else if (req.command == 'admin_set_aliases') return { command: req.command, data: await this.data.adminSetAlias(req.id, req.alias, req.mail) };
     else if (req.command == 'admin_del_aliases') return { command: req.command, data: await this.data.adminDelAlias(req.id) };
     else if (req.command == 'admin_get_admins') return { command: req.command, data: await this.data.adminGetAdmins() };
-    else if (req.command == 'admin_add_admin') return { command: req.command, data: await this.data.adminAddAdmin(req.name) };
+    else if (req.command == 'admin_add_admin') return { command: req.command, data: await this.data.adminAddAdmin(req.name, req.pass) };
     else if (req.command == 'admin_set_admin') return { command: req.command, data: await this.data.adminSetAdmin(req.id, req.name) };
     else if (req.command == 'admin_del_admin') return { command: req.command, data: await this.data.adminDelAdmin(req.id) };
     else if (req.command == 'admin_sysinfo') return { command: req.command, data: this.getSysInfo() };

@@ -313,9 +313,15 @@ table tbody tr td, table thead tr th {
  padding: 10px;
 }
 
+#footer-container {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+}
+
 #footer {
- z-index: 100;
- position: absolute;
  display: flex;
  align-items: center;
  bottom: 1px;

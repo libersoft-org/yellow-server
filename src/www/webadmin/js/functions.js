@@ -9,10 +9,19 @@ let idData = {
 
 window.onload = async function() {
  wsConnect(server);
+ let page_ = '';
+//  await getDomains();
+ console.log(domainsData);
  var login = localStorage.getItem('admin_token') ? false : true;
+ if(window.location.pathname.split('webadmin/')[1]) page_ = window.location.pathname.split('webadmin/')[1]
+ else page_ = 'stats';
  document.querySelector('#page').innerHTML = await getFileContent('html/' + (login ? 'login' : 'home') + '.html');
  if (login) document.querySelector('#user').focus();
- else await getPage('stats');
+ else await getPage(page_);
+}
+
+function replaceWindowState(url) {
+   return window.history.replaceState(null, null, url);
 }
 
 async function getPage(name) {
@@ -20,24 +29,24 @@ async function getPage(name) {
  if (document.querySelectorAll('.active').length >= 1) document.querySelectorAll('.active')[0].classList.remove('active');
  document.querySelector('#menu-' + name).classList.add('active');
  document.querySelector('#content').innerHTML = await getFileContent('html/' + name + '.html');
- if (name == 'stats') {
-   window.history.replaceState(null, null, "/webadmin/stats");
+ if (name === 'stats') {
+   replaceWindowState("/webadmin/stats");
    getStats();
  }
- if (name == 'domains') {
-   window.history.replaceState(null, null, "/webadmin/domains");
+ if (name === 'domains') {
+   replaceWindowState("/webadmin/domains");
    getDomains();
  }
- if (name == 'users') {
-   window.history.replaceState(null, null, "/webadmin/users");
+ if (name === 'users') {
+   replaceWindowState("/webadmin/users");
    getUsers();
  }
- if (name == 'aliases') {
-   window.history.replaceState(null, null, "/webadmin/aliases");
+ if (name === 'aliases') {
+   replaceWindowState("/webadmin/aliases");
    getAliases();
  }
- if (name == 'admins') {
-   window.history.replaceState(null, null, "/webadmin/admins");
+ if (name === 'admins') {
+   replaceWindowState("/webadmin/admins");
    getAdmins();
  }
  menuHide();
@@ -73,6 +82,48 @@ async function logout() {
   command: 'admin_logout',
   token: localStorage.getItem('admin_token')
  });
+}
+
+async function editAdmin(id, name) {
+ await getDialog('Edit admin', await getFileContent('html/admin_update.html'));
+ let updated_name = document.querySelector('#updated_admin_name');
+ let updated_password = document.querySelector('#updated_admin_pass');
+ updated_name.value = name;
+ updated_name.focus();
+ idData.id = id;
+}
+
+async function adminUpdate() {
+ let updated_name = document.querySelector('#updated_admin_name');
+ let updated_password = document.querySelector('#updated_admin_pass');
+ wsSend({
+  command: 'admin_set_admin',
+  id: idData.id,
+  name: updated_name.value,
+  pass: updated_password.value,
+  admin_token: localStorage.getItem('admin_token')
+ });
+ setTimeout(() => {
+    getPage('admins')
+ }, time);
+ dialogClose();
+}
+
+async function delAdminDialog(id) {
+   idData.secondary_id = id;
+   await getDialog('Delete admin ' + id, await getFileContent('html/admin_delete.html'));
+}
+
+async function delAdmin() {
+   wsSend({
+    command: 'admin_del_admin',
+    id: idData.secondary_id,
+    admin_token: localStorage.getItem('admin_token')
+   });
+   setTimeout(() => {
+      getPage('admins');
+   }, time);
+   dialogClose();
 }
 
 async function addDomain() {
@@ -279,11 +330,6 @@ async function getDomains() {
  });
 }
 
-// below to set domain options on load
-setTimeout(() => {
-    getDomains()
-}, 2000);
-
 async function getUsers(domain_id) {
  idData.id = domain_id;
 //  document.querySelector('#select_domains').value = idData.id;
@@ -302,6 +348,27 @@ async function getAliases(domain_id) {
 //   domain_id: document.querySelector('#select_domains').value
   domain_id: domain_id
  });
+}
+
+async function addAdmin() {
+ await getDialog('Add user', await getFileContent('html/admin_add.html'));
+ document.querySelector('#admin_name').focus();
+}
+
+async function adminAdd() {
+    let admin_name = document.querySelector('#admin_name');
+    let admin_password = document.querySelector('#admin_pass');
+    wsSend({
+     command: 'admin_add_admin',
+     domain_id: idData.id,
+     name: admin_name.value,
+     pass: admin_password.value,
+     admin_token: localStorage.getItem('admin_token')
+    });
+    setTimeout(() => {
+       getPage('admins');
+    }, time);
+    dialogClose();
 }
 
 async function getAdmins() {
@@ -350,8 +417,8 @@ function wsOnError(error) {
 }
 
 async function wsOnMessage(data) {
-//  console.log('FROM SERVER:');
-//  console.log(data);
+ console.log('FROM SERVER:');
+ console.log(data);
  data = JSON.parse(data);
 //  console.log('data......', data);
  if ('error' in data) {
@@ -365,9 +432,9 @@ async function wsOnMessage(data) {
     data.data.forEach((item) => {
         domainsData.push(item.id)
     });
-   if (page == 'domains') setDomains(data);
-   if (page == 'users') setUsersDomains(data);
-   if (page == 'aliases') setAliasesDomains(data);
+   if (page === 'domains') setDomains(data);
+   if (page === 'users') setUsersDomains(data);
+   if (page === 'aliases') setAliasesDomains(data);
   }
   if (data.command == 'admin_get_users') setUsers(data);
   if (data.command == 'admin_get_aliases') setAliases(data);
@@ -401,15 +468,20 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_set_aliases') {
    if(data.data !== undefined && data.data.error) await getDialog('Update alias Error', data.data.message);
    else await getDialog('Update Alias', 'Updated successfully');
-}
+  }
+  if (data.command == 'admin_set_admin') {
+   if(data.data !== undefined && data.data.error) await getDialog('Update admin Error', data.data.message);
+   else await getDialog('Update Admin', 'Updated successfully');
+  }
   if (data.command == 'admin_del_aliases') await getDialog('Delete Alias', 'Deleted successfully');
+  if (data.command == 'admin_del_admin') await getDialog('Delete Admin', 'Deleted successfully');
  }
 }
 
 async function wsSend(data) {
  if (ws.readyState === 1) {
-//   console.log('TO SERVER:');
-//   console.log(data);
+  console.log('TO SERVER:');
+  console.log(data);
   ws.send(JSON.stringify(data));
  }
 }
@@ -523,6 +595,7 @@ async function setUsers(res) {
 }
 
 async function setAliases(res) {
+console.log(res);
  document.querySelector('#aliases').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/aliases_row.html');

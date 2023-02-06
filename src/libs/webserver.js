@@ -27,14 +27,13 @@ class WebServer {
         app.use(Common.settings.webs[i].url, express.static(Common.settings.webs[i].path));
         app.get(Common.settings.webs[i].url + '/:page', (req, res) => {
          console.log(Common.settings.webs[i]);
-         // res.sendFile(__dirname + '/' + Common.settings.webs[i].path + '/index.html');
-         path.resolve('/' + Common.settings.webs[i].path + '/index.html')
-         res.send('ok');
+         res.sendFile(path.join(__dirname, '../www' + Common.settings.webs[i].url + '/index.html'));
+         // res.send('ok');
         });
      })(i);
     }
    }
-   app.use('*', express.static(Common.settings.web_notfound_path));
+   // app.use('*', (d) => { console.log('custom d is ---> ', d) }, express.static(Common.settings.web_notfound_path));
    this.httpServer = http.createServer(app).listen(Common.settings.http_port);
    Common.addLog('HTTP server running on port: ' + Common.settings.http_port);
    this.httpsServer = https.createSecureServer({ key: fs.readFileSync(cert_priv), cert: fs.readFileSync(cert_pub), ca: fs.readFileSync(cert_chain), allowHTTP1: true }, app).listen(Common.settings.https_port);
