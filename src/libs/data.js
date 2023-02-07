@@ -90,7 +90,9 @@ class Data {
 
  async adminGetUsers(id) {
   if(id === undefined) return [];
-  return await this.db.read('SELECT id, name, visible_name, photo, created FROM users WHERE id_domain = $1', [id]);
+  return await this.db.read(
+    `SELECT users.id, users.name, users.visible_name, users.photo, users.created, COUNT(messages.id) AS message_count
+    FROM users LEFT JOIN messages ON messages.id_user = users.id WHERE users.id_domain = $1 GROUP BY users.id;`, [id]);
  }
 
  async adminAddUser(domainID, name, visibleName, pass) {
@@ -140,6 +142,10 @@ class Data {
  }
 
  async adminDelAdmin(id) {
+  if(id === 1) return {
+    error: true,
+    message: "cannot remove root admin"
+  }
   return await this.db.write('DELETE FROM admins WHERE id = $1', [id]);
  }
 

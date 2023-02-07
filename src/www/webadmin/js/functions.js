@@ -10,18 +10,32 @@ let idData = {
 window.onload = async function() {
  wsConnect(server);
  let page_ = '';
-//  await getDomains();
- console.log(domainsData);
  var login = localStorage.getItem('admin_token') ? false : true;
  if(window.location.pathname.split('webadmin/')[1]) page_ = window.location.pathname.split('webadmin/')[1]
  else page_ = 'stats';
  document.querySelector('#page').innerHTML = await getFileContent('html/' + (login ? 'login' : 'home') + '.html');
+ replaceWindowState('/webadmin/' + page_);
  if (login) document.querySelector('#user').focus();
- else await getPage(page_);
+ else getPage(page_);
 }
 
 function replaceWindowState(url) {
    return window.history.replaceState(null, null, url);
+}
+
+setTimeout(() => {
+   getDomains();
+}, time);
+
+function setOptions() {
+ let domainsSelect = document.querySelector('#select_domains');
+ for (let i = 0; i < domainsData.length; i++) {
+  let option = document.createElement('option');
+  option.value = domainsData[i];
+  option.innerHTML = domainsData[i];
+  if(domainsSelect.children.length - 1 === domainsData.length) break;
+  domainsSelect.append(option);   
+ }
 }
 
 async function getPage(name) {
@@ -34,8 +48,8 @@ async function getPage(name) {
    getStats();
  }
  if (name === 'domains') {
-   replaceWindowState("/webadmin/domains");
    getDomains();
+   replaceWindowState("/webadmin/domains");
  }
  if (name === 'users') {
    replaceWindowState("/webadmin/users");
@@ -49,6 +63,7 @@ async function getPage(name) {
    replaceWindowState("/webadmin/admins");
    getAdmins();
  }
+ setOptions();
  menuHide();
 }
 
@@ -424,14 +439,15 @@ async function wsOnMessage(data) {
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
  } else {
+  if(data.handshake) getDomains();
   if (data.command == 'admin_login') setAdminLogin(data);
   if (data.command == 'admin_logout') setAdminLogout(data);
   if (data.command == 'admin_sysinfo') setSysInfo(data);
   if (data.command == 'admin_get_domains') {
-   if(data.data.length > 0)
-    data.data.forEach((item) => {
-        domainsData.push(item.id)
-    });
+   for(let i = 0; i < data.data.length; i++) {
+      domainsData.push(data.data[i].id);
+   }
+   setOptions();
    if (page === 'domains') setDomains(data);
    if (page === 'users') setUsersDomains(data);
    if (page === 'aliases') setAliasesDomains(data);
@@ -444,7 +460,6 @@ async function wsOnMessage(data) {
    else await getDialog('Delete domain', 'Removed successfully');
   }
   if (data.command == 'admin_add_domain') {
-   console.log(data);
    if(data.data !== undefined && data.data.error) await getDialog('Add domain Error', data.data.message);
    else await getDialog('Add domain', 'Added successfully');
   }
@@ -474,7 +489,10 @@ async function wsOnMessage(data) {
    else await getDialog('Update Admin', 'Updated successfully');
   }
   if (data.command == 'admin_del_aliases') await getDialog('Delete Alias', 'Deleted successfully');
-  if (data.command == 'admin_del_admin') await getDialog('Delete Admin', 'Deleted successfully');
+  if (data.command == 'admin_del_admin') {
+   if(data.data !== undefined && data.data.error) await getDialog('Delete admin Error', data.data.message);
+   else await getDialog('Deleted Admin', 'Deleted successfully');
+  }
  }
 }
 
@@ -529,7 +547,6 @@ async function setDomains(res) {
  document.querySelector('#domains').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/domains_row.html');
- domainsData = [...new Set(domainsData)]
  if(res.data.length > 0) {
   for (var i = 0; i < res.data.length; i++) {
     rows += translate(rowTemp, {
@@ -551,7 +568,7 @@ async function setUsersDomains(res) {
    '{NAME}': res.data[i].name
   });
  }
- document.querySelector('#domains').innerHTML = rows;
+ if(document.querySelector('#domains')) document.querySelector('#domains').innerHTML = rows;
 }
 
 async function setAliasesDomains(res) {
@@ -570,14 +587,6 @@ async function setUsers(res) {
  document.querySelector('#users').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/users_row.html');
- let domainsSelect = document.querySelector('#select_domains');
- for(let i = 0; i < domainsData.length; i++) {
-  let option = document.createElement('option');
-  option.value = domainsData[i];
-  option.innerHTML = domainsData[i];
-  if(domainsSelect.children.length - 1 === domainsData.length) break;
-  domainsSelect.append(option);
- }
  if(res.data.length > 0) {
   for (var i = 0; i < res.data.length; i++) {
    rows += translate(rowTemp, {
@@ -585,7 +594,7 @@ async function setUsers(res) {
     '{NAME}': res.data[i].name,
     '{VISIBLE_NAME}': res.data[i].visible_name,
     '{PHOTO}': res.data[i].photo,
-    '{MESSAGES}': '?',
+    '{MESSAGES}': res.data[i].message_count,
     '{FILES_SIZE}': '?',
     '{CREATED}': new Date(res.data[i].created).toLocaleString()
    });
@@ -595,18 +604,10 @@ async function setUsers(res) {
 }
 
 async function setAliases(res) {
-console.log(res);
  document.querySelector('#aliases').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/aliases_row.html');
  let domainsSelect = document.querySelector('#select_domains');
- for(let i = 0; i < domainsData.length; i++) {
-  let option = document.createElement('option');
-  option.value = domainsData[i];
-  option.innerHTML = domainsData[i];
-  if(domainsSelect.children.length - 1 === domainsData.length) break;
-  domainsSelect.append(option);
- }
  if(res.data.length > 0) {
     for (var i = 0; i < res.data.length; i++) {
      rows += translate (rowTemp, {

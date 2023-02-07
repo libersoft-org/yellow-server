@@ -52,7 +52,7 @@ class WebServer {
   ws.onmessage = async (data) => { this.wsOnMessage(ws, data) };
   ws.onclose = () => { this.wsOnClose(); };
   ws.onerror = () => { Common.addLog('WEBSOCKET - CLIENT ERROR'); }
-  this.wsSend(ws, 'HANDSHAKE FROM SERVER');
+  this.wsSend(ws, JSON.stringify({message: 'HANDSHAKE FROM SERVER', handshake: true}));
  }
 
  async wsOnMessage(ws, e) {
