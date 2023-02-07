@@ -48,7 +48,6 @@ async function getPage(name) {
    getStats();
  }
  if (name === 'domains') {
-   console.log('get domains method should be below, but why not?');
    getDomains();
    replaceWindowState("/webadmin/domains");
  }
@@ -446,7 +445,6 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_sysinfo') setSysInfo(data);
   if (data.command == 'admin_get_domains') {
    for(let i = 0; i < data.data.length; i++) {
-      console.log(data.data[i]);
       domainsData.push(data.data[i].id);
    }
    setOptions();
@@ -462,7 +460,6 @@ async function wsOnMessage(data) {
    else await getDialog('Delete domain', 'Removed successfully');
   }
   if (data.command == 'admin_add_domain') {
-   console.log(data);
    if(data.data !== undefined && data.data.error) await getDialog('Add domain Error', data.data.message);
    else await getDialog('Add domain', 'Added successfully');
   }
@@ -591,7 +588,6 @@ async function setUsers(res) {
  var rows = '';
  var rowTemp = await getFileContent('html/users_row.html');
  if(res.data.length > 0) {
-  console.log('res -> ', res)
   for (var i = 0; i < res.data.length; i++) {
    rows += translate(rowTemp, {
     '{ID}': res.data[i].id,
@@ -608,7 +604,6 @@ async function setUsers(res) {
 }
 
 async function setAliases(res) {
-console.log(res);
  document.querySelector('#aliases').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/aliases_row.html');
