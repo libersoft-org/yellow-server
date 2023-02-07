@@ -111,8 +111,8 @@ createAdmin() {
   var schema = {
     properties: {
       username: {
-        pattern: /^[a-zA-Z\s\-]+$/,
-        message: 'Name must be only letters, spaces, or dashes',
+        pattern: /^[a-zA-Z\-.]+$/,
+        message: 'Name must be only letters, dots or dashes',
         required: true
       },
       password: {
