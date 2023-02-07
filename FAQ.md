@@ -100,3 +100,9 @@ Matrix protocol is really an interesting software and together with NEMP it is p
 ## Is NEMP client backward compatible with classic e-mail protocols (SMTP, IMAP, POP3)?
 
 Right now it is not compatible, but in theory, it can be done in client software to support both old and new e-mail protocol. Maybe in future this feature will be added to NEMP client, but it is not our priority for now.
+
+## NEMP is using conversations instead of folders - why?
+
+Folders system (Inbox, Sent etc.) is very obsolete concept of message storing that was created before proper e-mail client software was even created. The original e-mail worked in file system structure where directories had roles of e-mail folders and files in them were e-mail messages. This concept was applied in all e-mail clients. Storing the e-mails in folders is very impractical solution, because if you search for message history, you have to switch between folders and search the content of each message. On the other hand conversations resolve this problem and make history search very fast, clear and easy.
+
+Custom folders in classic e-mail clients had some advantages and are present in NEMP client too. You can put whole conversations into folders (for example "Work", "Family" etc.). There is also a special non-conversation chat called "Own messages" where you can store your notes.
