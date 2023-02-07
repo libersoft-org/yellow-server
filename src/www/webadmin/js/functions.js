@@ -33,8 +33,10 @@ function setOptions() {
   let option = document.createElement('option');
   option.value = domainsData[i];
   option.innerHTML = domainsData[i];
-  if(domainsSelect.children.length - 1 === domainsData.length) break;
-  domainsSelect.append(option);   
+  if(domainsSelect) {
+   if(domainsSelect.children.length - 1 === domainsData.length) break;
+   domainsSelect.append(option);  
+  } 
  }
 }
 

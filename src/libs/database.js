@@ -15,9 +15,7 @@ class Database {
   try {
    await this.open();
    var res = await this.db.all(query, params, (err, success) => {
-    console.log('err ====> ', err);
-    console.log('success ====> ', success);
-    if(err) throw new Error(err) && Common.addLog('read err ====> ', err);
+    if(err) throw new Error(err);
    });
    this.close();
    return res;
@@ -30,7 +28,7 @@ class Database {
   try {
    await this.open();
    await this.db.run(query, params, (err, success) => {
-    if(err) throw new Error(err) && Common.addLog('write err ====> ', err);
+    if(err) throw new Error(err);
    });
    this.close();
   } catch (ex) {
