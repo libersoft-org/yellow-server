@@ -20,23 +20,24 @@ class Protocol {
     } else res = { error: 'command_missing', message: 'Command was not specified' }
     return JSON.stringify(res);
    } catch (error) {
-      return JSON.stringify({ error: 'invalid command', message: 'expected valid json', "error": error.message })
+      console.log(error);
+      return JSON.stringify({ error: 'invalid command', message: 'expected valid json', /*"error": error.message*/ });
    }
  }
 
  async processAdminCommand(req) {
     await this.data.adminDeleteOldTokens();
-    if (req.command == 'admin_login') {
+    if (req.command === 'admin_login') {
     if (req.user && req.pass) return { command: req.command, data: await this.data.adminGetLogin(req.user, req.pass) };
     else return { command: req.command, logged: false, message: 'Missing user or password parameter' }
-    } else if (req.command == 'admin_logout') {
+    } else if (req.command === 'admin_logout') {
     if (await this.data.adminGetTokenExists(req.token)) await this.data.adminDeleteToken(req.token);
     return { command: req.command, data: { logged: false, message: 'Logged out' } }
     } else {
     if (await this.data.adminIsTokenValid(req.admin_token)) {
     await this.data.adminUpdateTokenTime(req.admin_token);
-    if (req.command == 'admin_get_domains') return { command: req.command, data: await this.data.adminGetDomains() };
-    else if (req.command == 'admin_add_domain') return { command: req.command, data: await this.data.adminAddDomain(req.name) };
+    if (req.command === 'admin_get_domains') return { command: req.command, data: await this.data.adminGetDomains() };
+    else if (req.command === 'admin_add_domain') return { command: req.command, data: await this.data.adminAddDomain(req.name) };
     else if (req.command == 'admin_set_domain') return { command: req.command, data: await this.data.adminSetDomain(req.id, req.name) };
     else if (req.command == 'admin_del_domain') return { command: req.command, data: await this.data.adminDelDomains(req.id) };
     else if (req.command == 'admin_get_users') return { command: req.command, data: await this.data.adminGetUsers(req.domain_id) };
