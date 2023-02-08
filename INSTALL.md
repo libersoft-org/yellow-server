@@ -95,6 +95,12 @@ crontab -e
 node index.js --create-database
 ```
 
+**5. Create a new admin account:**
+
+```console
+node index.js --create-admin
+```
+
 If you need some additional configuration, just edit the **settings.json** file.
 
 ## Start the server

@@ -27,7 +27,17 @@ The modern features:
 - Modern looking UI
 - etc.
 
-## Is end-to-end encryption important?
+## Why is decentralization important?
+
+In today world, some governments and big corporations are continously censoring users' content, decentralization is extremely important. Even if you run centrally a free and open source service like Signal, some governments can push you to censor some content or they can easily block your servers.
+
+For example WhatsApp and many other centraly run messaging services are blocked in China which leads to inaccessibility of such service for more than 1 billion of people in China.
+
+Running the decentralized network of messaging servers can resolve this problem. Classic e-mail servers are decentralized. Everyone is able to buy a domain and VPS for cheap and run their own e-mail server. Most of the e-mail servers are not banned even in countries like China, where government is hugely blocking many foreign servers.
+
+It is **highly recommended not to use messaging software that is not decentralized**. If you run your own server software, no one can ever block you. It is recommend to use [**high availability solution**](https://en.wikipedia.org/wiki/High-availability_cluster) for your server so you'll run your own decentralized network just to be sure you'll never lose your data.
+
+## Why is end-to-end encryption important?
 
 The end-to-end encryption is really recommended for everyone. Your personal and business data are potentially exploitable.
 
@@ -41,15 +51,13 @@ For example:
 
 These are just few examples, there are many more.
 
-Encrypt your data and don't trust the software that's not open source!
+It is **highly recommended not to use messaging software that does not use end-to-end encryption**.
 
-## Is decentralization important?
+## Why is important to use open source software?
 
-In today world, some governments and big corporations are continously censoring users' content, decentralization is extremely important. Even if you run centrally a free and open source service like Signal, some governments can push you to censor some content or they can easily block your servers.
+Open source means that the source code of the software is published for free to everyone. This way you can check the code, point out its potential vulnerabilities and also propose how to fix it. Developers can easily adopt such fix and publish the new fixed verison. Everyone can also check that there is no malicious code in the software. This is not possible in case of proprietary (opposite of open source) software.
 
-For example WhatsApp and many other centraly run messaging services are blocked in China which leads to inaccessibility of such service for more than 1 billion of people in China.
-
-Running the decentralized network of messaging servers can resolve this problem. Classic e-mail servers are decentralized. Everyone is able to buy a domain and VPS for cheap and run their own e-mail server. Most of the e-mail servers are not banned even in countries like China, where government is hugely blocking many foreign servers. This is why NEMP is also decentralized.
+It is **highly recommended not to trust and not to use messaging software that is not open source** (both server and client software).
 
 ## Comparison with other messaging software
 
@@ -64,7 +72,7 @@ Running the decentralized network of messaging servers can resolve this problem.
 | Telegram                            |          :x:          |        optional       |  client apps only  | Telegram Group, UK                       |
 | QQ                                  |          :x:          |          :x:          |         :x:        | Tencent Holdings Ltd., China             |
 | iMessage                            |          :x:          |   :heavy_check_mark:  |         :x:        | Apple Inc., USA                          |
-| SnapChat                            |          :x:          |   :heavy_check_mark:  |         :x:        |	Snap Inc., USA                           |
+| SnapChat                            |          :x:          |          :x:          |         :x:        |	Snap Inc., USA                           |
 | Kik                                 |          :x:          |          :x:          |         :x:        |	MediaLab AI Inc., France                 |
 | Skype                               |          :x:          |   :heavy_check_mark:  |         :x:        |	Microsoft Corporation, USA               |
 | Discord                             |          :x:          |          :x:          |         :x:        | Discord Inc., USA                        |
@@ -73,7 +81,9 @@ Running the decentralized network of messaging servers can resolve this problem.
 | LINE                                |          :x:          |   :heavy_check_mark:  |         :x:        |	Line Corporation, Japan                  |
 | Hike                                |          :x:          |   :heavy_check_mark:  |         :x:        |	Hike Private Limited, India              |
 | Zalo                                |          :x:          |          :x:          |         :x:        | Zalo Group, Vietnam                      |
+| KakaoTalk                           |          :x:          |        optional       |         :x:        | Kakao Corp., South Korea                 |
 | Signal                              |          :x:          |   :heavy_check_mark:  | :heavy_check_mark: |	Signal Foundation, USA                   |
+| Threema                             |          :x:          |   :heavy_check_mark:  |  client apps only  | Threema GmbH, Switzerland                |
 | Matrix protocol (Element etc.)      |   :heavy_check_mark:  |   :heavy_check_mark:  | :heavy_check_mark: |	The Matrix.org Foundation CIC, UK        |
 | ICQ                                 |          :x:          |     AV files only     |         :x:        |	Mail.ru Group, Russia                    |
 
@@ -89,4 +99,10 @@ Matrix protocol is really an interesting software and together with NEMP it is p
 
 ## Is NEMP client backward compatible with classic e-mail protocols (SMTP, IMAP, POP3)?
 
-Right now it is not compatible, but in theory, it can be done in client software to support both old and new e-mail protocol. Maybe in future this feature will be added to NEMP client, but it is not our priority for now.
+It is not backward compatible. In theory, it can be done in client software to support both old and new e-mail protocols, but our goal is to replace the old e-mail protocols with NEMP and not to maintain the software for both old and new. We let enthusiasts to create backward compatible client software if they want to, but we're not going to do it.
+
+## NEMP is using conversations instead of folders - why?
+
+Folders system (Inbox, Sent etc.) is very obsolete concept of message storing that was created before proper e-mail client software even existed. The original e-mail worked in file system structure where directories had files had roles of e-mail folders and messages. This concept was applied in all e-mail clients that were made later. Storing the e-mails in folders is very impractical solution, because if you search for message history, you have to switch between folders and search the content of each message. On the other hand conversations resolve this problem and make history search very fast, clear and easy. You don't have to copy the history of messages in every single message so it saves space on server storage.
+
+Custom folders in classic e-mail clients had some advantages and are present in NEMP client too. You can put whole conversations into folders (for example "Work", "Family" etc.). There is also a special non-conversation chat called "Own messages" where you can store your notes.
