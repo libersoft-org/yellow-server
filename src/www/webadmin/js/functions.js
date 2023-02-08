@@ -39,7 +39,6 @@ function setOptions() {
 }
 
 async function getPage(name) {
- getDomains();
  page = name;
  if (document.querySelectorAll('.active').length >= 1) document.querySelectorAll('.active')[0].classList.remove('active');
  document.querySelector('#menu-' + name).classList.add('active');
@@ -58,12 +57,14 @@ async function getPage(name) {
   }, time);
  }
  if (name === 'users') {
+  getDomains();
   replaceWindowState("/webadmin/users");
   setTimeout(() => {
    getUsers();
   }, time);
  }
  if (name === 'aliases') {
+  getDomains();
   replaceWindowState("/webadmin/aliases");
   setTimeout(() => {
    getAliases();
@@ -435,7 +436,6 @@ async function wsOnMessage(data) {
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
  } else {
-  if(data.handshake) getDomains();
   setOptions();
   if (data.command == 'admin_login') setAdminLogin(data);
   if (data.command == 'admin_logout') setAdminLogout(data);
