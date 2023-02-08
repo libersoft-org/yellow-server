@@ -24,7 +24,7 @@ class Database {
   }
  }
 
- async write(query, params) {
+ async write(query, params=[]) {
   try {
    await this.open();
    await this.db.run(query, params, (err, success) => {

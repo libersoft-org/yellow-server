@@ -28,16 +28,16 @@ class WebServer {
         app.get(Common.settings.webs[i].url + '/:page', (req, res) => {
          console.log(Common.settings.webs[i]);
          res.sendFile(path.join(__dirname, '../www' + Common.settings.webs[i].url + '/index.html'));
-         // res.send('ok');
         });
      })(i);
     }
    }
-   // app.use('*', (d) => { console.log('custom d is ---> ', d) }, express.static(Common.settings.web_notfound_path));
+   app.use('*', express.static(Common.settings.web_notfound_path));
+   let activeHttpsPort = Common.settings.https_port.port_one || Common.settings.https_port.port_two;
    this.httpServer = http.createServer(app).listen(Common.settings.http_port);
    Common.addLog('HTTP server running on port: ' + Common.settings.http_port);
-   this.httpsServer = https.createSecureServer({ key: fs.readFileSync(cert_priv), cert: fs.readFileSync(cert_pub), ca: fs.readFileSync(cert_chain), allowHTTP1: true }, app).listen(Common.settings.https_port);
-   Common.addLog('HTTPS server running on port: ' + Common.settings.https_port);
+   this.httpsServer = https.createSecureServer({ key: fs.readFileSync(cert_priv), cert: fs.readFileSync(cert_pub), ca: fs.readFileSync(cert_chain), allowHTTP1: true }, app).listen(activeHttpsPort);
+   Common.addLog('HTTPS server running on port: ' + activeHttpsPort);
   } else {
    Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path);
    process.exit(1);

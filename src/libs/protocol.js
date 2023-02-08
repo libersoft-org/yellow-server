@@ -29,7 +29,7 @@ class Protocol {
     await this.data.adminDeleteOldTokens();
     if (req.command === 'admin_login') {
     if (req.user && req.pass) return { command: req.command, data: await this.data.adminGetLogin(req.user, req.pass) };
-    else return { command: req.command, logged: false, message: 'Missing user or password parameter' }
+    else return { command: req.command, data: {logged: false, message: 'Missing user or password parameter'} }
     } else if (req.command === 'admin_logout') {
     if (await this.data.adminGetTokenExists(req.token)) await this.data.adminDeleteToken(req.token);
     return { command: req.command, data: { logged: false, message: 'Logged out' } }
