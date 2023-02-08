@@ -11,7 +11,7 @@ class Database {
   this.db.close();
  }
 
- async read(query, params) {
+ async read(query, params=[]) {
   try {
    await this.open();
    var res = await this.db.all(query, params, (err, success) => {

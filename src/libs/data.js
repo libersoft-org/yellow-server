@@ -36,11 +36,8 @@ class Data {
  }
 
  async adminGetLogin(user, pass) {
-  console.log('user from login is: ', user);
   var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = $1', [user.toLowerCase()]);
-
   if (res.length === 1) {
-   console.log('res from login is: ', res[0]);
    if (await this.verifyHash(res[0].pass, pass)) {
     var token = this.getToken(64);
     await this.db.write('INSERT INTO admins_login (id_admin, token) VALUES ($1, $2)', [res[0].id, token]);
@@ -72,7 +69,7 @@ class Data {
  }
 
  async adminGetDomains() {
-  return await this.db.read('SELECT id, name, created FROM domains', []);
+  return await this.db.read('SELECT id, name, created FROM domains');
  }
 
  async adminAddDomain(name) {
@@ -148,7 +145,7 @@ class Data {
  }
 
  async adminGetAdmins() {
-  return await this.db.read('SELECT id, user, created FROM admins', []);
+  return await this.db.read('SELECT id, user, created FROM admins');
  }
 
  async adminAddAdmin(user, pass) {
