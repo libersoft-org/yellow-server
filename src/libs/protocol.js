@@ -21,7 +21,7 @@ class Protocol {
     return JSON.stringify(res);
    } catch (error) {
       console.log(error);
-      return JSON.stringify({ error: 'invalid command', message: 'expected valid json', /*"error": error.message*/ });
+      return JSON.stringify({ error: 'invalid_command', message: 'expected valid json', /*"error": error.message*/ });
    }
  }
 

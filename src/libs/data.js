@@ -102,8 +102,13 @@ class Data {
  }
 
  async adminAddUser(domainID, name, visibleName, pass) {
-   let callIsValidInput = this.isValidInput([domainID, name, visibleName, pass]);
-   if(!callIsValidInput) return this.res;
+  let callIsValidInput = this.isValidInput([domainID, name, visibleName, pass]);
+  if(!callIsValidInput) return this.res;
+  let existsUser = await this.db.read('SELECT id from aliases WHERE alias = $1 AND id_domain = $2', [name, domainID]);
+  if(existsUser.length > 0) return {
+    error: true,
+    message: "cannot create user with this name, found alias in this domain"
+  }
   return await this.db.write("INSERT INTO users (id_domain, name, visible_name, pass) VALUES ($1, $2, $3, $4)", [domainID, name, visibleName, pass]);
  }
 
@@ -123,7 +128,13 @@ class Data {
  }
 
  async adminAddAlias(domainID, alias, mail) {
-  if(!domainID && !alias && !mail) return this.res;
+  let callIsValidInput = this.isValidInput([domainID, alias, mail]);
+  if(!callIsValidInput) return this.res;
+  let existsUser = await this.db.read('SELECT id from users WHERE name = $1 AND id_domain = $2', [alias, domainID]);
+  if(existsUser.length > 0) return {
+    error: true,
+    message: "cannot create alias with this name, found user in this domain"
+  }
   return await this.db.write("INSERT INTO aliases (id_domain, alias, mail) VALUES ($1, $2, $3)", [domainID, alias, mail]);
  }
 
