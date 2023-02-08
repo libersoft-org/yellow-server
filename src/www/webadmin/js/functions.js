@@ -674,7 +674,7 @@ async function setUsers(res) {
     '{ID}': res.data[i].id,
     '{NAME}': res.data[i].name,
     '{VISIBLE_NAME}': res.data[i].visible_name,
-    '{PHOTO}': res.data[i].photo || './img/default-user.png',
+    '{PHOTO}': res.data[i].photo || './img/profile.svg',
     '{MESSAGES}': res.data[i].message_count,
     '{FILES_SIZE}': '?',
     '{CREATED}': new Date(res.data[i].created).toLocaleString()
