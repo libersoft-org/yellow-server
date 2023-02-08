@@ -433,6 +433,7 @@ async function wsOnMessage(data) {
  console.log(data);
  data = JSON.parse(data);
 //  console.log('data......', data);
+ document.querySelector("#label").innerHTML = window.location.host + ' - webadmin';
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
  } else {
@@ -601,7 +602,8 @@ async function setAdminLogin(res) {
 async function setAdminLogout(res) {
  if (!res.data.logged) {
   localStorage.removeItem('admin_token');
-  document.querySelector('#page').innerHTML = await getFileContent('html/login.html');
+//   document.querySelector('#page').innerHTML = await getFileContent('html/login.html');
+  window.location.reload();
  }
 }
 
