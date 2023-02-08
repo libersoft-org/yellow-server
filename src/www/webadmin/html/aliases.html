@@ -1,0 +1,10 @@
+<div><a class="button space" onclick="addAlias()">Add alias</a></div>
+<select id="select_domains" onchange="getAliases(this.value)">
+ <option value="" disabled selected hidden>-- Domain --</option>
+</select>
+<table>
+ <thead>
+  <tr><th>Alias</th><th>Destination address</th><th>Created</th><th>Action</th></tr>
+ </thead>
+ <tbody id="aliases"></tbody>
+</table>

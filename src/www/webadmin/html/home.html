@@ -1,0 +1,15 @@
+<div id="bar">
+ <div id="icon">
+  <a onclick="menuShowHide()"><img src="./img/menu.svg" alt="Menu" /></a>
+ </div>
+ <div id="label">New Mail server</div>
+</div>
+<div id="menu">
+ <a id="menu-stats" class="item" onclick="getPage('stats')">Stats</a>
+ <a id="menu-domains" class="item" onclick="getPage('domains')">Domains</a>
+ <a id="menu-users" class="item" onclick="getPage('users')">Users</a>
+ <a id="menu-aliases" class="item" onclick="getPage('aliases')">Aliases</a>
+ <a id="menu-admins" class="item" onclick="getPage('admins')">Admins</a>
+ <a class="item" onclick="logout()">Logout</a>
+</div>
+<div id="content"></div>

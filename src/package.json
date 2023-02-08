@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "argon2": "*",
+    "express": "*",
+    "http2-express-bridge": "*",
+    "prompt-sync": "^4.2.0",
+    "sqlite": "*",
+    "sqlite3": "*",
+    "ws": "*"
+  }
+}
