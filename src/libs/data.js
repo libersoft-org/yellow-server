@@ -26,12 +26,21 @@ class Data {
  res = {
   'error': true,
   'message': 'Missing input fields'
-};
+ };
+
+ isValidInput(input) {
+  for(let i = 0; i < input.length; i++) {
+    if(input[i] === undefined || input[i] === '' || !input[i]) return false;
+  }
+  return true;
+ }
 
  async adminGetLogin(user, pass) {
+  console.log('user from login is: ', user);
   var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = $1', [user.toLowerCase()]);
 
-  if (res.length == 1) {
+  if (res.length === 1) {
+   console.log('res from login is: ', res[0]);
    if (await this.verifyHash(res[0].pass, pass)) {
     var token = this.getToken(64);
     await this.db.write('INSERT INTO admins_login (id_admin, token) VALUES ($1, $2)', [res[0].id, token]);
@@ -93,12 +102,14 @@ class Data {
  }
 
  async adminAddUser(domainID, name, visibleName, pass) {
-  if(!domainID && !name && !visibleName && !pass) return this.res;
+   let callIsValidInput = this.isValidInput([domainID, name, visibleName, pass]);
+   if(!callIsValidInput) return this.res;
   return await this.db.write("INSERT INTO users (id_domain, name, visible_name, pass) VALUES ($1, $2, $3, $4)", [domainID, name, visibleName, pass]);
  }
 
  async adminSetUser(id, domainID, name, visibleName, photo, pass) {
-  if(!id && !domainID && !name && !visibleName) return this.res;
+  let callIsValidInput = this.isValidInput([id, domainID, name, visibleName, pass]);
+  if(!callIsValidInput) return this.res;
   return await this.db.write('UPDATE users SET id_domain = $1, name = $2, visible_name = $3, photo = $4, pass = $5', [domainID, name, visibleName, photo, pass]);
  }
 
@@ -131,7 +142,8 @@ class Data {
 
  async adminAddAdmin(user, pass) {
   if(!user && !pass) this.res;
-  return await this.db.write('INSERT INTO admins (user, pass) VALUES ($1, $2)', [user, this.getHash(pass)]);
+  console.log({user, pass})
+  return await this.db.write('INSERT INTO admins (user, pass) VALUES ($1, $2)', [user, await this.getHash(pass)]);
  }
 
  async adminSetAdmin(id, user, pass) {
@@ -139,10 +151,6 @@ class Data {
  }
 
  async adminDelAdmin(id) {
-  if(id === 1) return {
-    error: true,
-    message: "cannot remove root admin"
-  }
   return await this.db.write('DELETE FROM admins WHERE id = $1', [id]);
  }
 
@@ -159,6 +167,7 @@ class Data {
  }
 
  async verifyHash(hash, password) {
+  console.log('hash is: ', hash, ' & password is: ', password);
   return await Argon2.verify(hash, password);
  }
 }

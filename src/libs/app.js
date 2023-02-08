@@ -1,7 +1,7 @@
 const Common = require('./common.js').Common;
 const WebServer = require('./webserver.js');
 const fs = require('fs');
-let prompt = require('prompt');
+let prompt = require('prompt-sync')();
 
 class App {
  run() {
@@ -121,14 +121,15 @@ createAdmin() {
       }
     }
   };
-  prompt.start();
-  prompt.get(schema, function (err, result) {
-    if(err) throw err;
-    username = result.username;
-    password = result.password;
-    data.adminAddAdmin(username, password);
-    Common.addLog('Admin was created sucessfully.');
-  });
+  // Common.addLog('');
+  username = prompt('Enter admin username: ');
+  password = prompt('Enter admin password: ');
+
+  if(username !== '' && password !== '') {
+   console.log({username, password})
+   data.adminAddAdmin(username, password);
+   Common.addLog('Admin was created sucessfully.');
+  }
   Common.addLog('');
  }
 }
