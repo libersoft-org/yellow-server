@@ -3,7 +3,6 @@
     "argon2": "*",
     "express": "*",
     "http2-express-bridge": "*",
-    "nodemon": "^2.0.20",
     "prompt-sync": "^4.2.0",
     "sqlite": "*",
     "sqlite3": "*",

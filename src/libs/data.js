@@ -9,9 +9,7 @@ class Data {
 
  async createDB() {
   try {
-   if (!await this.db.tableExists('admins')) {
-    await this.db.write('CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, user VARCHAR(32) NOT NULL UNIQUE, pass VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
-   }
+   await this.db.write('CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, user VARCHAR(32) NOT NULL UNIQUE, pass VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
    await this.db.write('CREATE TABLE IF NOT EXISTS admins_login (id INTEGER PRIMARY KEY AUTOINCREMENT, id_admin INTEGER, token VARCHAR(64) NOT NULL UNIQUE, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_admin) REFERENCES admins(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS domains (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255) NOT NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
    await this.db.write('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, id_domain INTEGER, name VARCHAR(64) NOT NULL, visible_name VARCHAR(255) NULL, pass VARCHAR(255) NOT NULL, photo VARCHAR(255) NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domain) REFERENCES domains(id))');
@@ -104,8 +102,13 @@ class Data {
  }
 
  async adminAddUser(domainID, name, visibleName, pass) {
-   let callIsValidInput = this.isValidInput([domainID, name, visibleName, pass]);
-   if(!callIsValidInput) return this.res;
+  let callIsValidInput = this.isValidInput([domainID, name, visibleName, pass]);
+  if(!callIsValidInput) return this.res;
+  let existsUser = await this.db.read('SELECT id from aliases WHERE alias = $1 AND id_domain = $2', [name, domainID]);
+  if(existsUser.length > 0) return {
+    error: true,
+    message: "cannot create user with this name, found alias in this domain"
+  }
   return await this.db.write("INSERT INTO users (id_domain, name, visible_name, pass) VALUES ($1, $2, $3, $4)", [domainID, name, visibleName, pass]);
  }
 
@@ -125,7 +128,13 @@ class Data {
  }
 
  async adminAddAlias(domainID, alias, mail) {
-  if(!domainID && !alias && !mail) return this.res;
+  let callIsValidInput = this.isValidInput([domainID, alias, mail]);
+  if(!callIsValidInput) return this.res;
+  let existsUser = await this.db.read('SELECT id from users WHERE name = $1 AND id_domain = $2', [alias, domainID]);
+  if(existsUser.length > 0) return {
+    error: true,
+    message: "cannot create alias with this name, found user in this domain"
+  }
   return await this.db.write("INSERT INTO aliases (id_domain, alias, mail) VALUES ($1, $2, $3)", [domainID, alias, mail]);
  }
 

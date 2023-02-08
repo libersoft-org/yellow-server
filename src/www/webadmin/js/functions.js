@@ -23,20 +23,18 @@ function replaceWindowState(url) {
    return window.history.replaceState(null, null, url);
 }
 
-setTimeout(() => {
-   getDomains();
-}, time);
-
 function setOptions() {
  let domainsSelect = document.querySelector('#select_domains');
  for (let i = 0; i < domainsData.length; i++) {
   let option = document.createElement('option');
-  option.value = domainsData[i];
-  option.innerHTML = domainsData[i];
+  option.value = domainsData[i].name;
+  option.innerHTML = domainsData[i].name;
   if(domainsSelect) {
    if(domainsSelect.children.length - 1 === domainsData.length) break;
-   domainsSelect.append(option);  
-  } 
+   const option_already = domainsSelect.querySelector(`option[value="${domainsData[i].name}"]`);
+   option_already ? false : 
+   domainsSelect.append(option);
+  }
  }
 }
 
@@ -59,12 +57,14 @@ async function getPage(name) {
   }, time);
  }
  if (name === 'users') {
+  getDomains();
   replaceWindowState("/webadmin/users");
   setTimeout(() => {
    getUsers();
   }, time);
  }
  if (name === 'aliases') {
+  getDomains();
   replaceWindowState("/webadmin/aliases");
   setTimeout(() => {
    getAliases();
@@ -282,6 +282,10 @@ async function addAlias() {
 async function aliasAdd() {
  let alias_name = document.querySelector('#alias_name');
  let mail = document.querySelector('#mail');
+ if(idData.id === undefined) {
+   await getDialog('Add User Error', await getFileContent('html/error_message.html'));
+   return document.querySelector("#err_success_message").innerHTML = 'Domain ID cannot be empty';
+ }
  item_name = alias_name.value;
  wsSend({
      command: 'admin_add_aliases',
@@ -341,22 +345,22 @@ async function getDomains() {
 }
 
 async function getUsers(domain_id) {
- idData.id = domain_id;
-//  document.querySelector('#select_domains').value = idData.id;
+ let matchesDomain = domainsData.find((domain) => domain.name === domain_id);
+ matchesDomain ? idData.id = matchesDomain.id : idData.id = undefined;
  wsSend({
   command: 'admin_get_users',
-  domain_id: domain_id,
+  domain_id: idData.id,
   admin_token: localStorage.admin_token,
  });
 }
 
 async function getAliases(domain_id) {
- idData.id = domain_id;
+ let matchesDomain = domainsData.find((domain) => domain.name === domain_id);
+ matchesDomain ? idData.id = matchesDomain.id : idData.id = undefined;
  wsSend({
   command: 'admin_get_aliases',
   admin_token: localStorage.admin_token,
-//   domain_id: document.querySelector('#select_domains').value
-  domain_id: domain_id
+  domain_id: idData.id
  });
 }
 
@@ -429,19 +433,19 @@ async function wsOnMessage(data) {
  console.log(data);
  data = JSON.parse(data);
 //  console.log('data......', data);
+ document.querySelector("#label").innerHTML = window.location.host + ' - webadmin';
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
  } else {
-  if(data.handshake) getDomains();
+  setOptions();
   if (data.command == 'admin_login') setAdminLogin(data);
   if (data.command == 'admin_logout') setAdminLogout(data);
   if (data.command == 'admin_sysinfo') setSysInfo(data);
   if (data.command == 'admin_get_domains') {
    for(let i = 0; i < data.data.length; i++) {
-      domainsData.push(data.data[i].id);
+      domainsData.push({name: data.data[i].name, id: data.data[i].id});
       domainsData = [...new Set(domainsData)];
    }
-   setOptions();
    if (page === 'domains') setDomains(data);
    if (page === 'users') setUsersDomains(data);
    if (page === 'aliases') setAliasesDomains(data);
@@ -450,7 +454,7 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_get_aliases') setAliases(data);
   if (data.command == 'admin_get_admins') setAdmins(data);
   if (data.command == 'admin_del_domain') {
-   getPage('admins');
+   getPage('domains');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Delete domain Error', await getFileContent('html/error_message.html'));
     return document.querySelector("#err_success_message").innerHTML = data.data.message;
@@ -474,7 +478,7 @@ async function wsOnMessage(data) {
   if (data.command == 'admin_set_domain') {
    getPage('domains');
    if(data.data !== undefined && data.data.error) {
-    await getDialog('Update Domain Erro', await getFileContent('html/error_message.html'));
+    await getDialog('Update Domain Error', await getFileContent('html/error_message.html'));
     return document.querySelector("#err_success_message").innerHTML = data.data.message;
    }
    else {
@@ -598,7 +602,8 @@ async function setAdminLogin(res) {
 async function setAdminLogout(res) {
  if (!res.data.logged) {
   localStorage.removeItem('admin_token');
-  document.querySelector('#page').innerHTML = await getFileContent('html/login.html');
+//   document.querySelector('#page').innerHTML = await getFileContent('html/login.html');
+  window.location.reload();
  }
 }
 
@@ -669,7 +674,7 @@ async function setUsers(res) {
     '{ID}': res.data[i].id,
     '{NAME}': res.data[i].name,
     '{VISIBLE_NAME}': res.data[i].visible_name,
-    '{PHOTO}': res.data[i].photo,
+    '{PHOTO}': res.data[i].photo || './img/profile.svg',
     '{MESSAGES}': res.data[i].message_count,
     '{FILES_SIZE}': '?',
     '{CREATED}': new Date(res.data[i].created).toLocaleString()

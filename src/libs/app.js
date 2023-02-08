@@ -121,7 +121,6 @@ createAdmin() {
       }
     }
   };
-  // Common.addLog('');
   username = prompt('Enter admin username: ');
   password = prompt('Enter admin password: ');
 
