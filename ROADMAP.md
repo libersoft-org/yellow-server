@@ -71,3 +71,4 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Message editing
 - Local storage encryption for client application
 - Password protected client application
+- Media news feed
