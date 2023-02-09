@@ -74,3 +74,7 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Password protected client application
 - Media news feed
 - Multiplayer games between users
+- Disappearing messages
+- Live map location sharing
+- Live map points of interest
+- People nearby
