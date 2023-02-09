@@ -56,6 +56,7 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Serverless messages
 - Profile bio
 - Profile status
+- Followers
 - Personal news feed (for followers)
 - Stories (for followers)
 - Own markup language
