@@ -7,7 +7,7 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Server to client communication
 - Server to server communication
 - Plain text messages (with links and emojis)
-- End-to-end encryption
+- End-to-end encryption (more options - ECC, RSA etc.)
 - Web client account management
 - Notifications
 
@@ -30,6 +30,7 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Search
 - Filter (unread messages etc.)
 - Support form
+- Encryption keys import and export
 
 ## Version 2.x:
 
