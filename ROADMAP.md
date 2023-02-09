@@ -36,7 +36,7 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Voice calls
 - Video calls
 - Call list
-- Themes (backgrounds, font size, color scheme, night mode)
+- Themes (backgrounds, contact size, font size, color scheme, night mode)
 
 ## Version 3.x and beyond:
 
