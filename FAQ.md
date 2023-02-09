@@ -1,4 +1,4 @@
-# Frequently asked questions
+# The New E-mail Protocol (NEMP) - frequently asked questions
 
 ## Is NEMP an e-mail or instant messenger?
 

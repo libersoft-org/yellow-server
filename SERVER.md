@@ -1,4 +1,4 @@
-# The New E-mail Protocol (NEMP) server documentation
+# The New E-mail Protocol (NEMP) - server documentation
 
 ## Server parts
 
