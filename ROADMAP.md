@@ -32,8 +32,8 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 
 ## Version 2.x:
 
-- Chat group
-- News group
+- Chat group (public and private)
+- News group (public and private)
 - Voice calls
 - Video calls
 - Call list
