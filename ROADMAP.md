@@ -64,7 +64,7 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Own markup language
 - Rich text messages (multipart)
 - Newsletter system (template sent once with variables + variables for each user)
-- Phorum
+- Forum
 - E-shop features (like Durger King on Telegram)
 - Cryptocurrency integration
 - Events
