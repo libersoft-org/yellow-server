@@ -1,6 +1,8 @@
-var page = '';
+var page = '', host = '';
 var ws;
-var server = 'wss://' + window.location.host + (window.location.port != '' ? ':' + window.location.port : '') + '/';
+if(window.location.host.includes(window.location.port)) host = window.location.host.split(':' + window.location.port)[0];
+else host = window.location.host;
+var server = 'wss://' + host + (window.location.port !== '' ? ':' + window.location.port : '') + '/';
 
 let idData = {
     id: 0,
@@ -57,14 +59,12 @@ async function getPage(name) {
   }, time);
  }
  if (name === 'users') {
-  getDomains();
   replaceWindowState("/webadmin/users");
   setTimeout(() => {
    getUsers();
   }, time);
  }
  if (name === 'aliases') {
-  getDomains();
   replaceWindowState("/webadmin/aliases");
   setTimeout(() => {
    getAliases();
@@ -433,11 +433,14 @@ async function wsOnMessage(data) {
  console.log(data);
  data = JSON.parse(data);
 //  console.log('data......', data);
- document.querySelector("#label").innerHTML = window.location.host + ' - webadmin';
+ if(data.handshake) getDomains();
+ document.querySelector("#label").innerHTML = host + ' - webadmin';
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
  } else {
-  setOptions();
+   setTimeout(() => {
+      setOptions();
+   }, time);
   if (data.command == 'admin_login') setAdminLogin(data);
   if (data.command == 'admin_logout') setAdminLogout(data);
   if (data.command == 'admin_sysinfo') setSysInfo(data);
@@ -585,12 +588,12 @@ async function wsSend(data) {
 }
 
 async function setAdminLogin(res) {
+ var error = document.querySelector('#error');
  if (res.data.logged) {
   localStorage.setItem('admin_token', res.data.token);
   document.querySelector('#page').innerHTML = await getFileContent('html/home.html');
   await getPage('stats');
  } else {
-  var error = document.querySelector('#error');
   error.style.display = 'block';
   error.innerHTML = res.data.message;
   document.querySelector('#logbutton').style.backgroundColor = 'var(--primary-color)';
@@ -602,8 +605,7 @@ async function setAdminLogin(res) {
 async function setAdminLogout(res) {
  if (!res.data.logged) {
   localStorage.removeItem('admin_token');
-//   document.querySelector('#page').innerHTML = await getFileContent('html/login.html');
-  window.location.reload();
+  document.querySelector('#page').innerHTML = await getFileContent('html/login.html');
  }
 }
 
