@@ -1,4 +1,4 @@
-# The New E-mail Protocol (NEMP) - server installation and configuration
+# The New E-Mail Protocol (NEMP) - server installation and configuration
 
 ## Before the installation
 

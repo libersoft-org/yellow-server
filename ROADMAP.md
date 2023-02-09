@@ -1,4 +1,4 @@
-# The New E-mail Protocol (NEMP) - server roadmap
+# The New E-Mail Protocol (NEMP) - server roadmap
 
 This document describes our development plan (aka roadmap) of NEMP server based on version number.
 

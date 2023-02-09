@@ -1,4 +1,4 @@
-# The New E-mail Protocol (NEMP) - protocol documentation
+# The New E-Mail Protocol (NEMP) - protocol documentation
 
 **IMPORTANT NOTE:** This is just a draft. It is not the final version of protocol.
 

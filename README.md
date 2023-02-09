@@ -1,4 +1,4 @@
-# The New E-mail Protocol (NEMP) server
+# The New E-Mail Protocol (NEMP) - server software
 
 The classic e-mail protocol is more than 40 years old and has been very little modified since the mid-1990s. It lacks modern features.
 
@@ -17,7 +17,10 @@ This project aims to replace the existing e-mail protocols (SMTP, IMAP, POP3 etc
 - Protocol documentation: [**PROTOCOL.md**](./PROTOCOL.md) file.
 
 ## Frequently asked questions
-- Please see this [**FAQ.md**](./FAQ.md) document.
+- Please see [**FAQ.md**](./FAQ.md) file.
+
+## Development roadmap
+- Please see [**ROADMAP.md**](./ROADMAP.md) file.
 
 ## License
 - This software is developed as open source under [**Unlicense**](./LICENSE).
