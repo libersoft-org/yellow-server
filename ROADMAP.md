@@ -73,3 +73,4 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Local storage encryption for client application
 - Password protected client application
 - Media news feed
+- Multiplayer games between users
