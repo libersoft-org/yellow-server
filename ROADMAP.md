@@ -27,6 +27,7 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Contact blocking
 - Languages
 - Desktop and mobile client applications
+- Search
 
 ## Version 2.x:
 
@@ -35,7 +36,6 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Voice calls
 - Video calls
 - Call list
-- Search
 - Themes (backgrounds, font size, color scheme, night mode)
 
 ## Version 3.x and beyond:
