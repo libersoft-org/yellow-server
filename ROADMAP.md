@@ -53,6 +53,7 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 
 - Modules (for 3rd party software like antispam etc.)
 - Peer-to-peer file transfer
+- Serverless messages
 - Profile bio
 - Profile status
 - Personal news feed (for followers)
