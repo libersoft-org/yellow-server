@@ -9,6 +9,12 @@ let idData = {
     secondary_id: 0
 }, domainsData = [], usersInDomain = [], time = 700, item_name = '';
 
+function DateFormat(dateString) {
+   var date = new Date(dateString + ' UTC');
+   return date.toISOString().toLocaleString();
+ }
+ 
+
 window.onload = async function() {
  wsConnect(server);
  let page_ = '';
@@ -635,7 +641,7 @@ async function setDomains(res) {
     rows += translate(rowTemp, {
     '{ID}': res.data[i].id,
     '{NAME}': res.data[i].name,
-    '{CREATED}': new Date(res.data[i].created).toLocaleString()
+    '{CREATED}': DateFormat(res.data[i].created)
     });
   }
   document.querySelector('#domains').innerHTML = rows;
@@ -679,7 +685,7 @@ async function setUsers(res) {
     '{PHOTO}': res.data[i].photo || './img/profile.svg',
     '{MESSAGES}': res.data[i].message_count,
     '{FILES_SIZE}': '?',
-    '{CREATED}': new Date(res.data[i].created).toLocaleString()
+    '{CREATED}': DateFormat(res.data[i].created)
    });
   }
   document.querySelector('#users').innerHTML = rows;
@@ -697,7 +703,7 @@ async function setAliases(res) {
       '{ID}': res.data[i].id,
       '{ALIAS}': res.data[i].alias,
       '{MAIL}': res.data[i].mail,
-      '{CREATED}': new Date(res.data[i].created).toLocaleString()
+      '{CREATED}': DateFormat(res.data[i].created)
      });
     }
     document.querySelector('#aliases').innerHTML = rows;
@@ -718,7 +724,7 @@ async function setAdmins(res) {
   rows += translate (rowTemp, {
    '{ID}': res.data[i].id,
    '{USER}': res.data[i].user,
-   '{CREATED}': new Date(res.data[i].created).toLocaleString()
+   '{CREATED}': DateFormat(res.data[i].created)
   });
  }
  document.querySelector('#admins').innerHTML = rows;
