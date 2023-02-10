@@ -7,8 +7,9 @@ var server = 'wss://' + host + (window.location.port !== '' ? ':' + window.locat
 let idData = {
     id: 0,
     secondary_id: 0
-}, domainsData = [], usersInDomain = [], time = 700, item_name = '';
-
+}, domainsData = [], usersInDomain = [], time = 700, item_name = '',
+tips_for_strings = { "message": "\n\nHere are a few tips:\n-Do not start or end a name with a dot\n-Do not include whitespaces in names\n-Ensure domain is active" },
+formattedMessage = tips_for_strings.message.replace(/\n/g, "<br>");
 function DateFormat(dateString) {
    var date = new Date(dateString + ' UTC');
    return date.toISOString().toLocaleString();
@@ -58,7 +59,6 @@ async function getPage(name) {
   }, time);
  }
  if (name === 'domains') {
-  document.querySelector('#domains').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
   replaceWindowState("/webadmin/domains");
   setTimeout(() => {
    getDomains();
@@ -157,7 +157,7 @@ async function delAdmin() {
 }
 
 async function addDomain() {
-    await getDialog('Add domain', await getFileContent('html/domains_add.html'));
+    await getDialog('Add domain', await getFileContent('html/domain_add.html'));
     document.querySelector('#domain_name').focus();
 }
 async function domainAdd() {
@@ -223,7 +223,7 @@ async function delAlias() {
 }
 
 async function addUser() {
- await getDialog('Add user', await getFileContent('html/users_add.html'));
+ await getDialog('Add user', await getFileContent('html/user_add.html'));
  document.querySelector('#user_name').focus();
 }
 async function userAdd() {
@@ -436,11 +436,13 @@ function wsOnError(error) {
 
 async function wsOnMessage(data) {
  console.log('FROM SERVER:');
- console.log(data);
+//  console.log(data);
  data = JSON.parse(data);
-//  console.log('data......', data);
- if(data.handshake) getDomains();
- document.querySelector("#label").innerHTML = host + ' - webadmin';
+ console.log('data......', data);
+ if(data.handshake) {
+  getDomains();
+  document.querySelector("#label").innerHTML = data.server.name + ' - webadmin';
+ }
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
  } else {
@@ -466,7 +468,7 @@ async function wsOnMessage(data) {
    getPage('domains');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Delete domain Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message;
+    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
       await getDialog('Delete Domain', await getFileContent('html/error_message.html'));
@@ -477,7 +479,7 @@ async function wsOnMessage(data) {
    getPage('domains');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Add domain Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message;
+    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
     await getDialog('Add Domain', await getFileContent('html/error_message.html'));
@@ -488,7 +490,7 @@ async function wsOnMessage(data) {
    getPage('domains');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Update Domain Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message;
+    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
     await getDialog('Update Domain', await getFileContent('html/error_message.html'));
@@ -499,7 +501,7 @@ async function wsOnMessage(data) {
    getPage('users');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Add User Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message;
+    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
     await getDialog('Add User', await getFileContent('html/error_message.html'));
@@ -510,7 +512,7 @@ async function wsOnMessage(data) {
    getPage('users');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Update User Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message;
+    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
     await getDialog('Update User', await getFileContent('html/error_message.html'));
@@ -526,7 +528,7 @@ async function wsOnMessage(data) {
    getPage('aliases');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Add Alias Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message;
+      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
     await getDialog('Add Alias', await getFileContent('html/error_message.html'));
@@ -537,7 +539,7 @@ async function wsOnMessage(data) {
    getPage('aliases');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Update Alias Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message;
+      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
     await getDialog('Update Alias', await getFileContent('html/error_message.html'));
@@ -548,7 +550,7 @@ async function wsOnMessage(data) {
    getPage('admins');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Add Admin Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message;
+      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
     await getDialog('Add Admin', await getFileContent('html/error_message.html'));
@@ -559,7 +561,7 @@ async function wsOnMessage(data) {
    getPage('admins');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Update Admin Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message;
+      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
     await getDialog('Update Admin', await getFileContent('html/error_message.html'));
@@ -575,7 +577,7 @@ async function wsOnMessage(data) {
    getPage('admins');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Delete Admin Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message;
+      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
       await getDialog('Delete Admin', await getFileContent('html/error_message.html'));
@@ -645,7 +647,8 @@ async function setDomains(res) {
     });
   }
   document.querySelector('#domains').innerHTML = rows;
- } else document.querySelector('#domains').innerHTML = '<br/>&emsp;No data...<br/><br/>';
+ } 
+//  else document.querySelector('#domains').innerHTML = '<br/>&emsp;No data...<br/><br/>';
 }
 
 async function setUsersDomains(res) {
@@ -714,9 +717,7 @@ async function setAdmins(res) {
  document.querySelector('#admins').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/admins_row.html');
- console.log('no of admins yet.... ', res.data.length);
  if(res.data.length === 0) {
-   console.log('none left in admins....');
    localStorage.removeItem('admin_token')
    return window.location.reload();
  }

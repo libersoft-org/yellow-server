@@ -1,8 +1,8 @@
-<div>
+<form onsubmit="adminAdd(); return false;">
     <input id="admin_name" type="text" placeholder="Admin Name"/>
     <input id="admin_pass" type="password" placeholder="Admin password" />
-</div>
-<div>
- <a class="button" onclick="adminAdd()">Add</a>
- <a class="button" onclick="dialogClose()">Cancel</a>
-</div>
+    <div>
+     <input class="button mx" type="submit" value="Add">
+     <input class="button mx" onclick="dialogClose()" type="submit" value="Cancel">
+    </div>
+</form>
