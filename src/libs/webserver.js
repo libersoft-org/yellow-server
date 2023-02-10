@@ -35,9 +35,10 @@ class WebServer {
    app.use('*', express.static(Common.settings.web_notfound_path));
    this.httpServer = http.createServer(app).listen(Common.settings.http_port);
    Common.addLog('HTTP server running on port: ' + Common.settings.http_port);
-   Common.settings.https_port === 443 ?
-   this.httpsServer = https.createSecureServer({ key: fs.readFileSync(cert_priv), cert: fs.readFileSync(cert_pub), ca: fs.readFileSync(cert_chain), allowHTTP1: true }, app).listen(Common.settings.https_port)
-   : Common.addLog("Invalid https port"), process.exit(1);
+   Common.settings.https_port !== 443 ?
+   (Common.addLog("Invalid https port"), process.exit(1))
+   : 
+   this.httpsServer = https.createSecureServer({ key: fs.readFileSync(cert_priv), cert: fs.readFileSync(cert_pub), ca: fs.readFileSync(cert_chain), allowHTTP1: true }, app).listen(Common.settings.https_port);
    Common.addLog('HTTPS server running on port: ' + Common.settings.https_port);
   } else {
    Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path);
