@@ -94,6 +94,10 @@ table tbody tr td, table thead tr th {
  background-color: var(--primary-color);
  box-shadow: var(--shadow);
 }
+input[type='submit'] {
+    width: 40%;
+    max-width: 100px;
+}
 
 .button.large {
  width: calc(100% - 22px);

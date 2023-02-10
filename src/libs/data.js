@@ -25,7 +25,7 @@ class Data {
 
  res = {
   'error': true,
-  'message': 'Missing input fields'
+  'message': `Missing or invalid input data`
  };
 
  isValidInput(input) {
@@ -34,6 +34,9 @@ class Data {
   }
   return true;
  }
+ isValidString(str) {
+  return !/^\.|\.$|\s/.test(str);
+}
 
  async adminGetLogin(user, pass) {
   var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = $1', [user.toLowerCase()]);
@@ -73,7 +76,9 @@ class Data {
  }
 
  async adminAddDomain(name) {
-  if(!name) return this.res;
+  let callIsValidInput = this.isValidInput([name]);
+  if(!callIsValidInput) return this.res;
+  if(!this.isValidString(name)) return this.res;
   return await this.db.write('INSERT INTO domains (name) VALUES ($1)', [name]);
  }
 
@@ -101,6 +106,12 @@ class Data {
  async adminAddUser(domainID, name, visibleName, pass) {
   let callIsValidInput = this.isValidInput([domainID, name, visibleName, pass]);
   if(!callIsValidInput) return this.res;
+  if(!this.isValidString(name) && !this.isValidString(visibleName)) return this.res;
+  let activeDomain = await this.db.read('SELECT id FROM domains WHERE id = $1', [domainID]);
+  if(!activeDomain || activeDomain.length === 0) return {
+    error: true,
+    message: "Invalid domain id"
+  }
   let existsUser = await this.db.read('SELECT id from aliases WHERE alias = $1 AND id_domain = $2', [name, domainID]);
   if(existsUser.length > 0) return {
     error: true,
@@ -127,6 +138,12 @@ class Data {
  async adminAddAlias(domainID, alias, mail) {
   let callIsValidInput = this.isValidInput([domainID, alias, mail]);
   if(!callIsValidInput) return this.res;
+  if(!this.isValidString(alias) && !this.isValidString(mail)) return this.res;
+  let activeDomain = await this.db.read('SELECT id FROM domains WHERE id = $1', [domainID]);
+  if(!activeDomain || activeDomain.length === 0) return {
+    error: true,
+    message: "Invalid domain id"
+  }
   let existsUser = await this.db.read('SELECT id from users WHERE name = $1 AND id_domain = $2', [alias, domainID]);
   if(existsUser.length > 0) return {
     error: true,
@@ -149,8 +166,8 @@ class Data {
  }
 
  async adminAddAdmin(user, pass) {
-  if(!user && !pass) this.res;
-  console.log({user, pass})
+  let callIsValidInput = this.isValidInput([user, pass]);
+  if(!callIsValidInput) return this.res;
   return await this.db.write('INSERT INTO admins (user, pass) VALUES ($1, $2)', [user, await this.getHash(pass)]);
  }
 
