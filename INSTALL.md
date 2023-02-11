@@ -57,27 +57,29 @@ npm i
 node index.js --create-settings
 ```
 
-**2. Get your HTTPS certificate. This can be done automatically or manually.**
+**2. Create a new database file using:**
 
-- Automatically:
+```console
+node index.js --create-database
+```
+
+**3. Create a new admin account:**
+
+```console
+node index.js --create-admin
+```
+
+... and enter you admin name and password when prompted.
+
+**4. Get your HTTPS certificate:**
 
 ```console
 ./cert.sh
 ```
 
-This script will automatically replace the path to the certificate in your server settings file.
+**5. Set up the certificate auto renewal:**
 
-- Manually:
-
-```console
-certbot certonly --standalone --register-unsafely-without-email --agree-tos -d nemp.domain.tld
-```
-
-(replace **nemp.domain.tld** with your NEMP server domain address)
-
-Then edit the **settings.json** file and replace **$DOMAIN** to your NEMP server domain address as well.
-
-**3. To set up the certificate auto renewal edit crontab using:**
+Edit crontab using:
 
 ```console
 crontab -e
@@ -87,18 +89,6 @@ crontab -e
 
 ```console
 0 12 * * * /usr/bin/certbot renew --quiet
-```
-
-**4. Create a new database file using:**
-
-```console
-node index.js --create-database
-```
-
-**5. Create a new admin account:**
-
-```console
-node index.js --create-admin
 ```
 
 If you need some additional configuration, just edit the **settings.json** file.
@@ -133,8 +123,8 @@ Open the Web Admin in your browser (by default: **https://nemp.domain.tld/webadm
 When you're logged in, change the admin password in **Admins** section.
 Then add domains, users, aliases and other admins if needed.
 
-## Web Mail
-Open the Web Mail in your browser (by default: **https://nemp.domain.tld/webmail/**): To access your mailbox, just add a your newly created user account. User name is in e-mail address format (**user@domain.tld**).
+## Web Mail Client
+Open the Web Mail Client in your browser (by default: **https://nemp.domain.tld/webmail/**): To access your mailbox, just add a your newly created user account. User name is in e-mail address format (**user@domain.tld**).
 
 ## Developer Console
 Open the Developer Console in your browser (by default: **https://nemp.domain.tld/console/**). This will let you to send WebSocket commands to server.
