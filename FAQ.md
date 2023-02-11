@@ -109,7 +109,7 @@ It is **highly recommended not to trust and not to use messaging software that i
 
 Please note that information in the table above might not be up to date.
 
-## Matrix protocol is also open source, distributed and has end-to-end encryption. How does it differ from NEMP?
+## Matrix protocol is also open source, has a distributed network and using end-to-end encryption. How does it differ from NEMP?
 
 Matrix protocol is really an interesting software and together with NEMP it is probably the only software that is open source, uses end-to-end encryption and has distributed server structure. Here are the differences between NEMP and Matrix:
 
