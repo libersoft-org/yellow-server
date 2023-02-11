@@ -9,8 +9,8 @@ This project aims to replace the existing e-mail protocols (SMTP, IMAP, POP3 etc
 - Early stage of development, not intended for production deployment
 
 ## Documentation:
-- [**Server installation and configuration:**](./INSTALL.md)
-- [**Server documentation:**](./SERVER.md)
+- [**Server installation and configuration**](./INSTALL.md)
+- [**Server documentation**](./SERVER.md)
 - [**Protocol documentation**](./PROTOCOL.md)
 - [**Development roadmap**](./ROADMAP.md)
 - [**Frequently asked questions**](./FAQ.md)
