@@ -14,4 +14,4 @@ This project aims to replace the existing e-mail protocols (SMTP, IMAP, POP3 etc
 - [**Protocol documentation**](./PROTOCOL.md)
 - [**Development roadmap**](./ROADMAP.md)
 - [**Frequently asked questions**](./FAQ.md)
-- [**License**](./LICENSE.md)
+- [**License**](./LICENSE)
