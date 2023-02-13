@@ -8,12 +8,17 @@ let idData = {
     id: 0,
     secondary_id: 0
 }, domainsData = [], usersInDomain = [], time = 700, item_name = '',
-tips_for_strings = { "message": "\n\nHere are a few tips:\n-Do not start or end a name with a dot\n-Do not include whitespaces in names\n-Ensure domain is active" },
+tips_for_strings = { 
+   "message": "\n\nHere are a few tips:\n-Do not start or end a name with a dot\n-Do not include whitespaces in names\n-Ensure domain is active\n-Do not include special characters in name" },
 formattedMessage = tips_for_strings.message.replace(/\n/g, "<br>");
 function DateFormat(dateString) {
-   var date = new Date(dateString + ' UTC');
-   return date.toISOString().toLocaleString();
+ try {
+  var date = new Date(dateString + ' UTC');
+  return date.toISOString().toLocaleString();
+ } catch(e) {
+   return dateString.toLocaleString();
  }
+}
  
 
 window.onload = async function() {
@@ -281,7 +286,7 @@ async function delUserDialog(id, name) {
 }
 
 async function addAlias() {
- await getDialog('Add user', await getFileContent('html/alias_add.html'));
+ await getDialog('Add alias', await getFileContent('html/alias_add.html'));
  document.querySelector('#alias_name').focus();
 }
 
@@ -351,6 +356,18 @@ async function getDomains() {
 }
 
 async function getUsers(domain_id) {
+ let btn = document.querySelector("#add-user");
+ if(domain_id === undefined) {
+  console.log({btn, domain_id});
+  btn ? btn.style.opacity = '.7' : null;
+  btn ? btn.style.cursor = 'default' : null;
+  btn ? btn.setAttribute('onclick', null): null;
+ } else {
+  console.log({btn, domain_id});
+  btn ? btn.style.opacity = '1' : null;
+  btn ? btn.style.cursor = 'pointer' : null;
+  btn ? btn.setAttribute('onclick', 'addUser()'): null;
+ }
  let matchesDomain = domainsData.find((domain) => domain.name === domain_id);
  matchesDomain ? idData.id = matchesDomain.id : idData.id = undefined;
  wsSend({
@@ -361,6 +378,16 @@ async function getUsers(domain_id) {
 }
 
 async function getAliases(domain_id) {
+ let btn = document.querySelector("#add-alias");
+ if(domain_id === undefined) {
+  btn ? btn.style.opacity = '.7' : null;
+  btn ? btn.style.cursor = 'default' : null;
+  btn ? btn.setAttribute('onclick', null): null;
+ } else {
+  btn ? btn.style.opacity = '1' : null;
+  btn ? btn.style.cursor = 'pointer' : null;
+  btn ? btn.setAttribute('onclick', 'addAlias()'): null;
+ }
  let matchesDomain = domainsData.find((domain) => domain.name === domain_id);
  matchesDomain ? idData.id = matchesDomain.id : idData.id = undefined;
  wsSend({
@@ -371,7 +398,7 @@ async function getAliases(domain_id) {
 }
 
 async function addAdmin() {
- await getDialog('Add user', await getFileContent('html/admin_add.html'));
+ await getDialog('Add admin', await getFileContent('html/admin_add.html'));
  document.querySelector('#admin_name').focus();
 }
 
@@ -439,9 +466,9 @@ async function wsOnMessage(data) {
 //  console.log(data);
  data = JSON.parse(data);
  console.log('data......', data);
- if(data.handshake) {
+ if(data.server) {
   getDomains();
-  document.querySelector("#label").innerHTML = data.server.name + ' - webadmin';
+  document.querySelector("#label").innerHTML = data.server.name + ' - web admin';
  }
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
@@ -699,7 +726,6 @@ async function setAliases(res) {
  document.querySelector('#aliases').innerHTML = '<br/>&emsp;Checking...<br/><br/>';
  var rows = '';
  var rowTemp = await getFileContent('html/aliases_row.html');
- let domainsSelect = document.querySelector('#select_domains');
  if(res.data.length > 0) {
     for (var i = 0; i < res.data.length; i++) {
      rows += translate (rowTemp, {

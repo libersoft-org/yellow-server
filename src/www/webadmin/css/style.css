@@ -388,3 +388,6 @@ input[type='submit'] {
 .small {
     font-size: .8rem;
 }
+.disabled {
+    background-color: 'gray';
+}
