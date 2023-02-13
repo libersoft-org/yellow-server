@@ -54,7 +54,7 @@ class WebServer {
   ws.onmessage = async (data) => { this.wsOnMessage(ws, data) };
   ws.onclose = () => { this.wsOnClose(); };
   ws.onerror = () => { Common.addLog('WEBSOCKET - CLIENT ERROR'); }
-  this.wsSend(ws, JSON.stringify({server: {name: Common.appName, version: Common.appVersion}, handshake: true}));
+  this.wsSend(ws, JSON.stringify({server: {name: Common.appName, version: Common.appVersion}}));
  }
 
  async wsOnMessage(ws, e) {

@@ -462,7 +462,7 @@ async function wsOnMessage(data) {
 //  console.log(data);
  data = JSON.parse(data);
  console.log('data......', data);
- if(data.handshake) {
+ if(data.server) {
   getDomains();
   document.querySelector("#label").innerHTML = data.server.name + ' - web admin';
  }
