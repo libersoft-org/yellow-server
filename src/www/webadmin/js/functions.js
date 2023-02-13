@@ -9,7 +9,7 @@ let idData = {
     secondary_id: 0
 }, domainsData = [], usersInDomain = [], time = 700, item_name = '',
 tips_for_strings = { 
-   "message": "\n\nHere are a few tips:\n-Do not start or end a name with a dot\n-Do not include whitespaces in names\n-Ensure domain is active\n-Do not include special characters in name" },
+   "message": "\n\nHere are a few tips:\n-Do not start or end a name with a dot\n-Do not include whitespaces in names\n-Ensure domain is active\n-Do not include special characters in domain name" },
 formattedMessage = tips_for_strings.message.replace(/\n/g, "<br>");
 function DateFormat(dateString) {
  try {
