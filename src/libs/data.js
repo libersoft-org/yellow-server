@@ -37,20 +37,6 @@ class Data {
  isValidString(str) {
   return !/^\.|\.$|\s/.test(str);
 }
-invalid_chars = ['@', '#', '!', '$', '%', '^', '&', '*', '(', ')'];
-isValidDomain(str) {
-  let is_valid = false;
-  for(let i = 0; i < this.invalid_chars.length; i +=1) {
-    if(str.includes(this.invalid_chars[i])) {
-      console.log(str, this.invalid_chars[i]);
-      is_valid = false;
-      break;
-    }
-    else is_valid = true;
-  }
-  return is_valid;
-}
-
  async adminGetLogin(user, pass) {
   var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = $1', [user.toLowerCase()]);
   if (res.length === 1) {
@@ -89,10 +75,11 @@ isValidDomain(str) {
  }
 
  async adminAddDomain(name) {
+  let regex = new RegExp(/^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,6}$/);
   let callIsValidInput = this.isValidInput([name]);
   if(!callIsValidInput) return this.res;
   if(!this.isValidString(name)) return this.res;
-  if(!this.isValidDomain(name)) return this.res;
+  if(!regex.test(name)) return this.res;
   return await this.db.write('INSERT INTO domains (name) VALUES ($1)', [name]);
  }
 
