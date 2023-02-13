@@ -14,6 +14,7 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 ## Version 1.x:
 
 - Contacts
+- Contact sharing
 - Conversion folders
 - Reply and forward messages
 - Common file transfer
@@ -22,15 +23,13 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Video messages
 - Animated stickers
 - GIFs
-- Contact sharing
 - Map location sharing
 - Contact blocking
-- Languages
-- Desktop and mobile client applications
-- Search
+- Multi-language support
 - Filter (unread messages etc.)
-- Support form
+- Search
 - Encryption keys import and export
+- Desktop and mobile client applications
 
 ## Version 2.x:
 
@@ -50,31 +49,31 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Tasks (with sharing)
 - Events (with sharing)
 - Message translation
+- Peer-to-peer file transfer
+- Quick messages (like Quicktext for Thunderbird)
+- Personal news feed (for followers)
+- Rich text messages (multipart)
+- Newsletter system (template sent once with variables + variables for each user)
 
 ## Considered features:
 
 - Modules (for 3rd party software like antispam etc.)
-- Peer-to-peer file transfer
+- Local storage encryption for client application
+- Password (+ finger etc.) protected for client application
+- Message editing
 - Serverless messages
-- Support ticketing system
 - Profile bio
 - Profile status
+- Events
 - Followers
-- Personal news feed (for followers)
 - Stories (for followers)
 - Own markup language
-- Rich text messages (multipart)
-- Newsletter system (template sent once with variables + variables for each user)
 - Forum
-- E-shop features (like Durger King on Telegram)
-- Cryptocurrency integration
-- Events
-- Reels
 - Video filters
 - Voice changer
-- Message editing
-- Local storage encryption for client application
-- Password protected client application
+- E-shop features (like Durger King on Telegram)
+- Cryptocurrency integration
+- Reels
 - Media news feed
 - Multiplayer games between users
 - Disappearing messages
