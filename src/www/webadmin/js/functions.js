@@ -7,7 +7,7 @@ var server = 'wss://' + host + (window.location.port !== '' ? ':' + window.locat
 let idData = {
     id: 0,
     secondary_id: 0
-}, domainsData = [], usersInDomain = [], time = 700, item_name = '', label = '', active_domain = '',
+}, domainsData = [], usersInDomain = [], time = 700, item_name = '', label = '', active_domain = '', admins = [],
 tips_for_strings = { 
    "message": "\n\nHere are a few tips:\n-Do not start or end a name with a dot\n-Do not include whitespaces in names\n-Ensure domain is active\n-Do not include special characters in domain name" },
 formattedMessage = tips_for_strings.message.replace(/\n/g, "<br>");
@@ -23,6 +23,7 @@ function DateFormat(dateString) {
 function focusErr() {
    return document.querySelector("#mx-btn") ? document.querySelector("#mx-btn").focus() : null;
 }
+let btn = document.querySelector("#add-user") || document.querySelector("#add-alias");
 
 window.onload = async function() {
  if(window.location.port) return wsOnDisconnect();
@@ -152,7 +153,7 @@ async function adminUpdate() {
 async function delAdminDialog(id, name) {
  idData.secondary_id = id;
  item_name = name;
- await getDialog('Delete admin ' + id, await getFileContent('html/admin_delete.html'));
+ await getDialog('Delete Admin ' + id, translate(await getFileContent('html/admin_delete.html'), { '{NAME}': name }));
  focusErr();
 }
 
@@ -162,6 +163,12 @@ async function delAdmin() {
     id: idData.secondary_id,
     admin_token: localStorage.getItem('admin_token')
    });
+   admins.map((admin) => {
+      if(admin === idData.secondaryId) {
+         localStorage.removeItem('admin_token');
+         window.location.reload();
+      }
+   })
    dialogClose();
 }
 
@@ -255,7 +262,7 @@ async function userAdd() {
   password: password.value,
   admin_token: localStorage.getItem('admin_token')
  });
- dialogClose();
+//  dialogClose();
 }
 
 async function editUser(id, name, v_name) {
@@ -370,11 +377,11 @@ async function getUsers(domain_id) {
  document.querySelector("option[value = '" + active_domain + "']") ?
  document.querySelector("option[value = '" + active_domain + "']").setAttribute('selected', true) : null;
  if(active_domain === '' || active_domain === undefined) {
-  btn ? btn.style.backgroundColor = '#A0A0A0' : null;
+  btn ? btn.classList.add('disabled') : null;
   btn ? btn.style.cursor = 'default' : null;
   btn ? btn.setAttribute('onclick', null): null;
  } else {
-  btn ? btn.style.backgroundColor = 'var(--primary-color)' : null;
+  btn ? btn.classList.remove('disabled') : null;
   btn ? btn.style.cursor = 'pointer' : null;
   btn ? btn.setAttribute('onclick', 'addUser()'): null;
  }
@@ -394,11 +401,11 @@ async function getAliases(domain_id) {
  document.querySelector("option[value = '" + active_domain + "']") ?
  document.querySelector("option[value = '" + active_domain + "']").setAttribute('selected', true) : null;
  if(active_domain === '' || active_domain === undefined) {
-  btn ? btn.style.backgroundColor = '#A0A0A0' : null;
+  btn ? btn.classList.add('disabled') : null;
   btn ? btn.style.cursor = 'default' : null;
   btn ? btn.setAttribute('onclick', null): null;
  } else {
-  btn ? btn.style.backgroundColor = 'var(--primary-color)' : null;
+  btn ? btn.classList.remove('disabled') : null;
   btn ? btn.style.cursor = 'pointer' : null;
   btn ? btn.setAttribute('onclick', 'addAlias()'): null;
  }
@@ -487,6 +494,7 @@ async function wsOnMessage(data) {
  if(data.server) {
   getDomains();
   label = data.server.name;
+  document.title = data.server.name;
  }
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
@@ -495,6 +503,7 @@ async function wsOnMessage(data) {
       setOptions();
    }, time);
   document.querySelector("#label").innerHTML = label + ' - web admin';
+  document.title = label + ' - web admin';
   if (data.command == 'admin_login') setAdminLogin(data);
   if (data.command == 'admin_logout') setAdminLogout(data);
   if (data.command == 'admin_sysinfo') setSysInfo(data);
@@ -509,7 +518,12 @@ async function wsOnMessage(data) {
   }
   if (data.command == 'admin_get_users') setUsers(data);
   if (data.command == 'admin_get_aliases') setAliases(data);
-  if (data.command == 'admin_get_admins') setAdmins(data);
+  if (data.command == 'admin_get_admins') {
+   setAdmins(data);
+   data.data.map((item) => {
+    admins.push(item.id);
+   });
+  }
   if (data.command == 'admin_del_domain') {
    getPage('domains');
    if(data.data !== undefined && data.data.error) {

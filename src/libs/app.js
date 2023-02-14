@@ -2,6 +2,7 @@ const Common = require('./common.js').Common;
 const WebServer = require('./webserver.js');
 const fs = require('fs');
 let prompt = require('prompt-sync')();
+const readline = require('readline');
 
 class App {
  run() {
@@ -111,27 +112,15 @@ createAdmin() {
   this.loadSettings();
   const Data = require('./data.js');
   const data = new Data();
-  var schema = {
-    properties: {
-      username: {
-        pattern: /^[a-zA-Z\-.]+$/,
-        message: 'Name must be only letters, dots or dashes',
-        required: true
-      },
-      password: {
-        hidden: true,
-        required: true
-      }
-    }
-  };
   username = prompt('Enter admin username: ');
+  if(!username) return process.exit(1);
   password = prompt('Enter admin password: ');
 
-  if(username !== '' && password !== '') {
+  if(password) {
    console.log({username, password})
    data.adminAddAdmin(username, password);
    Common.addLog('Admin was created sucessfully.');
-  }
+  } else process.exit(1);
   Common.addLog('');
  }
 }

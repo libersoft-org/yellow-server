@@ -395,7 +395,7 @@ input[type='submit'] {
     font-size: .8rem;
 }
 .disabled {
-    background-color: 'gray';
+    background-color: #A0A0A0;
 }
 .small-icon {
     width: 20px;
