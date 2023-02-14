@@ -1,7 +1,7 @@
-<div>
-    <input id="updated_domain_name" type="text" placeholder="Domain name">
-</div>
-<div>
- <a class="button" onclick="domainUpdate()">Update</a>
- <a class="button" onclick="dialogClose()">Cancel</a>
-</div>
+<form onsubmit="domainUpdate(); return false;">
+ <input id="updated_domain_name" type="text" placeholder="Domain name">
+ <div>
+  <input class="button mx" type="submit" value="Update">
+  <input class="button mx" onclick="dialogClose()" type="submit" value="Cancel">
+ </div>
+</form>

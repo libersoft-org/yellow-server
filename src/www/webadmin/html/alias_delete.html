@@ -1,7 +1,7 @@
-<div>
+<form onsubmit="delAlias(); return false;">
     <br/><br/>
 </div>
 <div>
- <a class="button" onclick="delAlias()">Confirm</a>
- <a class="button" onclick="dialogClose()">Cancel</a>
-</div>
+ <input id="mx-btn" class="button mx" onclick="delAlias()" type="submit" value="Confirm">
+ <input class="button mx" onclick="dialogClose()" type="submit" value="Cancel">
+</form>

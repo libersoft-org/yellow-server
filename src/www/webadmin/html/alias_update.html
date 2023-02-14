@@ -1,8 +1,8 @@
-<div>
-    <input id="updated_alias_name" type="text" placeholder="Alias Name"/>
-    <input id="updated_mail" type="text" placeholder="Mail" />
-</div>
-<div>
- <a class="button" onclick="aliasUpdate()">Update</a>
- <a class="button" onclick="dialogClose()">Cancel</a>
-</div>
+<form onsubmit="aliasUpdate(); return false;">
+ <input id="updated_alias_name" type="text" placeholder="Alias Name"/>
+ <input id="updated_mail" type="text" placeholder="Mail" />
+ <div>
+  <input id="mx-btn" class="button mx" type="submit" value="Update">
+  <input class="button mx" onclick="dialogClose()" type="submit" value="Cancel">
+ </div>
+</form>
