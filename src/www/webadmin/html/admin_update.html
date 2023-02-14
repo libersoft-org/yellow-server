@@ -1,8 +1,8 @@
-<div>
-    <input id="updated_admin_name" type="text" placeholder="Admin Name"/>
-    <input id="updated_admin_pass" type="password" placeholder="Admin password" />
-</div>
-<div>
- <a class="button" onclick="adminUpdate()">Update</a>
- <a class="button" onclick="dialogClose()">Cancel</a>
-</div>
+<form onsubmit="adminUpdate(); return false;">
+ <input id="updated_admin_name" type="text" placeholder="Admin Name"/>
+ <input id="updated_admin_pass" type="password" placeholder="Admin password" />
+ <div>
+  <input id="mx-btn" class="button mx" type="submit" value="Update">
+  <input class="button mx" onclick="dialogClose()" type="submit" value="Cancel">
+ </div>
+</form>

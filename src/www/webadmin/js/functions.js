@@ -7,7 +7,7 @@ var server = 'wss://' + host + (window.location.port !== '' ? ':' + window.locat
 let idData = {
     id: 0,
     secondary_id: 0
-}, domainsData = [], usersInDomain = [], time = 700, item_name = '', label = '',
+}, domainsData = [], usersInDomain = [], time = 700, item_name = '', label = '', active_domain = '',
 tips_for_strings = { 
    "message": "\n\nHere are a few tips:\n-Do not start or end a name with a dot\n-Do not include whitespaces in names\n-Ensure domain is active\n-Do not include special characters in domain name" },
 formattedMessage = tips_for_strings.message.replace(/\n/g, "<br>");
@@ -21,10 +21,11 @@ function DateFormat(dateString) {
 }
  
 function focusErr() {
-   return document.querySelector("#mx-btn").focus();
+   return document.querySelector("#mx-btn") ? document.querySelector("#mx-btn").focus() : null;
 }
 
 window.onload = async function() {
+ if(window.location.port) return wsOnDisconnect();
  wsConnect(server);
  let page_ = '';
  var login = localStorage.getItem('admin_token') ? false : true;
@@ -49,8 +50,7 @@ function setOptions() {
   if(domainsSelect) {
    if(domainsSelect.children.length - 1 === domainsData.length) break;
    const option_already = domainsSelect.querySelector(`option[value="${domainsData[i].name}"]`);
-   option_already ? false : 
-   domainsSelect.append(option);
+   option_already ? false : domainsSelect.append(option);
   }
  }
 }
@@ -75,13 +75,13 @@ async function getPage(name) {
  if (name === 'users') {
   replaceWindowState("/webadmin/users");
   setTimeout(() => {
-   getUsers();
+   getUsers(active_domain);
   }, time);
  }
  if (name === 'aliases') {
   replaceWindowState("/webadmin/aliases");
   setTimeout(() => {
-   getAliases();
+   getAliases(active_domain);
   }, time);
  }
  if (name === 'admins') {
@@ -234,10 +234,12 @@ async function delAlias() {
 }
 
 async function addUser() {
+ let domainsSelect = document.querySelector('#select_domains');
  await getDialog('Add user', await getFileContent('html/user_add.html'));
  document.querySelector('#user_name').focus();
 }
-async function userAdd() {
+async function userAdd(e) {
+ console.log({e});
  let password = document.querySelector('#password');
  let user_name = document.querySelector('#user_name');
  let visible_name = document.querySelector('#visible_name');
@@ -288,8 +290,17 @@ async function userUpdate() {
 async function delUserDialog(id, name) {
  idData.secondary_id = id;
  item_name = name;
- await getDialog('Delete user ' + id, await getFileContent('html/user_delete.html'));
+ await getDialog('Delete user ' + id, translate(await getFileContent('html/user_delete.html'), { '{NAME}': name }));
  focusErr();
+}
+
+async function delUser() {
+ wsSend({
+  command: 'admin_del_user',
+  id: idData.secondary_id,
+  admin_token: localStorage.getItem('admin_token')
+ });
+ dialogClose();
 }
 
 async function addAlias() {
@@ -339,15 +350,6 @@ async function aliasUpdate() {
  dialogClose();
 }
 
-async function delUser() {
- wsSend({
-  command: 'admin_del_user',
-  id: idData.secondary_id,
-  admin_token: localStorage.getItem('admin_token')
- });
- dialogClose();
-}
-
 async function getStats() {
  wsSend({
   command: 'admin_sysinfo', 
@@ -364,7 +366,12 @@ async function getDomains() {
 
 async function getUsers(domain_id) {
  let btn = document.querySelector("#add-user");
- if(domain_id === undefined) {
+ active_domain = domain_id;
+ console.log({active_domain});
+ document.querySelector("option[disabled]").removeAttribute('selected');
+ document.querySelector("option[value = '" + active_domain + "']") ?
+ document.querySelector("option[value = '" + active_domain + "']").setAttribute('selected', true) : null;
+ if(active_domain === '' || active_domain === undefined) {
   console.log({btn, domain_id});
   btn ? btn.style.backgroundColor = '#A0A0A0' : null;
   btn ? btn.style.cursor = 'default' : null;
@@ -386,7 +393,12 @@ async function getUsers(domain_id) {
 
 async function getAliases(domain_id) {
  let btn = document.querySelector("#add-alias");
- if(domain_id === undefined) {
+ active_domain = domain_id;
+ console.log({active_domain});
+ document.querySelector("option[disabled]").removeAttribute('selected');
+ document.querySelector("option[value = '" + active_domain + "']") ?
+ document.querySelector("option[value = '" + active_domain + "']").setAttribute('selected', true) : null;
+ if(active_domain === '' || active_domain === undefined) {
   btn ? btn.style.backgroundColor = '#A0A0A0' : null;
   btn ? btn.style.cursor = 'default' : null;
   btn ? btn.setAttribute('onclick', null): null;
@@ -461,7 +473,11 @@ function wsOnConnect() {
 function wsOnDisconnect() {
  document.querySelector('#footer .icon').className = 'icon offline';
  document.querySelector('#footer .status').innerHTML = 'Not connected, reconnecting ...';
- wsConnect(server);
+ (async function send_error() {
+  var html = translate(await getFileContent('html/dialog.html'), { '{TITLE}': 'Could not establish conection', '{CONTENT}': 'Invalid secure port' });
+  document.querySelector('#page').innerHTML += html;
+ })();
+ window.location.port ? null : wsConnect(server);
 }
 
 function wsOnError(error) {
@@ -504,12 +520,10 @@ async function wsOnMessage(data) {
    if(data.data !== undefined && data.data.error) {
     await getDialog('Delete domain Error', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-    return focusErr();
    }
    else {
       await getDialog('Delete Domain', await getFileContent('html/error_message.html'));
       document.querySelector("#err_success_message").innerHTML = "Domain \"" + item_name + "\" removed successfully";
-      return focusErr();
      }
   }
   if (data.command == 'admin_add_domain') {
@@ -517,12 +531,10 @@ async function wsOnMessage(data) {
    if(data.data !== undefined && data.data.error) {
     await getDialog('Add domain Error', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-    return focusErr();
    }
    else {
     await getDialog('Add Domain', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = "Added domain \"" + item_name + "\" successfully";
-    return focusErr();
    }
   }
   if (data.command == 'admin_set_domain') {
@@ -530,12 +542,10 @@ async function wsOnMessage(data) {
    if(data.data !== undefined && data.data.error) {
     await getDialog('Update Domain Error', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-    return focusErr();
    }
    else {
     await getDialog('Update Domain', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = "Updated domain \"" + item_name + "\" successfully";
-    return focusErr();
    }
   }
   if (data.command == 'admin_add_user') {
@@ -543,12 +553,10 @@ async function wsOnMessage(data) {
    if(data.data !== undefined && data.data.error) {
     await getDialog('Add User Error', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-    return focusErr();
    }
    else {
     await getDialog('Add User', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = "Added user \"" + item_name + "\" successfully";
-    return focusErr();
    }
   }
   if (data.command == 'admin_set_user') {
@@ -556,31 +564,26 @@ async function wsOnMessage(data) {
    if(data.data !== undefined && data.data.error) {
     await getDialog('Update User Error', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-    return focusErr();
    }
    else {
     await getDialog('Update User', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = "Updated user \"" + item_name + "\" successfully";
-    return focusErr();
    }
   }
   if (data.command == 'admin_del_user') {
    getPage('users');
    await getDialog('Delete User', await getFileContent('html/error_message.html'));
    document.querySelector("#err_success_message").innerHTML = "Removed user \"" + item_name + "\" successfully";
-   return focusErr();
   }
   if (data.command == 'admin_add_aliases') {
    getPage('aliases');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Add Alias Error', await getFileContent('html/error_message.html'));
       document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-      return focusErr();
    }
    else {
     await getDialog('Add Alias', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = "Added alias \"" + item_name + "\" successfully";
-    return focusErr();
    }
   }
   if (data.command == 'admin_set_aliases') {
@@ -588,12 +591,10 @@ async function wsOnMessage(data) {
    if(data.data !== undefined && data.data.error) {
       await getDialog('Update Alias Error', await getFileContent('html/error_message.html'));
       document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-      return focusErr();
    }
    else {
     await getDialog('Update Alias', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = "Updatedm alias \"" + item_name + "\" successfully";
-    return focusErr();
    }
   }
   if (data.command == 'admin_add_admin') {
@@ -601,47 +602,41 @@ async function wsOnMessage(data) {
    if(data.data !== undefined && data.data.error) {
       await getDialog('Add Admin Error', await getFileContent('html/error_message.html'));
       document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-      return focusErr();
    }
    else {
     await getDialog('Add Admin', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = "Added admin \"" + item_name + "\" successfully";
-    return focusErr();
    }
   }
   if (data.command == 'admin_set_admin') {
    getPage('admins');
    if(data.data !== undefined && data.data.error) {
-      await getDialog('Update Admin Error', await getFileContent('html/error_message.html'));
-      document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-      return focusErr();
+    await getDialog('Update Admin Error', await getFileContent('html/error_message.html'));
+    document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
    }
    else {
     await getDialog('Update Admin', await getFileContent('html/error_message.html'));
     document.querySelector("#err_success_message").innerHTML = "Updated admin \"" + item_name + "\" successfully";
-    return focusErr();
    }
   }
   if (data.command == 'admin_del_aliases') {
    getPage('aliases');
    await getDialog('Delete Alias', await getFileContent('html/error_message.html'));
    document.querySelector("#err_success_message").innerHTML = "Removed alias \"" + item_name + "\" successfully";
-   return focusErr();
   }
   if (data.command == 'admin_del_admin') {
    getPage('admins');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Delete Admin Error', await getFileContent('html/error_message.html'));
       document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
-      return focusErr();
    }
    else {
       await getDialog('Delete Admin', await getFileContent('html/error_message.html'));
       document.querySelector("#err_success_message").innerHTML = "Removed admin \"" + item_name + "\" successfully";
-      return focusErr();
    }
   }
  }
+ return focusErr();
 }
 
 async function wsSend(data) {
