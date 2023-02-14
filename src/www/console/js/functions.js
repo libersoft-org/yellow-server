@@ -18,8 +18,8 @@ function connect() {
   ws = new WebSocket(document.querySelector('#address').value);
   ws.onopen = (e) => { onConnect() };
   ws.onclose = (e) => { onDisconnect() };
-  ws.onmessage = async (e) => { addLog('<span class="text-yellow bold">RECEIVED:</span> ' + e.data); };
-  ws.onerror = (e) => { addLog('<span class="text-red bold">ERROR:</span> ' + e.data); };
+  ws.onmessage = async (e) => { addLog('<span class="text-yellow bold">RECEIVED:</span> ' + syntaxHighlight(e.data)); };
+  ws.onerror = (e) => { addLog('<span class="text-red bold">ERROR:</span> ' + syntaxHighlight(e.data)); };
  }
 }
 
@@ -37,7 +37,7 @@ function onDisconnect() {
 
 function send() {
  var textbox = document.querySelector('#text');
- addLog('<span class="text-blue bold">SENT:</span> ' + textbox.value);
+ addLog('<span class="text-blue bold">SENT:</span> ' + syntaxHighlight(textbox.value));
  ws.send(textbox.value);
  textbox.value = '';
  textbox.focus();
@@ -65,4 +65,25 @@ function addLog(message) {
  var output = document.querySelector('#output');
  output.innerHTML += new Date().toLocaleString() + ' - ' + message + '<br />';
  output.scrollTop = output.scrollHeight;
+}
+
+function syntaxHighlight(data) {
+    data = data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // data = data.replace(',"', ',\n"');
+    // data = data.replace(', ', ',\n'); adds newline, but disabled for UI purposes
+    return data.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
 }
