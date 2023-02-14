@@ -193,7 +193,6 @@ class Data {
  }
 
  async verifyHash(hash, password) {
-  console.log('hash is: ', hash, ' & password is: ', password);
   return await Argon2.verify(hash, password);
  }
 }

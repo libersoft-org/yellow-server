@@ -238,8 +238,7 @@ async function addUser() {
  await getDialog('Add user', await getFileContent('html/user_add.html'));
  document.querySelector('#user_name').focus();
 }
-async function userAdd(e) {
- console.log({e});
+async function userAdd() {
  let password = document.querySelector('#password');
  let user_name = document.querySelector('#user_name');
  let visible_name = document.querySelector('#visible_name');
@@ -281,7 +280,7 @@ async function userUpdate() {
   name: updated_name.value,
   visible_name: updated_v_name.value,
   photo: null,
-  pass: updated_password.value,
+  password: updated_password.value,
   admin_token: localStorage.getItem('admin_token')
  });
  dialogClose();
@@ -367,17 +366,14 @@ async function getDomains() {
 async function getUsers(domain_id) {
  let btn = document.querySelector("#add-user");
  active_domain = domain_id;
- console.log({active_domain});
  document.querySelector("option[disabled]").removeAttribute('selected');
  document.querySelector("option[value = '" + active_domain + "']") ?
  document.querySelector("option[value = '" + active_domain + "']").setAttribute('selected', true) : null;
  if(active_domain === '' || active_domain === undefined) {
-  console.log({btn, domain_id});
   btn ? btn.style.backgroundColor = '#A0A0A0' : null;
   btn ? btn.style.cursor = 'default' : null;
   btn ? btn.setAttribute('onclick', null): null;
  } else {
-  console.log({btn, domain_id});
   btn ? btn.style.backgroundColor = 'var(--primary-color)' : null;
   btn ? btn.style.cursor = 'pointer' : null;
   btn ? btn.setAttribute('onclick', 'addUser()'): null;
@@ -394,7 +390,6 @@ async function getUsers(domain_id) {
 async function getAliases(domain_id) {
  let btn = document.querySelector("#add-alias");
  active_domain = domain_id;
- console.log({active_domain});
  document.querySelector("option[disabled]").removeAttribute('selected');
  document.querySelector("option[value = '" + active_domain + "']") ?
  document.querySelector("option[value = '" + active_domain + "']").setAttribute('selected', true) : null;
