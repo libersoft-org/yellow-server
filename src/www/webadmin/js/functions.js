@@ -23,6 +23,7 @@ function DateFormat(dateString) {
 function focusErr() {
    return document.querySelector("#mx-btn") ? document.querySelector("#mx-btn").focus() : null;
 }
+let btn = document.querySelector("#add-user") || document.querySelector("#add-alias");
 
 window.onload = async function() {
  if(window.location.port) return wsOnDisconnect();
@@ -255,7 +256,7 @@ async function userAdd() {
   password: password.value,
   admin_token: localStorage.getItem('admin_token')
  });
- dialogClose();
+//  dialogClose();
 }
 
 async function editUser(id, name, v_name) {
@@ -487,6 +488,7 @@ async function wsOnMessage(data) {
  if(data.server) {
   getDomains();
   label = data.server.name;
+  document.title = data.server.name;
  }
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
@@ -495,6 +497,7 @@ async function wsOnMessage(data) {
       setOptions();
    }, time);
   document.querySelector("#label").innerHTML = label + ' - web admin';
+  document.title = label + ' - web admin';
   if (data.command == 'admin_login') setAdminLogin(data);
   if (data.command == 'admin_logout') setAdminLogout(data);
   if (data.command == 'admin_sysinfo') setSysInfo(data);
