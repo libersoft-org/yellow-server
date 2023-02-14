@@ -7,7 +7,7 @@ var server = 'wss://' + host + (window.location.port !== '' ? ':' + window.locat
 let idData = {
     id: 0,
     secondary_id: 0
-}, domainsData = [], usersInDomain = [], time = 700, item_name = '',
+}, domainsData = [], usersInDomain = [], time = 700, item_name = '', label = '',
 tips_for_strings = { 
    "message": "\n\nHere are a few tips:\n-Do not start or end a name with a dot\n-Do not include whitespaces in names\n-Ensure domain is active\n-Do not include special characters in domain name" },
 formattedMessage = tips_for_strings.message.replace(/\n/g, "<br>");
@@ -359,12 +359,12 @@ async function getUsers(domain_id) {
  let btn = document.querySelector("#add-user");
  if(domain_id === undefined) {
   console.log({btn, domain_id});
-  btn ? btn.style.opacity = '.7' : null;
+  btn ? btn.style.backgroundColor = '#A0A0A0' : null;
   btn ? btn.style.cursor = 'default' : null;
   btn ? btn.setAttribute('onclick', null): null;
  } else {
   console.log({btn, domain_id});
-  btn ? btn.style.opacity = '1' : null;
+  btn ? btn.style.backgroundColor = 'var(--primary-color)' : null;
   btn ? btn.style.cursor = 'pointer' : null;
   btn ? btn.setAttribute('onclick', 'addUser()'): null;
  }
@@ -380,11 +380,11 @@ async function getUsers(domain_id) {
 async function getAliases(domain_id) {
  let btn = document.querySelector("#add-alias");
  if(domain_id === undefined) {
-  btn ? btn.style.opacity = '.7' : null;
+  btn ? btn.style.backgroundColor = '#A0A0A0' : null;
   btn ? btn.style.cursor = 'default' : null;
   btn ? btn.setAttribute('onclick', null): null;
  } else {
-  btn ? btn.style.opacity = '1' : null;
+  btn ? btn.style.backgroundColor = 'var(--primary-color)' : null;
   btn ? btn.style.cursor = 'pointer' : null;
   btn ? btn.setAttribute('onclick', 'addAlias()'): null;
  }
@@ -468,7 +468,7 @@ async function wsOnMessage(data) {
  console.log('data......', data);
  if(data.server) {
   getDomains();
-  document.querySelector("#label").innerHTML = data.server.name + ' - web admin';
+  label = data.server.name;
  }
  if ('error' in data) {
   if (data.error == 'admin_token_invalid') logout();
@@ -476,6 +476,7 @@ async function wsOnMessage(data) {
    setTimeout(() => {
       setOptions();
    }, time);
+  document.querySelector("#label").innerHTML = label + ' - web admin';
   if (data.command == 'admin_login') setAdminLogin(data);
   if (data.command == 'admin_logout') setAdminLogout(data);
   if (data.command == 'admin_sysinfo') setSysInfo(data);
