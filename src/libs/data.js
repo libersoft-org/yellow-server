@@ -75,7 +75,7 @@ class Data {
  }
 
  async adminAddDomain(name) {
-  let regex = new RegExp(/^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,6}$/);
+  let regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
   let callIsValidInput = this.isValidInput([name]);
   if(!callIsValidInput) return this.res;
   if(!this.isValidString(name)) return this.res;
