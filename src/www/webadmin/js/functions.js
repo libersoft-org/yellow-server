@@ -20,6 +20,9 @@ function DateFormat(dateString) {
  }
 }
  
+function focusErr() {
+   return document.querySelector("#mx-btn").focus();
+}
 
 window.onload = async function() {
  wsConnect(server);
@@ -147,9 +150,10 @@ async function adminUpdate() {
 }
 
 async function delAdminDialog(id, name) {
-   idData.secondary_id = id;
-   item_name = name;
-   await getDialog('Delete admin ' + id, await getFileContent('html/admin_delete.html'));
+ idData.secondary_id = id;
+ item_name = name;
+ await getDialog('Delete admin ' + id, await getFileContent('html/admin_delete.html'));
+ focusErr();
 }
 
 async function delAdmin() {
@@ -177,9 +181,10 @@ async function domainAdd() {
 }
 
 async function delDomainDialog(id, name) {
-    idData.id = id;
-    item_name = name;
-    await getDialog('Delete domain ' + id, await getFileContent('html/domain_delete.html'));
+ idData.id = id;
+ item_name = name;
+ await getDialog('Delete domain ' + id, translate(await getFileContent('html/domain_delete.html'), { '{NAME}': name }));
+ focusErr();
 }
 
 async function delDomain() {
@@ -213,9 +218,10 @@ async function domainUpdate() {
 }
 
 async function delAliasDialog(id, name) {
-    idData.id = id;
-    item_name = name;
-    await getDialog('Delete alias ' + id, await getFileContent('html/alias_delete.html'));
+ idData.id = id;
+ item_name = name;
+ await getDialog('Delete alias ' + id, await getFileContent('html/alias_delete.html'));
+ focusErr();
 }
 
 async function delAlias() {
@@ -280,9 +286,10 @@ async function userUpdate() {
 }
 
 async function delUserDialog(id, name) {
-    idData.secondary_id = id;
-    item_name = name;
-    await getDialog('Delete user ' + id, await getFileContent('html/user_delete.html'));
+ idData.secondary_id = id;
+ item_name = name;
+ await getDialog('Delete user ' + id, await getFileContent('html/user_delete.html'));
+ focusErr();
 }
 
 async function addAlias() {
@@ -496,120 +503,142 @@ async function wsOnMessage(data) {
    getPage('domains');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Delete domain Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    return focusErr();
    }
    else {
       await getDialog('Delete Domain', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = "Domain \"" + item_name + "\" removed successfully";
+      document.querySelector("#err_success_message").innerHTML = "Domain \"" + item_name + "\" removed successfully";
+      return focusErr();
      }
   }
   if (data.command == 'admin_add_domain') {
    getPage('domains');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Add domain Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    return focusErr();
    }
    else {
     await getDialog('Add Domain', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = "Added domain \"" + item_name + "\" successfully";
+    document.querySelector("#err_success_message").innerHTML = "Added domain \"" + item_name + "\" successfully";
+    return focusErr();
    }
   }
   if (data.command == 'admin_set_domain') {
    getPage('domains');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Update Domain Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    return focusErr();
    }
    else {
     await getDialog('Update Domain', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = "Updated domain \"" + item_name + "\" successfully";
+    document.querySelector("#err_success_message").innerHTML = "Updated domain \"" + item_name + "\" successfully";
+    return focusErr();
    }
   }
   if (data.command == 'admin_add_user') {
    getPage('users');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Add User Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    return focusErr();
    }
    else {
     await getDialog('Add User', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = "Added user \"" + item_name + "\" successfully";
+    document.querySelector("#err_success_message").innerHTML = "Added user \"" + item_name + "\" successfully";
+    return focusErr();
    }
   }
   if (data.command == 'admin_set_user') {
    getPage('users');
    if(data.data !== undefined && data.data.error) {
     await getDialog('Update User Error', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+    return focusErr();
    }
    else {
     await getDialog('Update User', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = "Updated user \"" + item_name + "\" successfully";
+    document.querySelector("#err_success_message").innerHTML = "Updated user \"" + item_name + "\" successfully";
+    return focusErr();
    }
   }
   if (data.command == 'admin_del_user') {
    getPage('users');
    await getDialog('Delete User', await getFileContent('html/error_message.html'));
-   return document.querySelector("#err_success_message").innerHTML = "Removed user \"" + item_name + "\" successfully";
+   document.querySelector("#err_success_message").innerHTML = "Removed user \"" + item_name + "\" successfully";
+   return focusErr();
   }
   if (data.command == 'admin_add_aliases') {
    getPage('aliases');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Add Alias Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      return focusErr();
    }
    else {
     await getDialog('Add Alias', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = "Added alias \"" + item_name + "\" successfully";
+    document.querySelector("#err_success_message").innerHTML = "Added alias \"" + item_name + "\" successfully";
+    return focusErr();
    }
   }
   if (data.command == 'admin_set_aliases') {
    getPage('aliases');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Update Alias Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      return focusErr();
    }
    else {
     await getDialog('Update Alias', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = "Updatedm alias \"" + item_name + "\" successfully";
+    document.querySelector("#err_success_message").innerHTML = "Updatedm alias \"" + item_name + "\" successfully";
+    return focusErr();
    }
   }
   if (data.command == 'admin_add_admin') {
    getPage('admins');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Add Admin Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      return focusErr();
    }
    else {
     await getDialog('Add Admin', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = "Added admin \"" + item_name + "\" successfully";
+    document.querySelector("#err_success_message").innerHTML = "Added admin \"" + item_name + "\" successfully";
+    return focusErr();
    }
   }
   if (data.command == 'admin_set_admin') {
    getPage('admins');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Update Admin Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      return focusErr();
    }
    else {
     await getDialog('Update Admin', await getFileContent('html/error_message.html'));
-    return document.querySelector("#err_success_message").innerHTML = "Updated admin \"" + item_name + "\" successfully";
+    document.querySelector("#err_success_message").innerHTML = "Updated admin \"" + item_name + "\" successfully";
+    return focusErr();
    }
   }
   if (data.command == 'admin_del_aliases') {
    getPage('aliases');
    await getDialog('Delete Alias', await getFileContent('html/error_message.html'));
-   return document.querySelector("#err_success_message").innerHTML = "Removed alias \"" + item_name + "\" successfully";
+   document.querySelector("#err_success_message").innerHTML = "Removed alias \"" + item_name + "\" successfully";
+   return focusErr();
   }
   if (data.command == 'admin_del_admin') {
    getPage('admins');
    if(data.data !== undefined && data.data.error) {
       await getDialog('Delete Admin Error', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      document.querySelector("#err_success_message").innerHTML = data.data.message + formattedMessage;
+      return focusErr();
    }
    else {
       await getDialog('Delete Admin', await getFileContent('html/error_message.html'));
-      return document.querySelector("#err_success_message").innerHTML = "Removed admin \"" + item_name + "\" successfully";
+      document.querySelector("#err_success_message").innerHTML = "Removed admin \"" + item_name + "\" successfully";
+      return focusErr();
    }
   }
  }

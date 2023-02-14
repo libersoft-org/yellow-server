@@ -10,6 +10,10 @@
  --shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
 }
 
+*:focus {
+    outline: none;
+}
+
 body {
  margin: 0px;
  font-family: Verdana, Tahoma, Helvetica, Arial;
@@ -93,6 +97,7 @@ table tbody tr td, table thead tr th {
  color: #FFFFFF;
  background-color: var(--primary-color);
  box-shadow: var(--shadow);
+ cursor: pointer;
 }
 input[type='submit'] {
     width: 40%;
