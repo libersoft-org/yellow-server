@@ -302,6 +302,7 @@ input[type='submit'] {
  font-weight: bold;
  background-color: hsl(var(--background-hue), var(--background-sat), calc(var(--background-lig) + 25%));
  color: hsl(var(--background-hue), var(--background-sat), calc(var(--background-lig) - 25%));
+ position: relative;
 }
 
 #page #menu .item:hover {
@@ -395,4 +396,17 @@ input[type='submit'] {
 }
 .disabled {
     background-color: 'gray';
+}
+.small-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 10px 20px;
+    border: 1px solid var(--primary-color);
+    border-radius: 7px;
+}
+.menu-span {
+    margin-left: 3rem;
 }
