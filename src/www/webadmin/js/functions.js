@@ -7,7 +7,7 @@ var server = 'wss://' + host + (window.location.port !== '' ? ':' + window.locat
 let idData = {
     id: 0,
     secondary_id: 0
-}, domainsData = [], usersInDomain = [], time = 700, item_name = '', label = '', active_domain = '',
+}, domainsData = [], usersInDomain = [], time = 700, item_name = '', label = '', active_domain = '', admins = [],
 tips_for_strings = { 
    "message": "\n\nHere are a few tips:\n-Do not start or end a name with a dot\n-Do not include whitespaces in names\n-Ensure domain is active\n-Do not include special characters in domain name" },
 formattedMessage = tips_for_strings.message.replace(/\n/g, "<br>");
@@ -163,6 +163,12 @@ async function delAdmin() {
     id: idData.secondary_id,
     admin_token: localStorage.getItem('admin_token')
    });
+   admins.map((admin) => {
+      if(admin === idData.secondaryId) {
+         localStorage.removeItem('admin_token');
+         window.location.reload();
+      }
+   })
    dialogClose();
 }
 
@@ -512,7 +518,12 @@ async function wsOnMessage(data) {
   }
   if (data.command == 'admin_get_users') setUsers(data);
   if (data.command == 'admin_get_aliases') setAliases(data);
-  if (data.command == 'admin_get_admins') setAdmins(data);
+  if (data.command == 'admin_get_admins') {
+   setAdmins(data);
+   data.data.map((item) => {
+    admins.push(item.id);
+   });
+  }
   if (data.command == 'admin_del_domain') {
    getPage('domains');
    if(data.data !== undefined && data.data.error) {

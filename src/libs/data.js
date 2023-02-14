@@ -43,7 +43,7 @@ class Data {
    if (await this.verifyHash(res[0].pass, pass)) {
     var token = this.getToken(64);
     await this.db.write('INSERT INTO admins_login (id_admin, token) VALUES ($1, $2)', [res[0].id, token]);
-    return { logged: true, token: token };
+    return { logged: true, token: token, id: res[0].id };
    } else return { logged: false, message: 'Wrong username or password' }
   } else return { logged: false, message: 'Wrong username or password' }
  }
