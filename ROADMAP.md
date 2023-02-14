@@ -27,7 +27,8 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Contact blocking
 - Multi-language support
 - Filter (unread messages etc.)
-- Search
+- Search contacts
+- Search chat history
 - Encryption keys import and export
 - Desktop and mobile client applications
 
@@ -47,36 +48,34 @@ This document describes our development plan (aka roadmap) of NEMP server based 
 - Video conference calls
 - Calendar (with sharing)
 - Tasks (with sharing)
-- Events (with sharing)
 - Message translation
 - Peer-to-peer file transfer
 - Quick messages (like Quicktext for Thunderbird)
+- Followers
 - Personal news feed (for followers)
-- Rich text messages (multipart)
+- Stories (for followers)
+- Rich text messages
+- Multipart messages
 - Newsletter system (template sent once with variables + variables for each user)
+- Modules (for 3rd party software like antispam etc.)
 
 ## Considered features:
 
-- Modules (for 3rd party software like antispam etc.)
 - Local storage encryption for client application
 - Password (+ finger etc.) protected for client application
 - Message editing
 - Serverless messages
+- Disappearing messages
+- Events (with sharing)
+- Forum
+- Live map location sharing (not just static point)
+- E-commerce features (like Durger King on Telegram)
+- Media news feed
 - Profile bio
 - Profile status
-- Events
-- Followers
-- Stories (for followers)
-- Own markup language
-- Forum
+- Cryptocurrency integration
 - Video filters
 - Voice changer
-- E-shop features (like Durger King on Telegram)
-- Cryptocurrency integration
-- Reels
-- Media news feed
 - Multiplayer games between users
-- Disappearing messages
-- Live map location sharing
-- Live map points of interest
+- Reels
 - People nearby
