@@ -153,7 +153,7 @@ async function adminUpdate() {
 async function delAdminDialog(id, name) {
  idData.secondary_id = id;
  item_name = name;
- await getDialog('Delete admin ' + id, await getFileContent('html/admin_delete.html'));
+ await getDialog('Delete Admin ' + id, translate(await getFileContent('html/admin_delete.html'), { '{NAME}': name }));
  focusErr();
 }
 
@@ -371,11 +371,11 @@ async function getUsers(domain_id) {
  document.querySelector("option[value = '" + active_domain + "']") ?
  document.querySelector("option[value = '" + active_domain + "']").setAttribute('selected', true) : null;
  if(active_domain === '' || active_domain === undefined) {
-  btn ? btn.style.backgroundColor = '#A0A0A0' : null;
+  btn ? btn.classList.add('disabled') : null;
   btn ? btn.style.cursor = 'default' : null;
   btn ? btn.setAttribute('onclick', null): null;
  } else {
-  btn ? btn.style.backgroundColor = 'var(--primary-color)' : null;
+  btn ? btn.classList.remove('disabled') : null;
   btn ? btn.style.cursor = 'pointer' : null;
   btn ? btn.setAttribute('onclick', 'addUser()'): null;
  }
@@ -395,11 +395,11 @@ async function getAliases(domain_id) {
  document.querySelector("option[value = '" + active_domain + "']") ?
  document.querySelector("option[value = '" + active_domain + "']").setAttribute('selected', true) : null;
  if(active_domain === '' || active_domain === undefined) {
-  btn ? btn.style.backgroundColor = '#A0A0A0' : null;
+  btn ? btn.classList.add('disabled') : null;
   btn ? btn.style.cursor = 'default' : null;
   btn ? btn.setAttribute('onclick', null): null;
  } else {
-  btn ? btn.style.backgroundColor = 'var(--primary-color)' : null;
+  btn ? btn.classList.remove('disabled') : null;
   btn ? btn.style.cursor = 'pointer' : null;
   btn ? btn.setAttribute('onclick', 'addAlias()'): null;
  }
