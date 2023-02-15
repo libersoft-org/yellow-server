@@ -1,63 +1,80 @@
 # The New E-Mail Protocol (NEMP) - server software roadmap
 
-This document describes our development plan (aka roadmap) of NEMP server based on version number.
+This document describes our development plan (aka roadmap) of NEMP server.
 
-## Version 0.x:
+## Server
 
-- Server to client communication
-- Server to server communication
-- Plain text messages (with links and emojis)
-- End-to-end encryption (more options - ECC, RSA etc.)
-- Web client account management
-- Notifications
+|                   Feature                 |     Implemented    |
+|-------------------------------------------|--------------------|
+| Web server + SSL certificate + Web Socket | :heavy_check_mark: |
+| Server database                           | :heavy_check_mark: |
+| Server administration                     |   in development   |
+| Plain text messages                       |         :x:        |
+| End to end encryption (ECC, RSA etc.)     |         :x:        |
+| Contacts                                  |         :x:        |
+| Contact sharing                           |         :x:        |
+| Conversion folders                        |         :x:        |
+| Reply and forward messages                |         :x:        |
+| Server file transfer                      |         :x:        |
+| Peer to peer file transfer                |         :x:        |
+| Images, audio and video files messages    |         :x:        |
+| Voice messages                            |         :x:        |
+| Video messages                            |         :x:        |
+| Stickers                                  |         :x:        |
+| Map location sharing                      |         :x:        |
+| Contact blocking                          |         :x:        |
+| Chat group (public and private)           |         :x:        |
+| News group (public and private)           |         :x:        |
+| Voice calls                               |         :x:        |
+| Video calls                               |         :x:        |
+| Chat bots                                 |         :x:        |
+| Live streaming                            |         :x:        |
+| Video conference calls                    |         :x:        |
+| Calendar (with sharing)                   |         :x:        |
+| Tasks (with sharing)                      |         :x:        |
+| Message templates                         |         :x:        |
+| Followers                                 |         :x:        |
+| Personal news feed (for followers)        |         :x:        |
+| Stories (for followers)                   |         :x:        |
+| Rich text messages                        |         :x:        |
+| Multipart messages                        |         :x:        |
+| Newsletter system (template + variables)  |         :x:        |
+| DNS and server to server communication    |         :x:        |
 
-## Version 1.x:
+## Web admin
 
-- Contacts
-- Contact sharing
-- Conversion folders
-- Reply and forward messages
-- Common file transfer
-- Images, audio and video files messages
-- Voice messages
-- Video messages
-- Animated stickers
-- GIFs
-- Map location sharing
-- Contact blocking
-- Multi-language support
-- Filter (unread messages etc.)
-- Search contacts
-- Search chat history
-- Encryption keys import and export
-- Desktop and mobile client applications
+|     Feature    |     Implemented    |
+|----------------|--------------------|
+| Server status  | :heavy_check_mark: |
+| Domains        | :heavy_check_mark: |
+| User accounts  | :heavy_check_mark: |
+| Aliases        | :heavy_check_mark: |
+| Admin accounts | :heavy_check_mark: |
 
-## Version 2.x:
+## Web mail client
 
-- Chat group (public and private)
-- News group (public and private)
-- Voice calls
-- Video calls
-- Call list
-- Themes (backgrounds, contact size, font size, color scheme, night mode)
+|                                    Feature                                   |     Implemented    |
+|------------------------------------------------------------------------------|--------------------|
+| Account management                                                           |         :x:        |
+| Notifications                                                                |         :x:        |
+| GIFs                                                                         |         :x:        |
+| Animated stickers                                                            |         :x:        |
+| Multi-language support                                                       |         :x:        |
+| Filter (unread messages etc.)                                                |         :x:        |
+| Search contacts                                                              |         :x:        |
+| Search chat history                                                          |         :x:        |
+| Encryption keys import and export                                            |         :x:        |
+| Call list                                                                    |         :x:        |
+| Message translation                                                          |         :x:        |
+| Themes (backgrounds, contact size, font size, color scheme, night mode etc.) |         :x:        |
 
-## Version 3.x and beyond:
+## Web developer console
 
-- Chat bots
-- Live streaming
-- Video conference calls
-- Calendar (with sharing)
-- Tasks (with sharing)
-- Message translation
-- Peer-to-peer file transfer
-- Quick messages (like Quicktext for Thunderbird)
-- Followers
-- Personal news feed (for followers)
-- Stories (for followers)
-- Rich text messages
-- Multipart messages
-- Newsletter system (template sent once with variables + variables for each user)
-- Modules (for 3rd party software like antispam etc.)
+|         Feature        |     Implemented    |
+|------------------------|--------------------|
+| Requests and responses | :heavy_check_mark: |
+| Autoconnect            | :heavy_check_mark: |
+| Pretty deminified JSON |         :x:        |
 
 ## Considered features:
 
