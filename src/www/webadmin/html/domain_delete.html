@@ -1,6 +1,5 @@
 <form onsubmit="delDomain(); return false;">
- <p>Are you sure you want to delete domain "{NAME}"</p>
- <br/>
- <input id="mx-btn" class="button mx" onclick="delDomain()" type="submit" value="Confirm">
- <input class="button mx" onclick="dialogClose()" type="submit" value="Cancel">
+ <p id = "err_msg">Are you sure you want to delete domain "{NAME}"</p><br/>
+ <input id="mx-btn" class="button mx" type="submit" value="Confirm">
+ <input class="button mxx" id="e" onclick="dialogClose()" type="submit" value="Cancel">
 </form>

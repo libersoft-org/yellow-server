@@ -1,7 +1,5 @@
 <form onsubmit="delAdmin(); return false;">
- <p>Are you sure you want to delete admin "{NAME}"</p>
- <div>
-  <input id="mx-btn" class="button mx" onclick="delAdmin()" type="submit" value="Confirm">
-  <input class="button mx" onclick="dialogClose()" type="submit" value="Cancel">
- </div>
+ <p id="err_msg">Are you sure you want to delete admin "{NAME}"</p>
+ <input id="mx-btn" class="button mx" type="submit" value="Confirm">
+ <input class="button mx" id="e" onclick="dialogClose()" type="submit" value="Cancel">
 </form>

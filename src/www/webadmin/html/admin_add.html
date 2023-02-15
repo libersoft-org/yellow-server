@@ -1,8 +1,9 @@
 <form onsubmit="adminAdd(); return false;">
  <input id="admin_name" type="text" placeholder="Admin Name"/>
  <input id="admin_pass" type="password" placeholder="Admin password" />
+ <p id="err_msg"></p><br/>
  <div>
-  <input id="mx-btn" class="button mx" type="submit" value="Add">
-  <input class="button mx" onclick="dialogClose()" type="submit" value="Cancel">
+  <input id="mx-btn" class="button mx" type="submit" value="Add"/>
+  <input class="button mx" id="e" onclick="dialogClose()" type="submit" value="Cancel"/>
  </div>
 </form>
