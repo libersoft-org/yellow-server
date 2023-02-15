@@ -10,7 +10,7 @@ Then add this domain record in your DNS for your NEMP server:
 
 Now for each domain you'd like to use with your NEMP server add this record:
 
-- **TXT** record that identifies your NEMP server, eg.: **domain.tld TXT nemp=nemp.domain.tld**
+- **TXT** record that identifies your NEMP server, eg.: **domain.tld TXT nemp=nemp.domain.tld:443**
 
 ## Installation
 
