@@ -6,6 +6,7 @@ class Data {
  constructor() {
   this.db = new Database();
  }
+ regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
 
  async createDB() {
   try {
@@ -75,11 +76,10 @@ class Data {
  }
 
  async adminAddDomain(name) {
-  let regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
   let callIsValidInput = this.isValidInput([name]);
   if(!callIsValidInput) return this.res;
   if(!this.isValidString(name)) return this.res;
-  if(!regex.test(name)) return this.res;
+  if(!this.regex.test(name)) return this.res;
   return await this.db.write('INSERT INTO domains (name) VALUES ($1)', [name]);
  }
 
@@ -89,11 +89,14 @@ class Data {
  }
 
  async adminDelDomains(id) {
+  console.log('starting...');
   let hasUsers = await this.db.read('SELECT id FROM users WHERE id_domain = $1', [id]);
+  console.log('seen users...');
   if(hasUsers.length > 0) return {
     'error': true,
     'message': 'Cannot remove domain with users'
   };
+  console.log('final logger...');
   return await this.db.write('DELETE FROM domains WHERE id = $1', [id]);
  }
 
@@ -105,9 +108,10 @@ class Data {
  }
 
  async adminAddUser(domainID, name, visibleName, pass) {
-  let callIsValidInput = this.isValidInput([domainID, name, visibleName, pass]);
+  let callIsValidInput = this.isValidInput([domainID, name, pass]);
   if(!callIsValidInput) return this.res;
   if(!this.isValidString(name) && !this.isValidString(visibleName)) return this.res;
+  if(!this.regex.test(name)) return this.res;
   let activeDomain = await this.db.read('SELECT id FROM domains WHERE id = $1', [domainID]);
   if(!activeDomain || activeDomain.length === 0) return {
     error: true,
@@ -122,8 +126,9 @@ class Data {
  }
 
  async adminSetUser(id, domainID, name, visibleName, photo, pass) {
-  let callIsValidInput = this.isValidInput([id, domainID, name, visibleName, pass]);
+  let callIsValidInput = this.isValidInput([id, domainID, name, pass]);
   if(!callIsValidInput) return this.res;
+  if(!this.regex.test(name)) return this.res;
   return await this.db.write('UPDATE users SET id_domain = $1, name = $2, visible_name = $3, photo = $4, pass = $5 WHERE id = $6', [domainID, name, visibleName, photo, pass, id]);
  }
 
@@ -140,6 +145,7 @@ class Data {
   let callIsValidInput = this.isValidInput([domainID, alias, mail]);
   if(!callIsValidInput) return this.res;
   if(!this.isValidString(alias) && !this.isValidString(mail)) return this.res;
+  if(!this.regex.test(alias)) return this.res;
   let activeDomain = await this.db.read('SELECT id FROM domains WHERE id = $1', [domainID]);
   if(!activeDomain || activeDomain.length === 0) return {
     error: true,
@@ -155,6 +161,7 @@ class Data {
 
  async adminSetAlias(id, alias, mail) {
   if(!id && !alias && !mail) return this.res;
+  if(!this.regex.test(alias)) return this.res;
   return await this.db.write('UPDATE aliases SET alias = $1, mail = $2 WHERE id = $3', [alias, mail, id]);
  }
 

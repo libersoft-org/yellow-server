@@ -1,7 +1,8 @@
 <form onsubmit="domainUpdate(); return false;">
  <input id="updated_domain_name" type="text" placeholder="Domain name">
+ <p id = "err_msg"></p><br/><br/>
  <div>
-  <input class="button mx" type="submit" value="Update">
-  <input class="button mx" onclick="dialogClose()" type="submit" value="Cancel">
+  <input id="mx-btn" class="button mx" type="submit" value="Update">
+  <input class="button mxx" id="e" onclick="dialogClose()" type="submit" value="Cancel">
  </div>
 </form>

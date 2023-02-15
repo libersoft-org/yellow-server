@@ -1,12 +1,14 @@
 <div id="error"></div>
 <div id="center-container">
  <div id="center">
-  <div id="login">
+  <form id="login" onsubmit="login(); return false;">
    <div id="label">New Mail server</div>
    <div id="description">admin area</div>
    <div><input id="user" type="text" placeholder="User name" /></div>
    <div><input id="pass" type="password" placeholder="Password" /></div>
-   <a id="logbutton" class="button large" onclick="login()">Login</a>
+   <input id="logbutton"type="submit" value="Login" style="display: none;">
+   <label id="logbutton-label" for="logbutton" class="button large" >Log In</label>
+   </form>
   </div>
  </div>
 </div>
