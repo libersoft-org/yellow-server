@@ -7,39 +7,47 @@ This document describes our development plan (aka roadmap) of NEMP server.
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
 | Web server + SSL certificate + Web Socket | :heavy_check_mark: |
-| Server database                           | :heavy_check_mark: |
-| Server administration                     |   in development   |
-| Plain text messages                       |         :x:        |
-| End to end encryption (ECC, RSA etc.)     |         :x:        |
-| Contacts                                  |         :x:        |
-| Contact sharing                           |         :x:        |
-| Conversion folders                        |         :x:        |
-| Reply and forward messages                |         :x:        |
-| Server file transfer                      |         :x:        |
-| Peer to peer file transfer                |         :x:        |
-| Images, audio and video files messages    |         :x:        |
-| Voice messages                            |         :x:        |
-| Video messages                            |         :x:        |
-| Stickers                                  |         :x:        |
-| Map location sharing                      |         :x:        |
-| Contact blocking                          |         :x:        |
-| Chat group (public and private)           |         :x:        |
-| News group (public and private)           |         :x:        |
-| Voice calls                               |         :x:        |
-| Video calls                               |         :x:        |
-| Chat bots                                 |         :x:        |
-| Live streaming                            |         :x:        |
-| Video conference calls                    |         :x:        |
-| Calendar (with sharing)                   |         :x:        |
-| Tasks (with sharing)                      |         :x:        |
-| Message templates                         |         :x:        |
-| Followers                                 |         :x:        |
-| Personal news feed (for followers)        |         :x:        |
-| Stories (for followers)                   |         :x:        |
-| Rich text messages                        |         :x:        |
-| Multipart messages                        |         :x:        |
-| Newsletter system (template + variables)  |         :x:        |
 | DNS and server to server communication    |         :x:        |
+
+## Modules
+
+|                   Feature                 | Implemented to server | Implemented to web mail client |
+|-------------------------------------------|-----------------------|--------------------------------|
+| Server administration                     |     in development    |           not needed           |
+| SQLite support                            |   :heavy_check_mark:  |           not needed           |
+| MySQL support                             |          :x:          |           not needed           |
+| PostgreSQL support                        |          :x:          |           not needed           |
+| End to end encryption (ECC, RSA etc.)     |          :x:          |               :x:              |
+| Plain text messages                       |          :x:          |               :x:              |
+| Rich text messages                        |          :x:          |               :x:              |
+| Multipart messages                        |          :x:          |               :x:              |
+| Reply and forward messages                |          :x:          |               :x:              |
+| Message templates                         |       not needed      |               :x:              |
+| Newsletter system (template + variables)  |          :x:          |               :x:              |
+| Contacts                                  |          :x:          |               :x:              |
+| Contact sharing                           |          :x:          |               :x:              |
+| Conversion folders                        |          :x:          |               :x:              |
+| Server file transfer                      |          :x:          |               :x:              |
+| Peer to peer file transfer                |          :x:          |               :x:              |
+| Images, audio and video files messages    |          :x:          |               :x:              |
+| Stickers                                  |          :x:          |               :x:              |
+| Voice messages                            |          :x:          |               :x:              |
+| Video messages                            |          :x:          |               :x:              |
+| Stickers                                  |          :x:          |               :x:              |
+| Map location sharing                      |          :x:          |               :x:              |
+| Contact blocking                          |          :x:          |               :x:              |
+| Chat group (public and private)           |          :x:          |               :x:              |
+| News group (public and private)           |          :x:          |               :x:              |
+| Voice calls                               |          :x:          |               :x:              |
+| Video calls                               |          :x:          |               :x:              |
+| Chat bots                                 |          :x:          |               :x:              |
+| Live streaming                            |          :x:          |               :x:              |
+| Video conference calls                    |          :x:          |               :x:              |
+| Calendar (with sharing)                   |          :x:          |               :x:              |
+| Tasks (with sharing)                      |          :x:          |               :x:              |
+| Followers                                 |          :x:          |               :x:              |
+| Personal news feed (for followers)        |          :x:          |               :x:              |
+| Stories (for followers)                   |          :x:          |               :x:              |
 
 ## Web admin
 
@@ -49,6 +57,7 @@ This document describes our development plan (aka roadmap) of NEMP server.
 | Domains        | :heavy_check_mark: |
 | User accounts  | :heavy_check_mark: |
 | Aliases        | :heavy_check_mark: |
+| Modules        |         :x:        |
 | Admin accounts | :heavy_check_mark: |
 
 ## Web mail client
@@ -57,8 +66,7 @@ This document describes our development plan (aka roadmap) of NEMP server.
 |------------------------------------------------------------------------------|--------------------|
 | Account management                                                           |         :x:        |
 | Notifications                                                                |         :x:        |
-| GIFs                                                                         |         :x:        |
-| Animated stickers                                                            |         :x:        |
+| GIF feed                                                                     |         :x:        |
 | Multi-language support                                                       |         :x:        |
 | Filter (unread messages etc.)                                                |         :x:        |
 | Search contacts                                                              |         :x:        |
