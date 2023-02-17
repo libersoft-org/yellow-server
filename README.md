@@ -1,16 +1,12 @@
 # The New E-Mail Protocol (NEMP) - server software
 
-This is the server implementation of [**NEMP Protocol**](https://github.com/libersoft-org) including official modules, web admin, web mail client and web developer console.
-
-## Development status
-
-- Early stage of development, not intended for production deployment
+This is the server implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-protocol/) including official modules, web admin, web mail client and web developer console.
 
 ## Documentation
 
 - [**Server installation and configuration**](./INSTALL.md)
-- [**Server documentation**](./SERVER.md)
 - [**Development roadmap**](./ROADMAP.md)
+- [**Server documentation**](./SERVER.md)
 - [**License**](./LICENSE)
 
 ## Donations
