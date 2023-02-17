@@ -120,10 +120,13 @@ node index.js
 To stop the server just press **CTRL+C**.
 
 ## Web Admin
-Here are the installation instructions for NEMP Web Admin: https://github.com/libersoft-org/nemp-admin-web/blob/main/INSTALL.md
+
+- [**Installation instructions for NEMP Web Admin**](https://github.com/libersoft-org/nemp-admin-web/blob/main/INSTALL.md)
 
 ## Web Mail Client
-Here are the installation instructions for NEMP Web Admin: https://github.com/libersoft-org/nemp-client-web/blob/main/INSTALL.md
+
+- [**installation instructions for NEMP Web Client**](https://github.com/libersoft-org/nemp-client-web/blob/main/INSTALL.md)
 
 ## Developer Console
-Here are the installation instructions for NEMP Web Admin: https://github.com/libersoft-org/websocket-console/blob/main/INSTALL.md
+
+- [**Installation instructions for WebSocket Developer Console**](https://github.com/libersoft-org/websocket-console/blob/main/INSTALL.md)
