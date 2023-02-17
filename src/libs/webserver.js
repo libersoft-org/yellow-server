@@ -17,27 +17,34 @@ class WebServer {
   if (fs.existsSync(cert_priv) && fs.existsSync(cert_pub) && fs.existsSync(cert_chain)) certs_exist = true;
   if (certs_exist) {
    const app = http2express(express);
-   app.use((req, res, next) => {
-    if (!req.secure) return res.redirect(301, 'https://' + req.headers.host + ':' + Common.settings.https_port + req.url);
-    next();
-   });
+   if (Common.settings.http_run) {
+    app.use((req, res, next) => {
+     if (!req.secure) return res.redirect(301, 'https://' + req.headers.host + ':' + Common.settings.https_port + req.url);
+     next();
+    });
+   }
+   
+   /*
    for (var i = 0; i < Common.settings.webs.length; i++) {
     if (Common.settings.webs[i].run) {
      (function(i) {
-        app.use(Common.settings.webs[i].url, express.static(Common.settings.webs[i].path));
-        app.get(Common.settings.webs[i].url + '/:page', (req, res) => {
-         console.log(Common.settings.webs[i]);
-         res.sendFile(path.join(__dirname, '../www' + Common.settings.webs[i].url + '/index.html'));
-        });
+      app.use(Common.settings.webs[i].url, express.static(Common.settings.webs[i].path));
+      app.get(Common.settings.webs[i].url + '/:page', (req, res) => {
+       console.log(Common.settings.webs[i]);
+       res.sendFile(path.join(__dirname, '../www' + Common.settings.webs[i].url + '/index.html'));
+      });
      })(i);
     }
    }
+   */
+
+   app.use(Common.settings.webs[i].url, express.static('www/'));
+
    app.use('*', express.static(Common.settings.web_notfound_path));
-   this.httpServer = http.createServer(app).listen(Common.settings.http_port);
-   Common.addLog('HTTP server running on port: ' + Common.settings.http_port);
-   // Common.settings.https_port !== 443 ?
-   // (Common.addLog("Invalid https port"), process.exit(1))
-   // : 
+   if (Common.settings.http_run) {
+    this.httpServer = http.createServer(app).listen(Common.settings.http_port);
+    Common.addLog('HTTP server running on port: ' + Common.settings.http_port);
+   }
    this.httpsServer = https.createSecureServer({ key: fs.readFileSync(cert_priv), cert: fs.readFileSync(cert_pub), ca: fs.readFileSync(cert_chain), allowHTTP1: true }, app).listen(Common.settings.https_port);
    Common.addLog('HTTPS server running on port: ' + Common.settings.https_port);
   } else {

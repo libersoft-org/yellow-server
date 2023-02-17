@@ -66,27 +66,9 @@ class App {
   } else {
    var settings = {
     http_port: 80,
-    https_port: {
-      port_one: 443,
-      port_two: 8443
-    },
+    https_port: 443,
     https_cert_path: '/etc/letsencrypt/live/{DOMAIN}/',
     web_notfound_path: 'www/notfound',
-    webs: [
-     {
-      run: true,
-      url: '/webadmin',
-      path: 'www/webadmin'
-     }, {
-      run: true,
-      url: '/webmail',
-      path: 'www/webmail'
-     }, {
-      run: true,
-      url: '/console',
-      path: 'www/console'
-     }
-    ],
     webadmin_ttl: 600,
     log_to_file: true,
     log_file: 'nemp.log',
