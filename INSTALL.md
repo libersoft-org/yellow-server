@@ -120,13 +120,10 @@ node index.js
 To stop the server just press **CTRL+C**.
 
 ## Web Admin
-Open the Web Admin in your browser (by default: **https://nemp.domain.tld/webadmin/**): and log in as **admin** with default password **123456**
-
-When you're logged in, change the admin password in **Admins** section.
-Then add domains, users, aliases and other admins if needed.
+Here are the installation instructions for NEMP Web Admin: https://github.com/libersoft-org/nemp-admin-web/blob/main/INSTALL.md
 
 ## Web Mail Client
-Open the Web Mail Client in your browser (by default: **https://nemp.domain.tld/webmail/**): To access your mailbox, just add a your newly created user account. User name is in e-mail address format (**user@domain.tld**).
+Here are the installation instructions for NEMP Web Admin: https://github.com/libersoft-org/nemp-client-web/blob/main/INSTALL.md
 
 ## Developer Console
-Open the Developer Console in your browser (by default: **https://nemp.domain.tld/console/**). This will let you to send WebSocket commands to server.
+Here are the installation instructions for NEMP Web Admin: https://github.com/libersoft-org/websocket-console/blob/main/INSTALL.md
