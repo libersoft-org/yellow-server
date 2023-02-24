@@ -1,6 +1,7 @@
 const Database = require('./database.js');
 const Common = require('./common.js').Common;
 const Argon2 = require('argon2');
+const punycode = require('punycode/');
 
 class Data {
  constructor() {
@@ -38,6 +39,18 @@ class Data {
  isValidString(str) {
   return !/^\.|\.$|\s/.test(str);
 }
+validateIDN(input) {
+ const normalizedValue = input.normalize('NFC');
+ const punycodeValue = punycode.toASCII(normalizedValue);
+ if (input !== punycodeValue) {
+  console.log('Invalid IDN');
+  return false;
+ } else {
+  console.log('Valid IDN');
+  return true;
+ }
+}
+
  async adminGetLogin(user, pass) {
   var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = $1', [user.toLowerCase()]);
   if (res.length === 1) {
@@ -76,15 +89,17 @@ class Data {
  }
 
  async adminAddDomain(name) {
-  let callIsValidInput = this.isValidInput([name]);
+  let callIsValidInput = this.validateIDN([name]);
   if(!callIsValidInput) return this.res;
-  if(!this.isValidString(name)) return this.res;
   if(!this.regex.test(name)) return this.res;
   return await this.db.write('INSERT INTO domains (name) VALUES ($1)', [name]);
  }
 
  async adminSetDomain(id, name) {
   if(!id && !name) return this.res;
+  let callIsValidInput = this.validateIDN([name]);
+  if(!callIsValidInput) return this.res;
+  if(!this.regex.test(name)) return this.res;
   return await this.db.write('UPDATE domains SET name = $1 WHERE id = $2', [name, id]);
  }
 

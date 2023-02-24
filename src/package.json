@@ -4,6 +4,7 @@
     "express": "*",
     "http2-express-bridge": "*",
     "prompt-sync": "^4.2.0",
+    "punycode": "^2.3.0",
     "sqlite": "*",
     "sqlite3": "*",
     "ws": "*"
