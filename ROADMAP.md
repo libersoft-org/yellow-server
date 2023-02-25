@@ -7,21 +7,24 @@ This document describes our development plan (aka roadmap) of NEMP server.
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
 | Web server + SSL certificate + Web Socket | :heavy_check_mark: |
-
+| Server status                             | :heavy_check_mark: |
+| Admin accounts management                 |         :x:        |
+| SQLite support                            | :heavy_check_mark: |
+| MySQL support                             |         :x:        |
+| PostgreSQL support                        |         :x:        |
 
 ## Protocol core
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
+| Domains management                        |         :x:        |
+| Users management                          |         :x:        |
+| Aliases management                        |         :x:        |
 | DNS and server to server communication    |         :x:        |
 
 ## Protocol modules
 
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
-| Server administration                     |   in development   |
-| SQLite support                            | :heavy_check_mark: |
-| MySQL support                             |         :x:        |
-| PostgreSQL support                        |         :x:        |
 | End to end encryption (ECC, RSA etc.)     |         :x:        |
 | Plain text messages                       |         :x:        |
 | Rich text messages                        |         :x:        |
