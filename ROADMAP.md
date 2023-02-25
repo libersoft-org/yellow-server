@@ -9,6 +9,7 @@ This document describes our development plan (aka roadmap) of NEMP server.
 | Web server + SSL certificate + Web Socket | :heavy_check_mark: |
 | Server status                             | :heavy_check_mark: |
 | Admin accounts management                 | :heavy_check_mark: |
+| Modules management                        |         :x:        |
 | SQLite support                            | :heavy_check_mark: |
 | MySQL support                             |         :x:        |
 | PostgreSQL support                        |         :x:        |
