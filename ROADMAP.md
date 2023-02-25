@@ -7,9 +7,14 @@ This document describes our development plan (aka roadmap) of NEMP server.
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
 | Web server + SSL certificate + Web Socket | :heavy_check_mark: |
+
+
+## Protocol core
+|                   Feature                 |     Implemented    |
+|-------------------------------------------|--------------------|
 | DNS and server to server communication    |         :x:        |
 
-## Modules
+## Protocol modules
 
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
