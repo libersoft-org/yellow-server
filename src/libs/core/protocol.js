@@ -1,5 +1,5 @@
 const Data = require('./data.js');
-const Common = require('./common.js').Common;
+const Common = require('../common.js').Common;
 //const DNS = require('./dns.js');
 
 class Protocol {

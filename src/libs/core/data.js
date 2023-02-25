@@ -125,7 +125,7 @@ validateIDN(input) {
  async adminAddUser(domainID, name, visibleName, pass) {
   let callIsValidInput = this.isValidInput([domainID, name, pass]);
   if(!callIsValidInput) return this.res;
-  if(!this.isValidString(name) && !this.isValidString(visibleName)) return this.res;
+  if(!this.isValidString(name) && (visibleName && !this.isValidString(visibleName))) return this.res;
   if(!this.regex.test(name)) return this.res;
   let activeDomain = await this.db.read('SELECT id FROM domains WHERE id = $1', [domainID]);
   if(!activeDomain || activeDomain.length === 0) return {
