@@ -41,7 +41,6 @@ This document describes our development plan (aka roadmap) of NEMP server.
 | Stickers                                  |         :x:        |
 | Voice messages                            |         :x:        |
 | Video messages                            |         :x:        |
-| Stickers                                  |         :x:        |
 | Map location sharing                      |         :x:        |
 | Contact blocking                          |         :x:        |
 | Chat group (public and private)           |         :x:        |
