@@ -2,26 +2,30 @@
 
 This document describes our development plan (aka roadmap) of NEMP server.
 
-## Server
+## Server core
 
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
 | Web server + SSL certificate + Web Socket | :heavy_check_mark: |
+| Server status                             | :heavy_check_mark: |
+| Admin accounts management                 | :heavy_check_mark: |
+| Modules management                        |         :x:        |
+| SQLite support                            | :heavy_check_mark: |
+| MySQL support                             |         :x:        |
+| PostgreSQL support                        |         :x:        |
 
-
-## Protocol core
+## Protocol identity
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
+| Domains management                        | :heavy_check_mark: |
+| Users management                          | :heavy_check_mark: |
+| Aliases management                        | :heavy_check_mark: |
 | DNS and server to server communication    |         :x:        |
 
 ## Protocol modules
 
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
-| Server administration                     |   in development   |
-| SQLite support                            | :heavy_check_mark: |
-| MySQL support                             |         :x:        |
-| PostgreSQL support                        |         :x:        |
 | End to end encryption (ECC, RSA etc.)     |         :x:        |
 | Plain text messages                       |         :x:        |
 | Rich text messages                        |         :x:        |
@@ -30,14 +34,13 @@ This document describes our development plan (aka roadmap) of NEMP server.
 | Newsletter system (template + variables)  |         :x:        |
 | Contacts                                  |         :x:        |
 | Contact sharing                           |         :x:        |
-| Conversion folders                        |         :x:        |
+| Conversation folders                      |         :x:        |
 | Server file transfer                      |         :x:        |
 | Peer to peer file transfer                |         :x:        |
 | Images, audio and video files messages    |         :x:        |
 | Stickers                                  |         :x:        |
 | Voice messages                            |         :x:        |
 | Video messages                            |         :x:        |
-| Stickers                                  |         :x:        |
 | Map location sharing                      |         :x:        |
 | Contact blocking                          |         :x:        |
 | Chat group (public and private)           |         :x:        |
