@@ -16,9 +16,9 @@ This document describes our development plan (aka roadmap) of NEMP server.
 ## Protocol core
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
-| Domains management                        |         :x:        |
-| Users management                          |         :x:        |
-| Aliases management                        |         :x:        |
+| Domains management                        | :heavy_check_mark: |
+| Users management                          | :heavy_check_mark: |
+| Aliases management                        | :heavy_check_mark: |
 | DNS and server to server communication    |         :x:        |
 
 ## Protocol modules
