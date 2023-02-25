@@ -34,7 +34,7 @@ This document describes our development plan (aka roadmap) of NEMP server.
 | Newsletter system (template + variables)  |         :x:        |
 | Contacts                                  |         :x:        |
 | Contact sharing                           |         :x:        |
-| Conversion folders                        |         :x:        |
+| Conversation folders                      |         :x:        |
 | Server file transfer                      |         :x:        |
 | Peer to peer file transfer                |         :x:        |
 | Images, audio and video files messages    |         :x:        |
