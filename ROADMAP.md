@@ -2,7 +2,7 @@
 
 This document describes our development plan (aka roadmap) of NEMP server.
 
-## Server
+## Server core
 
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
@@ -14,7 +14,7 @@ This document describes our development plan (aka roadmap) of NEMP server.
 | MySQL support                             |         :x:        |
 | PostgreSQL support                        |         :x:        |
 
-## Protocol core
+## Protocol identity
 |                   Feature                 |     Implemented    |
 |-------------------------------------------|--------------------|
 | Domains management                        | :heavy_check_mark: |
