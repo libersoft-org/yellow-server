@@ -1,8 +1,8 @@
 const Common = require('./common.js').Common;
 const WebServer = require('./webserver.js');
 const fs = require('fs');
-let prompt = require('prompt-sync')();
-const readline = require('readline');
+let prompts = require('prompts');
+// const readline = require('readline');
 
 class App {
  run() {
@@ -95,16 +95,29 @@ createAdmin() {
   this.loadSettings();
   const Data = require('./data.js');
   const data = new Data();
-  username = prompt('Enter admin username: ');
-  if(!username) return process.exit(1);
-  password = prompt('Enter admin password: ');
-
-  if(password) {
-   console.log({username, password})
-   data.adminAddAdmin(username, password);
-   Common.addLog('Admin was created sucessfully.');
-  } else process.exit(1);
-  Common.addLog('');
+  
+  (async () => {
+    const response = await prompts(
+      [{
+      type: 'text',
+      name: 'username',
+      message: 'Enter admin username',
+      },
+      {
+      type: 'password',
+      name: 'password',
+      message: 'Enter admin password',
+      },]
+    );
+    if(response.username && (response.password && response.password.length > 4)) {
+      data.adminAddAdmin(username, password);
+      Common.addLog('Admin was created sucessfully.');
+      Common.addLog('');
+    } else {
+      Common.addLog('Invalid input or invalid password length')
+      process.exit(1);
+    }
+  })();
  }
 }
 

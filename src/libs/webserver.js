@@ -38,7 +38,7 @@ class WebServer {
    }
    */
 
-   app.use(Common.settings.webs[i].url, express.static('www/'));
+//    app.use(Common.settings.webs[i].url, express.static('www/'));
 
    app.use('*', express.static(Common.settings.web_notfound_path));
    if (Common.settings.http_run) {

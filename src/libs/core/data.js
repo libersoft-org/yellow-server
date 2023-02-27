@@ -1,6 +1,7 @@
 const Database = require('./database.js');
 const Common = require('./common.js').Common;
 const Argon2 = require('argon2');
+const punycode = require('punycode/');
 
 class Data {
  constructor() {
@@ -13,9 +14,9 @@ class Data {
    await this.db.write('CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, user VARCHAR(32) NOT NULL UNIQUE, pass VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
    await this.db.write('CREATE TABLE IF NOT EXISTS admins_login (id INTEGER PRIMARY KEY AUTOINCREMENT, id_admin INTEGER, token VARCHAR(64) NOT NULL UNIQUE, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_admin) REFERENCES admins(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS domains (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255) NOT NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
-   await this.db.write('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, id_domain INTEGER, name VARCHAR(64) NOT NULL UNIQUE, visible_name VARCHAR(255) NULL, pass VARCHAR(255) NOT NULL, photo VARCHAR(255) NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (name) REFERENCES aliases(alias))');
+   await this.db.write('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, id_domain INTEGER REFERENCES domains(id), name VARCHAR(64) NOT NULL UNIQUE, visible_name VARCHAR(255) NULL, pass VARCHAR(255) NOT NULL, photo VARCHAR(255) NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (name) REFERENCES aliases(alias) UNIQUE (name, id_domain)');
    await this.db.write('CREATE TABLE IF NOT EXISTS users_login (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, token VARCHAR(64) NOT NULL UNIQUE, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
-   await this.db.write('CREATE TABLE IF NOT EXISTS aliases (id INTEGER PRIMARY KEY AUTOINCREMENT, alias VARCHAR(64) NOT NULL UNIQUE, id_domain INTEGER, mail VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domain) REFERENCES domains(id))');
+   await this.db.write('CREATE TABLE IF NOT EXISTS aliases (id INTEGER PRIMARY KEY AUTOINCREMENT, alias VARCHAR(64) NOT NULL UNIQUE, id_domain INTEGER REFERENCES domains(id), mail VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (alias) REFERENCES users(name) UNIQUE (alias, id_domain)');
    await this.db.write('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, email VARCHAR(255) NOT NULL, message TEXT NOT NULL, encryption VARCHAR(5) NOT NULL DEFAULT "", public_key VARCHAR(64) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, name VARCHAR(64) NOT NULL, visible_name VARCHAR(255), email VARCHAR(255) NOT NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
   } catch (ex) {
@@ -38,6 +39,18 @@ class Data {
  isValidString(str) {
   return !/^\.|\.$|\s/.test(str);
 }
+validateIDN(input) {
+ const normalizedValue = input.normalize('NFC');
+ const punycodeValue = punycode.toASCII(normalizedValue);
+ if (input !== punycodeValue) {
+  console.log('Invalid IDN');
+  return false;
+ } else {
+  console.log('Valid IDN');
+  return true;
+ }
+}
+
  async adminGetLogin(user, pass) {
   var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = $1', [user.toLowerCase()]);
   if (res.length === 1) {
@@ -76,15 +89,17 @@ class Data {
  }
 
  async adminAddDomain(name) {
-  let callIsValidInput = this.isValidInput([name]);
+  let callIsValidInput = this.validateIDN([name]);
   if(!callIsValidInput) return this.res;
-  if(!this.isValidString(name)) return this.res;
   if(!this.regex.test(name)) return this.res;
   return await this.db.write('INSERT INTO domains (name) VALUES ($1)', [name]);
  }
 
  async adminSetDomain(id, name) {
   if(!id && !name) return this.res;
+  let callIsValidInput = this.validateIDN([name]);
+  if(!callIsValidInput) return this.res;
+  if(!this.regex.test(name)) return this.res;
   return await this.db.write('UPDATE domains SET name = $1 WHERE id = $2', [name, id]);
  }
 
@@ -110,7 +125,7 @@ class Data {
  async adminAddUser(domainID, name, visibleName, pass) {
   let callIsValidInput = this.isValidInput([domainID, name, pass]);
   if(!callIsValidInput) return this.res;
-  if(!this.isValidString(name) && !this.isValidString(visibleName)) return this.res;
+  if(!this.isValidString(name) && (visibleName && !this.isValidString(visibleName))) return this.res;
   if(!this.regex.test(name)) return this.res;
   let activeDomain = await this.db.read('SELECT id FROM domains WHERE id = $1', [domainID]);
   if(!activeDomain || activeDomain.length === 0) return {
