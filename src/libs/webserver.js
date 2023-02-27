@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const WebSocketServer = require('ws').Server;
 const Common = require('./common.js').Common;
-const Protocol = require('./protocol.js');
+const Protocol = require('./core/protocol.js');
 
 class WebServer {
  constructor() {
@@ -23,20 +23,22 @@ class WebServer {
      next();
     });
    }
+   let items = fs.readdirSync(Common.settings.client, { withFileTypes: true });
+   items = items.filter((item) => item.name.startsWith("nemp-"));
    
-   /*
-   for (var i = 0; i < Common.settings.webs.length; i++) {
-    if (Common.settings.webs[i].run) {
-     (function(i) {
-      app.use(Common.settings.webs[i].url, express.static(Common.settings.webs[i].path));
-      app.get(Common.settings.webs[i].url + '/:page', (req, res) => {
-       console.log(Common.settings.webs[i]);
-       res.sendFile(path.join(__dirname, '../www' + Common.settings.webs[i].url + '/index.html'));
+   for (var i = 0; i < items.length; i++) {
+      const itemName = items[i].name;
+      const pathname = `${itemName.split("nemp-")[1].split("-web")[0]}`;
+      console.log(pathname);
+      const itemPath = path.join(__dirname, "../../../" + Common.settings.client + "/" + itemName + '/src');
+      app.use(`/${pathname}`, express.static(itemPath));
+      
+      app.get(`/${pathname}/:page`, (req, res) => {
+        const indexPath = path.join(itemPath, 'index.html');
+        res.sendFile(indexPath);
       });
-     })(i);
-    }
    }
-   */
+   
 
 //    app.use(Common.settings.webs[i].url, express.static('www/'));
 

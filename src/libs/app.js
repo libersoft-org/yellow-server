@@ -83,7 +83,7 @@ class App {
 
  createDatabase() {
   this.loadSettings();
-  const Data = require('./data.js');
+  const Data = require('./core/data.js');
   const data = new Data();
   data.createDB();
   Common.addLog('Database was created sucessfully.');
@@ -93,7 +93,7 @@ class App {
 createAdmin() {
   var username = '', password = '';
   this.loadSettings();
-  const Data = require('./data.js');
+  const Data = require('./core/data.js');
   const data = new Data();
   
   (async () => {
@@ -110,7 +110,7 @@ createAdmin() {
       },]
     );
     if(response.username && (response.password && response.password.length > 4)) {
-      data.adminAddAdmin(username, password);
+      data.adminAddAdmin(response.username, response.password);
       Common.addLog('Admin was created sucessfully.');
       Common.addLog('');
     } else {

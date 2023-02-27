@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3');
 const sqlite = require('sqlite');
-const Common = require('./common.js').Common;
+const Common = require('../common.js').Common;
 
 class Database {
  async open() {
