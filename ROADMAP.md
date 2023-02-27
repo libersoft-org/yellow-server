@@ -14,47 +14,39 @@ This document describes our development plan (aka roadmap) of NEMP server.
 | MySQL support                             |         :x:        |
 | PostgreSQL support                        |         :x:        |
 
-## Protocol identity
-|                   Feature                 |     Implemented    |
-|-------------------------------------------|--------------------|
-| Domains management                        | :heavy_check_mark: |
-| Users management                          | :heavy_check_mark: |
-| Aliases management                        | :heavy_check_mark: |
-| DNS and server to server communication    |         :x:        |
-
 ## Protocol modules
-
-|                   Feature                 |     Implemented    |
-|-------------------------------------------|--------------------|
-| End to end encryption (ECC, RSA etc.)     |         :x:        |
-| Plain text messages                       |         :x:        |
-| Rich text messages                        |         :x:        |
-| Multipart messages                        |         :x:        |
-| Reply and forward messages                |         :x:        |
-| Newsletter system (template + variables)  |         :x:        |
-| Contacts                                  |         :x:        |
-| Contact sharing                           |         :x:        |
-| Conversation folders                      |         :x:        |
-| Server file transfer                      |         :x:        |
-| Peer to peer file transfer                |         :x:        |
-| Images, audio and video files messages    |         :x:        |
-| Stickers                                  |         :x:        |
-| Voice messages                            |         :x:        |
-| Video messages                            |         :x:        |
-| Map location sharing                      |         :x:        |
-| Contact blocking                          |         :x:        |
-| Chat group (public and private)           |         :x:        |
-| News group (public and private)           |         :x:        |
-| Voice calls                               |         :x:        |
-| Video calls                               |         :x:        |
-| Chat bots                                 |         :x:        |
-| Live streaming                            |         :x:        |
-| Video conference calls                    |         :x:        |
-| Calendar (with sharing)                   |         :x:        |
-| Tasks (with sharing)                      |         :x:        |
-| Followers                                 |         :x:        |
-| Personal news feed (for followers)        |         :x:        |
-| Stories (for followers)                   |         :x:        |
+|                   Feature                    |     Implemented    |
+|----------------------------------------------|--------------------|
+| Identity (DNS, Domains, users, aliases, ...) |   in development   |
+| End to end encryption (ECC, RSA etc.)        |         :x:        |
+| Plain text messages                          |         :x:        |
+| Rich text messages                           |         :x:        |
+| Multipart messages                           |         :x:        |
+| Reply and forward messages                   |         :x:        |
+| Newsletter system (template + variables)     |         :x:        |
+| Contacts                                     |         :x:        |
+| Contact sharing                              |         :x:        |
+| Conversation folders                         |         :x:        |
+| Server file transfer                         |         :x:        |
+| Peer to peer file transfer                   |         :x:        |
+| Images, audio and video files messages       |         :x:        |
+| Stickers                                     |         :x:        |
+| Voice messages                               |         :x:        |
+| Video messages                               |         :x:        |
+| Map location sharing                         |         :x:        |
+| Contact blocking                             |         :x:        |
+| Chat group (public and private)              |         :x:        |
+| News group (public and private)              |         :x:        |
+| Voice calls                                  |         :x:        |
+| Video calls                                  |         :x:        |
+| Chat bots                                    |         :x:        |
+| Live streaming                               |         :x:        |
+| Video conference calls                       |         :x:        |
+| Calendar (with sharing)                      |         :x:        |
+| Tasks (with sharing)                         |         :x:        |
+| Followers                                    |         :x:        |
+| Personal news feed (for followers)           |         :x:        |
+| Stories (for followers)                      |         :x:        |
 
 ## Considered features:
 
