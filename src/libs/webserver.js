@@ -25,14 +25,12 @@ class WebServer {
     });
    }
    let items = fs.readdirSync(Common.settings.web_root, { withFileTypes: true });
-   items = items.filter((item) => item.name.startsWith("nemp-"));
    for (var i = 0; i < items.length; i++) {
       const itemName = items[i].name;
-      const pathname = `${itemName.split("nemp-")[1].split("-web")[0]}`;
-      const itemPath = path.join(__dirname, "../../../" + Common.settings.web_root + "/" + itemName + '/src');
-      app.use(`/${pathname}`, express.static(itemPath));
+      const itemPath = path.join(__dirname, "../../../../" + Common.settings.web_root + "/" + itemName + '/src');
+      app.use(`/${itemName}`, express.static(itemPath));
       
-      app.get(`/${pathname}/:page`, (req, res) => {
+      app.get(`/${itemName}/:page`, (req, res) => {
         const indexPath = path.join(itemPath, 'index.html');
         res.sendFile(indexPath);
       });
