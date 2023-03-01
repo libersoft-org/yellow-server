@@ -102,6 +102,10 @@ class Protocol {
   mins = mins % 60;
   secs = secs % 60;
   var uptime = days + ' days, ' + hours + ' hours, ' + mins + ' minutes, ' + secs + ' seconds';
+  var total_memory = os.totalmem(), free_memory = os.freemem();
+  var total_mem_in_kb = total_memory/1024, free_mem_in_kb = free_memory/1024;
+  var total_mem_in_mb = total_mem_in_kb/1024, free_mem_in_mb = free_mem_in_kb/1024;
+  var total_mem_in_gb = total_mem_in_mb/1024, free_mem_in_gb = free_mem_in_mb/1024;
   return {
    app_name: Common.appName,
    app_version: Common.appVersion,
@@ -111,8 +115,8 @@ class Protocol {
    cpu_cores: os.cpus().length,
    cpu_arch: os.arch(),
    cpu_load: Math.min(Math.floor(os.loadavg()[0] * 100 / os.cpus().length), 100),
-   ram_total: os.totalmem(),
-   ram_free: os.freemem(),
+   ram_total: total_mem_in_gb,
+   ram_free: free_mem_in_gb,
    hostname: os.hostname(),
    networks: networks,
    uptime: uptime

@@ -7,7 +7,8 @@ class Data {
  constructor() {
   this.db = new Database();
  }
- regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
+ domain_regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
+ name_regex = /^$|\s+/;
 
  async createDB() {
   try {
@@ -77,7 +78,7 @@ validateIDN(input) {
  }
 
  async adminDeleteOldTokens() {
-  return await this.db.write('DELETE FROM admins_login WHERE DATETIME(updated, "$1 seconds") < DATETIME("now")', [Common.settings.webadmin_ttl]);
+  return await this.db.write('DELETE FROM admins_login WHERE DATETIME(updated, "$1 seconds") < DATETIME("now")', [Common.settings.admin_ttl]);
  }
 
  async adminUpdateTokenTime(token) {
@@ -91,7 +92,7 @@ validateIDN(input) {
  async adminAddDomain(name) {
   let callIsValidInput = this.validateIDN([name]);
   if(!callIsValidInput) return this.res;
-  if(!this.regex.test(name)) return this.res;
+  if(!this.domain_regex.test(name)) return this.res;
   return await this.db.write('INSERT INTO domains (name) VALUES ($1)', [name]);
  }
 
@@ -99,7 +100,7 @@ validateIDN(input) {
   if(!id && !name) return this.res;
   let callIsValidInput = this.validateIDN([name]);
   if(!callIsValidInput) return this.res;
-  if(!this.regex.test(name)) return this.res;
+  if(!this.domain_regex.test(name)) return this.res;
   return await this.db.write('UPDATE domains SET name = $1 WHERE id = $2', [name, id]);
  }
 
@@ -126,7 +127,7 @@ validateIDN(input) {
   let callIsValidInput = this.isValidInput([domainID, name, pass]);
   if(!callIsValidInput) return this.res;
   if(!this.isValidString(name) && (visibleName && !this.isValidString(visibleName))) return this.res;
-  if(!this.regex.test(name)) return this.res;
+  if(this.name_regex.test(name)) return this.res;
   let activeDomain = await this.db.read('SELECT id FROM domains WHERE id = $1', [domainID]);
   if(!activeDomain || activeDomain.length === 0) return {
     error: true,
@@ -143,7 +144,7 @@ validateIDN(input) {
  async adminSetUser(id, domainID, name, visibleName, photo, pass) {
   let callIsValidInput = this.isValidInput([id, domainID, name, pass]);
   if(!callIsValidInput) return this.res;
-  if(!this.regex.test(name)) return this.res;
+  if(this.name_regex.test(name)) return this.res;
   return await this.db.write('UPDATE users SET id_domain = $1, name = $2, visible_name = $3, photo = $4, pass = $5 WHERE id = $6', [domainID, name, visibleName, photo, pass, id]);
  }
 
@@ -160,7 +161,7 @@ validateIDN(input) {
   let callIsValidInput = this.isValidInput([domainID, alias, mail]);
   if(!callIsValidInput) return this.res;
   if(!this.isValidString(alias) && !this.isValidString(mail)) return this.res;
-  if(!this.regex.test(alias)) return this.res;
+  if(this.name_regex.test(alias)) return this.res;
   let activeDomain = await this.db.read('SELECT id FROM domains WHERE id = $1', [domainID]);
   if(!activeDomain || activeDomain.length === 0) return {
     error: true,
@@ -176,7 +177,7 @@ validateIDN(input) {
 
  async adminSetAlias(id, alias, mail) {
   if(!id && !alias && !mail) return this.res;
-  if(!this.regex.test(alias)) return this.res;
+  if(this.name_regex.test(alias)) return this.res;
   return await this.db.write('UPDATE aliases SET alias = $1, mail = $2 WHERE id = $3', [alias, mail, id]);
  }
 

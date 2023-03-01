@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const WebSocketServer = require('ws').Server;
 const Common = require('./common.js').Common;
+const settings = require('./app.js');
 const Protocol = require('./core/protocol.js');
 
 class WebServer {
@@ -23,14 +24,12 @@ class WebServer {
      next();
     });
    }
-   let items = fs.readdirSync(Common.settings.client, { withFileTypes: true });
+   let items = fs.readdirSync(Common.settings.web_root, { withFileTypes: true });
    items = items.filter((item) => item.name.startsWith("nemp-"));
-   
    for (var i = 0; i < items.length; i++) {
       const itemName = items[i].name;
       const pathname = `${itemName.split("nemp-")[1].split("-web")[0]}`;
-      console.log(pathname);
-      const itemPath = path.join(__dirname, "../../../" + Common.settings.client + "/" + itemName + '/src');
+      const itemPath = path.join(__dirname, "../../../" + Common.settings.web_root + "/" + itemName + '/src');
       app.use(`/${pathname}`, express.static(itemPath));
       
       app.get(`/${pathname}/:page`, (req, res) => {
