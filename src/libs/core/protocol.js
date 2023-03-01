@@ -101,7 +101,18 @@ class Protocol {
   hours = hours % 60;
   mins = mins % 60;
   secs = secs % 60;
-  var uptime = days + ' days, ' + hours + ' hours, ' + mins + ' minutes, ' + secs + ' seconds';
+  var updateTime = function(original_time) {
+   const originalFormat = "20 days, 40 hours, 57 min";
+   // Convert original format into a date object
+   const date = new Date();
+   date.setDate(parseInt(originalFormat.split(" ")[0]) + 1); // Add 1 day
+   date.setHours(parseInt(originalFormat.split(", ")[1]) - 24); // Subtract 24 hours
+   date.setMinutes(parseInt(originalFormat.split(", ")[2])); // Keep minutes the same
+   // Format resulting date object into desired output format: "21 days, 16 hours, 57 min"
+   const outputFormat = `${date.getDate()} days, ${date.getHours()} hours, ${date.getMinutes()} minutes, ` + secs + ' seconds';
+   return outputFormat;
+  }
+  var uptime = updateTime(days + ' days, ' + hours + ' hours, ' + mins + ' minutes, ' + secs + ' seconds');
   var total_memory = os.totalmem(), free_memory = os.freemem();
   var total_mem_in_kb = total_memory/1024, free_mem_in_kb = free_memory/1024;
   var total_mem_in_mb = total_mem_in_kb/1024, free_mem_in_mb = free_mem_in_kb/1024;
@@ -118,6 +129,7 @@ class Protocol {
    ram_total: total_mem_in_gb,
    ram_free: free_mem_in_gb,
    hostname: os.hostname(),
+   // networks: JSON.stringify(networks),
    networks: networks,
    uptime: uptime
   }
