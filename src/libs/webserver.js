@@ -27,7 +27,7 @@ class WebServer {
    let items = fs.readdirSync(Common.settings.web_root, { withFileTypes: true });
    for (var i = 0; i < items.length; i++) {
       const itemName = items[i].name;
-      const itemPath = path.join(__dirname, "../../../../" + Common.settings.web_root + "/" + itemName + '/src');
+      const itemPath = Common.settings.web_root + "/" + itemName + '/src';
       app.use(`/${itemName}`, express.static(itemPath));
       
       app.get(`/${itemName}/:page`, (req, res) => {
