@@ -15,12 +15,13 @@ class Data {
    await this.db.write('CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, user VARCHAR(32) NOT NULL UNIQUE, pass VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
    await this.db.write('CREATE TABLE IF NOT EXISTS admins_login (id INTEGER PRIMARY KEY AUTOINCREMENT, id_admin INTEGER, token VARCHAR(64) NOT NULL UNIQUE, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_admin) REFERENCES admins(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS domains (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255) NOT NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
-   await this.db.write('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, id_domain INTEGER REFERENCES domains(id), name VARCHAR(64) NOT NULL UNIQUE, visible_name VARCHAR(255) NULL, pass VARCHAR(255) NOT NULL, photo VARCHAR(255) NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (name) REFERENCES aliases(alias) UNIQUE (name, id_domain)');
+   await this.db.write("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, id_domain INTEGER REFERENCES domains(id), name VARCHAR(64) NOT NULL UNIQUE, visible_name VARCHAR(255) NULL, pass VARCHAR(255) NOT NULL, photo VARCHAR(255) NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (name) REFERENCES aliases(alias), UNIQUE (name, id_domain));")
    await this.db.write('CREATE TABLE IF NOT EXISTS users_login (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, token VARCHAR(64) NOT NULL UNIQUE, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
-   await this.db.write('CREATE TABLE IF NOT EXISTS aliases (id INTEGER PRIMARY KEY AUTOINCREMENT, alias VARCHAR(64) NOT NULL UNIQUE, id_domain INTEGER REFERENCES domains(id), mail VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (alias) REFERENCES users(name) UNIQUE (alias, id_domain)');
+   await this.db.write("CREATE TABLE IF NOT EXISTS aliases (id INTEGER PRIMARY KEY AUTOINCREMENT, alias VARCHAR(64) NOT NULL UNIQUE, id_domain INTEGER REFERENCES domains(id), mail VARCHAR(255) NOT NULL, reated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (alias) REFERENCES users(name), UNIQUE(alias, id_domain));");
    await this.db.write('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, email VARCHAR(255) NOT NULL, message TEXT NOT NULL, encryption VARCHAR(5) NOT NULL DEFAULT "", public_key VARCHAR(64) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, name VARCHAR(64) NOT NULL, visible_name VARCHAR(255), email VARCHAR(255) NOT NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
   } catch (ex) {
+    console.log('ran into error here.....');
    Common.addLog({ex});
    process.exit(1);
   }
@@ -41,13 +42,12 @@ class Data {
   return !/^\.|\.$|\s/.test(str);
 }
 validateIDN(input) {
- const normalizedValue = input.normalize('NFC');
+  input = input.toString();
+  const normalizedValue = input.normalize('NFC');
  const punycodeValue = punycode.toASCII(normalizedValue);
  if (input !== punycodeValue) {
-  console.log('Invalid IDN');
   return false;
  } else {
-  console.log('Valid IDN');
   return true;
  }
 }
@@ -78,7 +78,7 @@ validateIDN(input) {
  }
 
  async adminDeleteOldTokens() {
-  return await this.db.write('DELETE FROM admins_login WHERE DATETIME(updated, "$1 seconds") < DATETIME("now")', [Common.settings.admin_ttl]);
+  return await this.db.write("DELETE FROM admins_login WHERE DATETIME(updated, ? || ' seconds') < DATETIME('now')", [Common.settings.admin_ttl]);
  }
 
  async adminUpdateTokenTime(token) {
@@ -134,9 +134,10 @@ validateIDN(input) {
     message: "Invalid domain id"
   }
   let existsUser = await this.db.read('SELECT id from aliases WHERE alias = $1 AND id_domain = $2', [name, domainID]);
-  if(existsUser.length > 0) return {
+  let duplicate = await this.db.read('SELECT id from users WHERE name = $1 AND id_domain = $2', [name, domainID]);
+  if(existsUser.length > 0 || duplicate.length > 0) return {
     error: true,
-    message: "cannot create user with this name, found alias in this domain"
+    message: "duplicate user or alias name"
   }
   return await this.db.write("INSERT INTO users (id_domain, name, visible_name, pass) VALUES ($1, $2, $3, $4)", [domainID, name, visibleName, pass]);
  }

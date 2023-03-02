@@ -8,6 +8,7 @@ const WebSocketServer = require('ws').Server;
 const Common = require('./common.js').Common;
 const settings = require('./app.js');
 const Protocol = require('./core/protocol.js');
+const { LIMIT_COMPOUND_SELECT } = require('sqlite3');
 
 class WebServer {
  constructor() {
@@ -24,21 +25,20 @@ class WebServer {
      next();
     });
    }
-   let items = fs.readdirSync(Common.settings.web_root, { withFileTypes: true });
-   for (var i = 0; i < items.length; i++) {
-      const itemName = items[i].name;
-      const itemPath = Common.settings.web_root + "/" + itemName + '/src';
-      app.use(`/${itemName}`, express.static(itemPath));
-      
-      app.get(`/${itemName}/:page`, (req, res) => {
-        const indexPath = path.join(itemPath, 'index.html');
-        res.sendFile(indexPath);
-      });
+   let web_root_dirs = fs.readdirSync(Common.settings.web_root, { withFileTypes: true });
+   for (var i = 0; i < web_root_dirs.length; i++) {
+     const itemName = web_root_dirs[i].name;
+     const itemPath = Common.settings.web_root + "/" + itemName + '/src';
+     app.use(`/${itemName}`, express.static(itemPath));
+
+     app.use(`/${itemName}/:pages*`, (req, res, next) => {
+       const pages = req.params.pages.split('/');
+        const filePath = path.join(itemPath, ...pages);
+        fs.stat(filePath, (err, stats) => {
+          res.sendFile(path.join(itemPath, 'index.html'));
+         });
+       });
    }
-   
-
-//    app.use(Common.settings.webs[i].url, express.static('www/'));
-
    app.use('*', express.static(Common.settings.web_notfound_path));
    if (Common.settings.http_run) {
     this.httpServer = http.createServer(app).listen(Common.settings.http_port);
