@@ -21,7 +21,6 @@ class Data {
    await this.db.write('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, email VARCHAR(255) NOT NULL, message TEXT NOT NULL, encryption VARCHAR(5) NOT NULL DEFAULT "", public_key VARCHAR(64) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, name VARCHAR(64) NOT NULL, visible_name VARCHAR(255), email VARCHAR(255) NOT NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
   } catch (ex) {
-    console.log('ran into error here.....');
    Common.addLog({ex});
    process.exit(1);
   }
@@ -169,9 +168,10 @@ validateIDN(input) {
     message: "Invalid domain id"
   }
   let existsUser = await this.db.read('SELECT id from users WHERE name = $1 AND id_domain = $2', [alias, domainID]);
-  if(existsUser.length > 0) return {
+  let duplicate = await this.db.read('SELECT id from aliases WHERE alias = $1 AND id_domain = $2', [alias, domainID]);
+  if(existsUser.length > 0 || duplicate.length > 0) return {
     error: true,
-    message: "cannot create alias with this name, found user in this domain"
+    message: "duplicate alias or user name"
   }
   return await this.db.write("INSERT INTO aliases (id_domain, alias, mail) VALUES ($1, $2, $3)", [domainID, alias, mail]);
  }
