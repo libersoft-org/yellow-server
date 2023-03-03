@@ -3,6 +3,7 @@
     "argon2": "*",
     "express": "*",
     "http2-express-bridge": "*",
+    "mime-types": "^2.1.35",
     "prompts": "^2.4.2",
     "punycode": "^2.3.0",
     "sqlite": "*",

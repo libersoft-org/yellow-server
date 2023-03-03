@@ -6,8 +6,8 @@ const fs = require('fs');
 const path = require('path');
 const WebSocketServer = require('ws').Server;
 const Common = require('./common.js').Common;
-const settings = require('./app.js');
 const Protocol = require('./core/protocol.js');
+const mime = require('mime-types');
 
 class WebServer {
  constructor() {
@@ -24,21 +24,54 @@ class WebServer {
      next();
     });
    }
-   let items = fs.readdirSync(Common.settings.web_root, { withFileTypes: true });
-   for (var i = 0; i < items.length; i++) {
-      const itemName = items[i].name;
-      const itemPath = Common.settings.web_root + "/" + itemName + '/src';
-      app.use(`/${itemName}`, express.static(itemPath));
-      
-      app.get(`/${itemName}/:page`, (req, res) => {
-        const indexPath = path.join(itemPath, 'index.html');
-        res.sendFile(indexPath);
+   const customMiddleware = (req, res) => {
+    const pathParts = req.path.split("/");
+    const firstPath = pathParts.slice(0, 2).join("/");
+    if (firstPath === "/") {
+      return res.sendFile(
+        path.join(__dirname, "..", Common.settings.web_notfound_path, "index.html")
+      );
+    }
+    const staticPath = Common.settings.web_root + `/${firstPath}/src`;
+    const filePath = path.join(staticPath, "index.html");
+    fs.stat(filePath, (err, stats) => {
+        if(err || !stats.isFile()) {
+            return res.sendFile(
+              path.join(__dirname, "..", Common.settings.web_notfound_path, "index.html")
+            );
+          }
+          if(req.path.endsWith(".js/")) {
+            const url = req.path.substring(0, req.path.length - 1);
+            const segments = url.split('/');
+            const lastDir = segments[segments.length - 2];
+            const lastDirFile = segments[segments.length - 1];
+            return res.sendFile(path.join(staticPath, lastDir, lastDirFile));
+          }
+          if(req.path.endsWith(".css/")) {
+            const url = req.path.substring(0, req.path.length - 1);
+            const segments = url.split('/');
+            const lastDir = segments[segments.length - 2];
+            const lastDirFile = segments[segments.length - 1];
+            return res.sendFile(path.join(staticPath, lastDir, lastDirFile));
+          }
+          if(req.path.endsWith(".svg")) {
+            const url = req.path;
+            const segments = url.split('/');
+            const lastDir = segments[segments.length - 2];
+            const lastDirFile = segments[segments.length - 1];
+            return res.sendFile(path.join(staticPath, lastDir, lastDirFile));
+          }
+          if(req.path.endsWith(".html")) {
+            const url = req.path;
+            const segments = url.split('/');
+            const lastDir = segments[segments.length - 2];
+            const lastDirFile = segments[segments.length - 1];
+            return res.sendFile(path.join(staticPath, lastDir, lastDirFile));
+          }
+          return res.sendFile(filePath);
       });
-   }
-   
-
-//    app.use(Common.settings.webs[i].url, express.static('www/'));
-
+   };
+   app.use(customMiddleware);    
    app.use('*', express.static(Common.settings.web_notfound_path));
    if (Common.settings.http_run) {
     this.httpServer = http.createServer(app).listen(Common.settings.http_port);
