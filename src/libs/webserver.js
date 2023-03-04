@@ -47,8 +47,16 @@ class WebServer {
             const lastDirFile = segments[segments.length - 1];
             return path.join(staticPath, lastDir, lastDirFile);
           }
-          if(req.path.endsWith(".js/") || req.path.endsWith(".css/") || req.path.endsWith(".svg") || req.path.endsWith(".html")) {
-            return res.sendFile(trimFile(req.path));
+          let url = req.path;
+          if(req.path.endsWith('/')) url = req.path.substring(0, req.path.length - 1);
+          console.log({url});
+          if(
+            url.endsWith(".js") || 
+            url.endsWith(".css") || 
+            url.endsWith(".svg") || 
+            (url.endsWith(".html") || 
+            url.endsWith(".svg"))) {
+            return res.sendFile(trimFile(url));
           }
           return res.sendFile(filePath);
       });
