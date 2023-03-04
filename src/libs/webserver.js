@@ -40,33 +40,15 @@ class WebServer {
               path.join(__dirname, "..", Common.settings.web_notfound_path, "index.html")
             );
           }
-          if(req.path.endsWith(".js/")) {
-            const url = req.path.substring(0, req.path.length - 1);
-            const segments = url.split('/');
+          function trimFile(file_path) {
+            if(file_path.endsWith('/')) file_path = file_path.substring(0, file_path.length - 1);
+            const segments = file_path.split('/');
             const lastDir = segments[segments.length - 2];
             const lastDirFile = segments[segments.length - 1];
-            return res.sendFile(path.join(staticPath, lastDir, lastDirFile));
+            return path.join(staticPath, lastDir, lastDirFile);
           }
-          if(req.path.endsWith(".css/")) {
-            const url = req.path.substring(0, req.path.length - 1);
-            const segments = url.split('/');
-            const lastDir = segments[segments.length - 2];
-            const lastDirFile = segments[segments.length - 1];
-            return res.sendFile(path.join(staticPath, lastDir, lastDirFile));
-          }
-          if(req.path.endsWith(".svg")) {
-            const url = req.path;
-            const segments = url.split('/');
-            const lastDir = segments[segments.length - 2];
-            const lastDirFile = segments[segments.length - 1];
-            return res.sendFile(path.join(staticPath, lastDir, lastDirFile));
-          }
-          if(req.path.endsWith(".html")) {
-            const url = req.path;
-            const segments = url.split('/');
-            const lastDir = segments[segments.length - 2];
-            const lastDirFile = segments[segments.length - 1];
-            return res.sendFile(path.join(staticPath, lastDir, lastDirFile));
+          if(req.path.endsWith(".js/") || req.path.endsWith(".css/") || req.path.endsWith(".svg") || req.path.endsWith(".html")) {
+            return res.sendFile(trimFile(req.path));
           }
           return res.sendFile(filePath);
       });
