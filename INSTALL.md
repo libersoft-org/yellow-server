@@ -25,7 +25,7 @@ Log in as "root" on your server and run the following commands to download the n
 ```console
 apt update
 apt -y upgrade
-apt -y install curl git screen certbot
+apt -y install curl git screen certbot whiptail
 cd /root/
 curl -fsSL https://deb.nodesource.com/setup_19.x | bash -
 apt -y install nodejs
@@ -41,7 +41,7 @@ Log in as "root" on your server and run the following commands to download the n
 
 ```console
 dnf -y update
-dnf -y install git curl screen certbot
+dnf -y install git curl screen certbot whiptail
 cd /root/
 curl -fsSL https://rpm.nodesource.com/setup_19.x | bash -
 dnf -y install nodejs
