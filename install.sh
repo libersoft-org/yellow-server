@@ -2,6 +2,8 @@
 
 USER_HOME=$(getent passwd $USER | cut -d: -f6)
 
+# SERVER:
+
 SERVER_INSTALL_DIR=$(whiptail --title "NEMP Server installer" --inputbox "NEMP Server installation directory:" 10 60 "$USER_HOME/nemp" 3>&1 1>&2 2>&3)
 if [ -z "$SERVER_INSTALL_DIR" ]; then
  whiptail --msgbox "Invalid installation directory." 10 60
@@ -9,6 +11,31 @@ if [ -z "$SERVER_INSTALL_DIR" ]; then
 fi
 git clone https://github.com/libersoft-org/nemp-server.git
 cp -r ./nemp-server/src/* $SERVER_INSTALL_DIR
+
+cd $SERVER_INSTALL_DIR
+npm install &
+PID=$!
+PERCENT=0
+
+function update_progress {
+ PERCENT=$(echo "scale=2; $PERCENT + 0.5" | bc)
+ echo $PERCENT
+}
+
+whiptail --title "Installing npm packages" --gauge "Please wait..." 6 50 0 < <(
+ while true; do
+  if [[ $(ps -p $PID | grep $PID) ]]; then
+   update_progress
+   echo "$PERCENT Installing packages... "
+  else
+   echo "100 Installation complete."
+   break
+  fi
+  sleep 0.1
+ done
+)
+
+# CLIENTS:
 
 CLIENTS_INSTALL_DIR=$(whiptail --title "NEMP Server installer" --inputbox "NEMP Client installation directory:" 10 60 "$USER_HOME/nemp/www" 3>&1 1>&2 2>&3)
 if [ -z "$INSTALL_DIR" ]; then
