@@ -65,3 +65,5 @@ whiptail --msgbox "Installation done. You can run the server using $SERVER_INSTA
 
 # TODO: show progress bar of git clone & cp
 #whiptail --gauge "Installing NEMP Web Admin" 6 60 0
+
+# TODO: add update.sh script too
