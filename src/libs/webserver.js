@@ -24,45 +24,14 @@ class WebServer {
      next();
     });
    }
-   const customMiddleware = (req, res) => {
-    const pathParts = req.path.split("/");
-    const firstPath = pathParts.slice(0, 2).join("/");
-    if (firstPath === "/") {
-      return res.sendFile(
-        path.join(__dirname, "..", Common.settings.web_notfound_path, "index.html")
-      );
-    }
-    const staticPath = Common.settings.web_root + `/${firstPath}/src`;
-    const filePath = path.join(staticPath, "index.html");
-    fs.stat(filePath, (err, stats) => {
-        if(err || !stats.isFile()) {
-            return res.sendFile(
-              path.join(__dirname, "..", Common.settings.web_notfound_path, "index.html")
-            );
-          }
-          function trimFile(file_path) {
-            if(file_path.endsWith('/')) file_path = file_path.substring(0, file_path.length - 1);
-            const segments = file_path.split('/');
-            const lastDir = segments[segments.length - 2];
-            const lastDirFile = segments[segments.length - 1];
-            return path.join(staticPath, lastDir, lastDirFile);
-          }
-          let url = req.path;
-          if(req.path.endsWith('/')) url = req.path.substring(0, req.path.length - 1);
-          console.log({url});
-          if(
-            url.endsWith(".js") || 
-            url.endsWith(".css") || 
-            url.endsWith(".svg") || 
-            (url.endsWith(".html") || 
-            url.endsWith(".svg"))) {
-            return res.sendFile(trimFile(url));
-          }
-          return res.sendFile(filePath);
-      });
-   };
-   app.use(customMiddleware);    
-   app.use('*', express.static(Common.settings.web_notfound_path));
+   app.use(express.static(Common.settings.web_root));
+   app.use((req, res, next) => {
+    var path = Common.settings.web_root + req.originalUrl;
+    path = path.substring(0, path.lastIndexOf('/') + 1) + 'index.html';
+    if (fs.existsSync(path)) res.sendFile(path);
+    else next();
+   });
+   app.use((req, res) => { res.sendFile(path.join(__dirname, '../notfound.html')); });
    if (Common.settings.http_run) {
     this.httpServer = http.createServer(app).listen(Common.settings.http_port);
     Common.addLog('HTTP server running on port: ' + Common.settings.http_port);
