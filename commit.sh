@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 REPO=nemp-server.git
 NAME="Liberland Software Foundation"
