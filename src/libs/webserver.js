@@ -18,12 +18,10 @@ class WebServer {
   if (fs.existsSync(cert_priv) && fs.existsSync(cert_pub) && fs.existsSync(cert_chain)) certs_exist = true;
   if (certs_exist) {
    const app = http2express(express);
-   if (Common.settings.http_run) {
-    app.use((req, res, next) => {
-     if (!req.secure) return res.redirect(301, 'https://' + req.headers.host + ':' + Common.settings.https_port + req.url);
-     next();
-    });
-   }
+   app.use((req, res, next) => {
+    if (!req.secure) return res.redirect(301, 'https://' + req.headers.host + ':' + Common.settings.https_port + req.url);
+    next();
+   });
    app.use(express.static(Common.settings.web_root));
    app.use((req, res, next) => {
     var path = Common.settings.web_root + req.originalUrl;
@@ -32,19 +30,17 @@ class WebServer {
     else next();
    });
    app.use((req, res) => { res.sendFile(path.join(__dirname, '../notfound.html')); });
-   if (Common.settings.http_run) {
-    this.httpServer = http.createServer(app).listen(Common.settings.http_port);
-    Common.addLog('HTTP server running on port: ' + Common.settings.http_port);
-   }
+   this.httpServer = http.createServer(app).listen(Common.settings.http_port);
+   Common.addLog('HTTP server running on port: ' + Common.settings.http_port);
    this.httpsServer = https.createSecureServer({ key: fs.readFileSync(cert_priv), cert: fs.readFileSync(cert_pub), ca: fs.readFileSync(cert_chain), allowHTTP1: true }, app).listen(Common.settings.https_port);
    Common.addLog('HTTPS server running on port: ' + Common.settings.https_port);
+   this.protocol = new Protocol();
+   this.wss = new WebSocketServer({ server: this.httpsServer });
+   this.wss.on('connection', ws => { this.wsOnConnection(ws) });
   } else {
    Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path);
    process.exit(1);
   }
-  this.protocol = new Protocol();
-  this.wss = new WebSocketServer({ server: this.httpsServer });
-  this.wss.on('connection', ws => { this.wsOnConnection(ws) });
  };
 
  wsOnConnection(ws) {
