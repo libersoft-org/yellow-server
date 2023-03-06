@@ -6,6 +6,7 @@
     "mime-types": "^2.1.35",
     "prompts": "^2.4.2",
     "punycode": "^2.3.0",
+    "simple-git": "^3.17.0",
     "sqlite": "*",
     "sqlite3": "*",
     "ws": "*"

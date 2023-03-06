@@ -32,7 +32,7 @@ class WebServer {
         path.join(__dirname, "..", Common.settings.web_notfound_path, "index.html")
       );
     }
-    const staticPath = Common.settings.web_root + `/${firstPath}/src`;
+    const staticPath = Common.settings.web_root + `/${firstPath}`;
     const filePath = path.join(staticPath, "index.html");
     fs.stat(filePath, (err, stats) => {
         if(err || !stats.isFile()) {
@@ -49,7 +49,6 @@ class WebServer {
           }
           let url = req.path;
           if(req.path.endsWith('/')) url = req.path.substring(0, req.path.length - 1);
-          console.log({url});
           if(
             url.endsWith(".js") || 
             url.endsWith(".css") || 
