@@ -68,7 +68,6 @@ class App {
     http_port: 80,
     https_port: 443,
     https_cert_path: '/etc/letsencrypt/live/{DOMAIN}/',
-    web_notfound_path: 'www/notfound',
     web_root: "/var/www/nemp",
     admin_ttl: 600,
     log_to_file: true,
