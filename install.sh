@@ -61,71 +61,48 @@ if [ -z "$CHOICES" ]; then
  whiptail --msgbox "Nothing selected" 15 110
  exit 1
 fi
+# set -x
 case $CHOICES in
  1)
-    PID=$!
-    PERCENT=0
-    whiptail --title "Installing admin web" --gauge "Please wait..." 15 110 0 < <(
-    while true; do
-      if [[ $(ps -p $PID | grep $PID) ]]; then
-         update_progress
-         echo "$PERCENT updating admin... "
-      else
-         echo "100 Installation complete."
-         break
-      fi
-      sleep 0.1
+    rm ../../data/www/admin -rf && cd ../../data/www && mkdir admin && cd ../../../../
+    whiptail --title "Downloading admin web" --gauge "Cloning repository" 6 60 0 < <(
+      git clone --progress https://github.com/libersoft-org/nemp-admin-web.git 2>&1 | while read line; do
+      percent=$(echo $line | grep -o "[0-9]\{1,3\}%" | tr -d '%')
+      percent=${percent:-0}
+      sleep 0.15
       done
     )
-    rm ../../data/www/admin -rf && cd ../../data/www && mkdir admin && cd ../../../../
-    git clone https://github.com/libersoft-org/nemp-admin-web.git
     cd nemp-admin-web
     mv ./src/* ../../data/www/admin/
     cd ../ && rm nemp-admin-web -rf
    ;;
- 2) 
-    PID=$!
-    PERCENT=0
-    whiptail --title "Installing client web" --gauge "Please wait..." 15 110 0 < <(
-    while true; do
-      if [[ $(ps -p $PID | grep $PID) ]]; then
-         update_progress
-         echo "$PERCENT updating client... "
-      else
-         echo "100 Installation complete."
-         break
-      fi
-      sleep 0.1
+ 2)
+    rm ../../data/www/client -rf && cd ../../data/www && mkdir admin && cd ../../../../
+    whiptail --title "Downloading client web" --gauge "Cloning repository" 6 60 0 < <(
+      git clone --progress https://github.com/libersoft-org/nemp-client-web.git.git 2>&1 | while read line; do
+      percent=$(echo $line | grep -o "[0-9]\{1,3\}%" | tr -d '%')
+      percent=${percent:-0}
+      sleep 0.15
       done
     )
-    rm ../../data/www/client -rf && cd ../../data/www && mkdir admin && cd ../../../../
-    git clone https://github.com/libersoft-org/nemp-client-web.git
     cd nemp-client-web
     mv ./src/* ../../data/www/client/
     cd ../ && rm nemp-client-web -rf
     ;;
- 3)  
-    PID=$!
-    PERCENT=0
-    whiptail --title "Installing web console" --gauge "Please wait..." 15 110 0 < <(
-    while true; do
-      if [[ $(ps -p $PID | grep $PID) ]]; then
-         update_progress
-         echo "$PERCENT updating console... "
-      else
-         echo "100 Installation complete."
-         break
-      fi
-      sleep 0.1
+ 3)
+    rm ../../data/www/console -rf && cd ../../data/www && mkdir console && cd ../../../../
+    whiptail --title "Downloading admin web" --gauge "Cloning repository" 6 60 0 < <(
+      git clone --progress https://github.com/libersoft-org/websocket-console.git 2>&1 | while read line; do
+      percent=$(echo $line | grep -o "[0-9]\{1,3\}%" | tr -d '%')
+      percent=${percent:-0}
+      sleep 0.15
       done
     )
-    rm ../../data/www/console -rf && cd ../../data/www && mkdir console && cd ../../../../
-    git clone https://github.com/libersoft-org/websocket-console.git
     cd websocket-console
     mv ./src/* ../../data/www/console/
     cd ../ && rm websocket-console -rf
     ;;
- *) whiptail --msgbox "Invalid choice" 15 110
+ *) whiptail --msgbox "Invalid choice" 15 110 #todo: add multiple selections later
     ;;
 esac
 whiptail --msgbox "Installation done. You can run the server using $SERVER_INSTALL_DIR/start.sh." 15 110
