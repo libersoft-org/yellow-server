@@ -9,7 +9,7 @@ class Data {
  }
  domain_regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
  name_regex = /^$|\s+/;
-
+ alias_regex = /^[a-zA-Z*-]+(-[a-zA-Z*-]+)*$/;
  async createDB() {
   try {
    await this.db.write('CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, user VARCHAR(32) NOT NULL UNIQUE, pass VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
@@ -161,7 +161,7 @@ validateIDN(input) {
   let callIsValidInput = this.isValidInput([domainID, alias, mail]);
   if(!callIsValidInput) return this.res;
   if(!this.isValidString(alias) && !this.isValidString(mail)) return this.res;
-  if(this.name_regex.test(alias)) return this.res;
+  if(this.alias_regex.test(alias)) return this.res;
   let activeDomain = await this.db.read('SELECT id FROM domains WHERE id = $1', [domainID]);
   if(!activeDomain || activeDomain.length === 0) return {
     error: true,
