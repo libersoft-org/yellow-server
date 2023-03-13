@@ -1,5 +1,5 @@
 const Data = require('./data.js');
-const Common = require('../common.js').Common;
+const Common = require('./common.js').Common;
 //const DNS = require('./dns.js');
 
 class Protocol {
@@ -36,6 +36,7 @@ class Protocol {
     } else {
     if (await this.data.adminIsTokenValid(req.admin_token)) {
     await this.data.adminUpdateTokenTime(req.admin_token);
+    // THIS WILL BE MOVED TO THE IDENTITY MODULE
     if (req.command === 'admin_get_domains') return { command: req.command, data: await this.data.adminGetDomains() };
     else if (req.command === 'admin_add_domain') return { command: req.command, data: await this.data.adminAddDomain(req.name) };
     else if (req.command == 'admin_set_domain') return { command: req.command, data: await this.data.adminSetDomain(req.id, req.name) };
@@ -48,6 +49,7 @@ class Protocol {
     else if (req.command == 'admin_add_aliases') return { command: req.command, data: await this.data.adminAddAlias(req.domain_id, req.alias, req.mail) };
     else if (req.command == 'admin_set_aliases') return { command: req.command, data: await this.data.adminSetAlias(req.id, req.alias, req.mail) };
     else if (req.command == 'admin_del_aliases') return { command: req.command, data: await this.data.adminDelAlias(req.id) };
+    // THIS WILL STAY HERE IN CORE:
     else if (req.command == 'admin_get_admins') return { command: req.command, data: await this.data.adminGetAdmins() };
     else if (req.command == 'admin_add_admin') return { command: req.command, data: await this.data.adminAddAdmin(req.name, req.pass) };
     else if (req.command == 'admin_set_admin') return { command: req.command, data: await this.data.adminSetAdmin(req.id, req.name) };

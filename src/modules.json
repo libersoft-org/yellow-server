@@ -1,0 +1,10 @@
+[
+ "name": "Identity",
+ "github": "https://github.com/libersoft-org/nemp-server-module-identity"
+], [
+ "name": "Messages",
+ "github": "https://github.com/libersoft-org/nemp-server-module-messages"
+], [
+ "name": "File Transfer",
+ "github": "https://github.com/libersoft-org/nemp-server-module-file-transfer"
+]

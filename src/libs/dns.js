@@ -1,5 +1,6 @@
 const dns = require('node:dns');
 
+// TODO: DNS WILL BE A PART OF IDENTITY MODULE
 class DNS {
  getDomainInfo(domain) {
   var options = {
