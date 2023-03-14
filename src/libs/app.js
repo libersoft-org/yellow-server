@@ -82,7 +82,7 @@ class App {
 
  createDatabase() {
   this.loadSettings();
-  const Data = require('./core/data.js');
+  const Data = require('./data.js');
   const data = new Data();
   data.createDB();
   Common.addLog('Database was created sucessfully.');
@@ -92,7 +92,7 @@ class App {
 createAdmin() {
   var username = '', password = '';
   this.loadSettings();
-  const Data = require('./core/data.js');
+  const Data = require('./data.js');
   const data = new Data();
   
   (async () => {
