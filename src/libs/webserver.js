@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const WebSocketServer = require('ws').Server;
 const Common = require('./common.js').Common;
-const Protocol = require('./core/protocol.js');
+const Protocol = require('./protocol.js');
 const mime = require('mime-types');
 
 class WebServer {

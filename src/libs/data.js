@@ -1,4 +1,4 @@
-const Database = require('./core/database_sqlite.js');
+const Database = require('./database_sqlite.js');
 const Common = require('./common.js').Common;
 const Argon2 = require('argon2');
 const punycode = require('punycode/');
