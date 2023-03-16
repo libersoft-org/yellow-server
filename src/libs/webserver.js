@@ -53,7 +53,10 @@ class WebServer {
 
  async wsOnMessage(ws, e) {
   Common.addLog('WEBSOCKET - RECEIVED: ' + e.data);
-  this.wsSend(ws, await this.protocol.protocolHandler(e.data));
+  this.wsSend(ws, await this.protocol.protocolHandler(e.data)
+  ||
+  await this.protocol.data.identity_protocol.protocolHandler(e.data)
+  );
  }
 
  wsOnClose() {
