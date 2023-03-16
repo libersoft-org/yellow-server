@@ -1,16 +1,23 @@
-const Data = require('./data.js');
+const Data = require('./modules_data.js');
 const Common = require('./common.js').Common;
+const fs = require('fs');
 //const DNS = require('./dns.js');
 
 class Protocol {
  constructor() {
-  this.data = new Data();
+  const data = new Data();
+  this.data = {
+    core: data.core,
+    identity: data['identity'],
+    identity_protocol: data['identity-Protocol'],
+    identity_protocol_path: data['identity-path']
+  };
   //this.dns = new DNS();
  }
-
  async protocolHandler(data) {
    try {
-    console.log(data);
+    console.log({data});
+    this.data.identity_protocol.protocolHandler(data);
     var req = JSON.parse(data);
     var res = {}
     if (req.command) {
@@ -26,56 +33,50 @@ class Protocol {
  }
 
  async processAdminCommand(req) {
-    await this.data.adminDeleteOldTokens();
+    await this.data.core.adminDeleteOldTokens();
     if (req.command === 'admin_login') {
-    if (req.user && req.pass) return { command: req.command, data: await this.data.adminGetLogin(req.user, req.pass) };
+    if (req.user && req.pass) return { command: req.command, data: await this.data.core.adminGetLogin(req.user, req.pass) };
     else return { command: req.command, data: {logged: false, message: 'Missing user or password parameter'} }
     } else if (req.command === 'admin_logout') {
-    if (await this.data.adminGetTokenExists(req.token)) await this.data.adminDeleteToken(req.token);
+    if (await this.data.core.adminGetTokenExists(req.token)) await this.data.core.adminDeleteToken(req.token);
     return { command: req.command, data: { logged: false, message: 'Logged out' } }
     } else {
-    if (await this.data.adminIsTokenValid(req.admin_token)) {
-    await this.data.adminUpdateTokenTime(req.admin_token);
-    // THIS WILL BE MOVED TO THE IDENTITY MODULE
-    if (req.command === 'admin_get_domains') return { command: req.command, data: await this.data.adminGetDomains() };
-    else if (req.command === 'admin_add_domain') return { command: req.command, data: await this.data.adminAddDomain(req.name) };
-    else if (req.command == 'admin_set_domain') return { command: req.command, data: await this.data.adminSetDomain(req.id, req.name) };
-    else if (req.command == 'admin_del_domain') return { command: req.command, data: await this.data.adminDelDomains(req.id) };
-    else if (req.command == 'admin_get_users') return { command: req.command, data: await this.data.adminGetUsers(req.domain_id) };
-    else if (req.command == 'admin_add_user') return { command: req.command, data: await this.data.adminAddUser(req.domain_id, req.name, req.visible_name, req.password) };
-    else if (req.command == 'admin_set_user') return { command: req.command, data: await this.data.adminSetUser(req.id, req.domain_id, req.name, req.visible_name, req.photo, req.password) };
-    else if (req.command == 'admin_del_user') return { command: req.command, data: await this.data.adminDelUser(req.id) };
-    else if (req.command == 'admin_get_aliases') return { command: req.command, data: await this.data.adminGetAliases(req.domain_id) };
-    else if (req.command == 'admin_add_aliases') return { command: req.command, data: await this.data.adminAddAlias(req.domain_id, req.alias, req.mail) };
-    else if (req.command == 'admin_set_aliases') return { command: req.command, data: await this.data.adminSetAlias(req.id, req.alias, req.mail) };
-    else if (req.command == 'admin_del_aliases') return { command: req.command, data: await this.data.adminDelAlias(req.id) };
+    if (await this.data.core.adminIsTokenValid(req.admin_token)) {
+    await this.data.core.adminUpdateTokenTime(req.admin_token);
     // THIS WILL STAY HERE IN CORE:
-    else if (req.command == 'admin_get_admins') return { command: req.command, data: await this.data.adminGetAdmins() };
-    else if (req.command == 'admin_add_admin') return { command: req.command, data: await this.data.adminAddAdmin(req.name, req.pass) };
-    else if (req.command == 'admin_set_admin') return { command: req.command, data: await this.data.adminSetAdmin(req.id, req.name) };
-    else if (req.command == 'admin_del_admin') return { command: req.command, data: await this.data.adminDelAdmin(req.id) };
-    else if (req.command == 'admin_sysinfo') return { command: req.command, data: this.getSysInfo() };
-    //else if (req.command == 'admin_dns') return this.dns.getDomainInfo(domain);
-    else return { error: 'command_unknown', message: 'Command is unknown' }
+    function readFileContents(filePath, startLine, endLine) {
+      const fileContents = fs.readFileSync(filePath, 'utf-8');
+      const lines = fileContents.split('\n');
+      const startIndex = lines.findIndex(line => line.includes(startLine));
+      const endIndex = lines.findIndex(line => line.includes(endLine));
+      return lines.slice(startIndex + 1, endIndex).join('\n');
+    }
+    if (req.command === 'admin_get_admins') return { command: req.command, data: await this.data.core.adminGetAdmins() };
+    else if (req.command === 'admin_add_admin') return { command: req.command, data: await this.data.core.adminAddAdmin(req.name, req.pass) };
+    else if (req.command === 'admin_set_admin') return { command: req.command, data: await this.data.core.adminSetAdmin(req.id, req.name) };
+    else if (req.command === 'admin_del_admin') return { command: req.command, data: await this.data.core.adminDelAdmin(req.id) };
+    else if (req.command === 'admin_sysinfo') return { command: req.command, data: this.getSysInfo() };
+    //else if (req.command === 'admin_dns') return this.dns.getDomainInfo(domain);
+    else readFileContents(this.data.identity_protocol_path, ' async processAdminCommand(req) {', ' }\nasync processUserCommand');
     } else return { error: 'admin_token_invalid', message: 'Invalid or expired admin login token' }
     }
  }
 
  async processUserCommand(req, res) {
-  if (req.command == 'user_login') {
-   if (req.user && req.pass) return await this.data.userGetLogin(req.user, req.pass);
+  if (req.command === 'user_login') {
+   if (req.user && req.pass) return await this.data.core.userGetLogin(req.user, req.pass);
    else return { command: req.command, logged: false, message: 'Missing user or password parameter' }
-  } else if (req.command == 'user_logout') {
-   if (await this.data.userGetTokenExists(req.token)) return { command: req.command, logged: false, message: 'Logged out' }
+  } else if (req.command === 'user_logout') {
+   if (await this.data.core.userGetTokenExists(req.token)) return { command: req.command, logged: false, message: 'Logged out' }
    else {
-    if (await this.data.userIsTokenValid(req.user_token)) {
+    if (await this.data.core.userIsTokenValid(req.user_token)) {
      // TODO: check if token is accessed from the same device
      // TODO: token expiration?
-     if (req.command == 'user_get_contacts') return await this.data.userGetContacts();
-     else if (req.command == 'user_add_contact') return await this.data.userAddContact(req.user_info);
-     else if (req.command == 'user_set_contact') return await this.data.userSetContact(req.user_info);
-     else if (req.command == 'user_del_contact') return await this.data.userDelContact(req.address);
-     else if (req.command == 'user_del_contact') return await this.data.userDelContact(req.address);
+     if (req.command === 'user_get_contacts') return await this.data.core.userGetContacts();
+     else if (req.command === 'user_add_contact') return await this.data.core.userAddContact(req.user_info);
+     else if (req.command === 'user_set_contact') return await this.data.core.userSetContact(req.user_info);
+     else if (req.command === 'user_del_contact') return await this.data.core.userDelContact(req.address);
+     else if (req.command === 'user_del_contact') return await this.data.core.userDelContact(req.address);
      return { error: 'command_unknown', message: 'Command is unknown' } 
     } else return { error: 'user_token_invalid', message: 'Command is unknown' }
    }
