@@ -17,7 +17,7 @@ class Protocol {
  async protocolHandler(data) {
    try {
     console.log({data});
-    this.data.identity_protocol.protocolHandler(data);
+    this.data.identity_protocol ? this.data.identity_protocol.protocolHandler(data) : null;
     var req = JSON.parse(data);
     var res = {}
     if (req.command) {
@@ -45,6 +45,7 @@ class Protocol {
     await this.data.core.adminUpdateTokenTime(req.admin_token);
     // THIS WILL STAY HERE IN CORE:
     function readFileContents(filePath, startLine, endLine) {
+      if(!filePath) return false;
       const fileContents = fs.readFileSync(filePath, 'utf-8');
       const lines = fileContents.split('\n');
       const startIndex = lines.findIndex(line => line.includes(startLine));
@@ -57,7 +58,8 @@ class Protocol {
     else if (req.command === 'admin_del_admin') return { command: req.command, data: await this.data.core.adminDelAdmin(req.id) };
     else if (req.command === 'admin_sysinfo') return { command: req.command, data: this.getSysInfo() };
     //else if (req.command === 'admin_dns') return this.dns.getDomainInfo(domain);
-    else readFileContents(this.data.identity_protocol_path, ' async processAdminCommand(req) {', ' }\nasync processUserCommand');
+    else if(readFileContents(this.data.identity_protocol_path, ' async processAdminCommand(req) {', ' }\nasync processUserCommand'));
+    else return { error: 'command_unknown', message: 'Command unknown. Check that module exists' }
     } else return { error: 'admin_token_invalid', message: 'Invalid or expired admin login token' }
     }
  }

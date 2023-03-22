@@ -10,14 +10,25 @@ class Data {
    this.core = new coreData(options);
   }
 
+  function isValidPath(path) {
+   try {
+    fs.readdirSync(path);
+     return true;
+    } catch (err) {
+     return false;
+    }
+  }
+
   // Get a list of all directories inside the modules folder
-  const moduleDirs = fs.readdirSync(path.join(__dirname, '../../../server-modules'), { withFileTypes: true })
+  let modulesRoot = '../../../server-modules';
+  let identityModulePath = path.join(__dirname, modulesRoot);
+  if (!isValidPath(identityModulePath)) fs.mkdirSync(identityModulePath);
+  const moduleDirs = fs.readdirSync(identityModulePath, { withFileTypes: true })
    .filter(dirent => dirent.isDirectory())
    .map(dirent => dirent.name);
-  // Import all data.js files from the module directories
   for (const moduleDir of moduleDirs) {
-   const dataFilePath = path.join(__dirname, '../../../server-modules', moduleDir, 'src/data.js');
-   const protocolFilePath = path.join(__dirname, '../../../server-modules', moduleDir, 'src/protocol.js');
+   const dataFilePath = path.join(__dirname, modulesRoot, moduleDir, 'src/data.js');
+   const protocolFilePath = path.join(__dirname, modulesRoot, moduleDir, 'src/protocol.js');
    if (fs.existsSync(dataFilePath) && fs.existsSync(protocolFilePath)) {
     const Data = require(dataFilePath);
     const Protocol = require(protocolFilePath);
