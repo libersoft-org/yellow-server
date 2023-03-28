@@ -2,6 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const Data = require('./modules_data');
 const { Common } = require('./common');
+const Response = require('./response');
 // const DNS = require('./dns.js');
 
 class Protocol {
@@ -43,14 +44,13 @@ class Protocol {
           res = await this.processUserCommand(reqData);
           break;
         default:
-          res = { error: 'command_unknown', message: 'Command is unknown' };
+          res = Response.sendError(command, 'command_unknown', 'Command not found');
           break;
       }
-
       return JSON.stringify(res);
     } catch (error) {
       console.log(error);
-      return JSON.stringify({ error: 'command_error', message: error.message });
+      return JSON.stringify(Response.sendError(null, 'command_error', error.message));
     }
   }
 
@@ -58,13 +58,11 @@ class Protocol {
     const { user, pass, command } = reqData;
 
     if (!user || !pass) {
-      return { command, data: { logged: false, message: 'Missing user or password parameter' } };
+      return Response.sendError(command, 'admin_credentials_incomplete', 'Missing user or password data');
     }
 
-    return {
-      command,
-      data: await this.data.core.adminGetLogin(user, pass),
-    };
+    const data = await this.data.core.adminGetLogin(user, pass);
+    return Response.sendData(command, data);
   }
 
   async processAdminCommand(reqData) {
@@ -76,12 +74,12 @@ class Protocol {
     }
 
     if (!token) {
-      return { error: 'admin_token_missing', message: 'Admin login token not found' };
+      return Response.sendError(command, 'admin_token_missing', 'Admin login token not found');
     }
 
     const validAdminToken = await this.data.core.adminGetTokenExists(token);
     if (!validAdminToken) {
-      return { error: 'admin_token_invalid', message: 'Invalid or expired admin login token' };
+      return Response.sendError(command, 'admin_token_invalid', 'Invalid or expired admin login token');
     }
 
     await this.data.core.adminUpdateTokenTime(token);
@@ -89,21 +87,31 @@ class Protocol {
     switch (command) {
       case 'admin_logout':
         await this.data.core.adminDeleteToken(reqData.token);
-        return { command, data: { logged: false, message: 'Logged out' } };
-      case 'admin_get_admins':
-        return { command, data: await this.data.core.adminGetAdmins() };
-      case 'admin_add_admin':
-        return { command, data: await this.data.core.adminAddAdmin(reqData.name, reqData.pass) };
-      case 'admin_set_admin':
-        return { command, data: await this.data.core.adminSetAdmin(reqData.id, reqData.name) };
-      case 'admin_del_admin':
-        return { command, data: await this.data.core.adminDelAdmin(reqData.id) };
-      case 'admin_sysinfo':
-        return { command, data: this.getSysInfo() };
+        return Response.sendSuccess(command);
+      case 'admin_get_admins': {
+        const data = await this.data.core.adminGetAdmins();
+        return Response.sendData(command, data);
+      }
+      case 'admin_add_admin': {
+        const data = await this.data.core.adminAddAdmin(reqData.name, reqData.pass);
+        return Response.sendData(command, data);
+      }
+      case 'admin_set_admin': {
+        const data = await this.data.core.adminSetAdmin(reqData.id, reqData.name);
+        return Response.sendData(command, data);
+      }
+      case 'admin_del_admin': {
+        const data = await this.data.core.adminDelAdmin(reqData.id);
+        return Response.sendData(command, data);
+      }
+      case 'admin_sysinfo': {
+        const data = Protocol.getSysInfo();
+        return Response.sendData(command, data);
+      }
       // case 'admin_dns':
       //  return this.dns.getDomainInfo(domain);
       default:
-        return { error: 'command_unknown', message: 'Command unknown. Check that module exists' };
+        return Response.sendError(command, 'command_unknown', 'Command unknown, please check available admin commands.');
     }
   }
 
