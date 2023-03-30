@@ -12,6 +12,18 @@
   "devDependencies": {
     "eslint": "^8.36.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.27.5"
-  }
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^2.0.22"
+  },
+  "name": "nemp-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "watch": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

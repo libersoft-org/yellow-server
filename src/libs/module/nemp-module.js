@@ -1,4 +1,12 @@
+const Logger = require('../utils/logger');
+
 class NempModule {
+  constructor() {
+    this.logger = new Logger();
+
+    this.logger.log('[Module] initialized');
+  }
+
   getCommandPrefix() {
     if (!this.commandPrefix) {
       throw new Error('Module does not have the command prefix set');
@@ -7,7 +15,7 @@ class NempModule {
   }
 
   getCommandName() {
-    return `${this.getCommandName()}${this.getCommandName.caller.name}`;
+    return `${this.getCommandPrefix()}${this.getCommandName.caller.name}`;
   }
 }
 

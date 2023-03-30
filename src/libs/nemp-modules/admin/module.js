@@ -1,20 +1,30 @@
-const NempModule = require('../../module');
+const NempModule = require('../../module/nemp-module');
 const Response = require('../../response');
-const Data = require('./data');
+const AdminData = require('./data');
 
 class Admin extends NempModule {
-  constructor(db) {
+  constructor() {
     super();
-    this.data = new Data(db);
+    this.moduleName = 'Admin';
+    this.moduleVersion = '1.0.0';
+    this.data = new AdminData();
     this.commandPrefix = 'admin_';
     this.commands = {
-      admin_get_admins: this.getAdmins(),
+      admin_get_admins: this.getAdmins.bind(this),
     };
   }
 
-  async getAdmins() {
+  runCommand(command, data = {}) {
+    if (this.commands[command]) {
+      return this.commands[command](command, data);
+    }
+
+    return Response.sendError(command, 'command_not_found', `[${this.moduleName}] Command not found`);
+  }
+
+  async getAdmins(command) {
     const data = await this.data.adminGetAdmins();
-    return Response.sendData(this.getCommandName(), data);
+    return Response.sendData(command, data);
   }
 }
 

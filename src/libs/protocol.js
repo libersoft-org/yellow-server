@@ -3,6 +3,7 @@ const os = require('os');
 const Data = require('./modules_data');
 const { Common } = require('./common');
 const Response = require('./response');
+const ModulesLoader = require('./modules-loader');
 // const DNS = require('./dns.js');
 
 class Protocol {
@@ -14,6 +15,7 @@ class Protocol {
       identity_protocol: data['identity-Protocol'],
       identity_protocol_path: data['identity-path'],
     };
+    this.modules = new ModulesLoader();
     // this.dns = new DNS();
   }
 
@@ -89,8 +91,12 @@ class Protocol {
         await this.data.core.adminDeleteToken(reqData.token);
         return Response.sendSuccess(command);
       case 'admin_get_admins': {
-        const data = await this.data.core.adminGetAdmins();
-        return Response.sendData(command, data);
+        // ONLY FOR TESTING MODULES LOADER //
+        // const data = await this.data.core.adminGetAdmins();
+        // return Response.sendData(command, data);
+        const adminModule = this.modules.getModuleInstance('Admin');
+        console.log(adminModule);
+        return adminModule.runCommand(command);
       }
       case 'admin_add_admin': {
         const data = await this.data.core.adminAddAdmin(reqData.name, reqData.pass);
