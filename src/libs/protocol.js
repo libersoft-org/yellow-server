@@ -28,31 +28,13 @@ class Protocol {
     return lines.slice(startIndex + 1, endIndex).join('\n');
   }
 
-  async protocolHandler(rawData) {
+  async protocolHandler(commandData) {
     try {
-      this.data.identity_protocol ? this.data.identity_protocol.protocolHandler(rawData) : null;
-      const reqData = JSON.parse(rawData);
-      const { command } = reqData;
-      let res = {};
-
-      switch (true) {
-        case command === undefined || command === '':
-          res = { error: 'command_missing', message: 'Command was not specified' };
-          break;
-        case command.startsWith('admin_'):
-          res = await this.processAdminCommand(reqData);
-          break;
-        case command.startsWith('user_'):
-          res = await this.processUserCommand(reqData);
-          break;
-        default:
-          res = Response.sendError(command, 'command_unknown', 'Command not found');
-          break;
-      }
-      return JSON.stringify(res);
+      const response = this.modules.callModuleCommand(commandData);
+      return response;
     } catch (error) {
       console.log(error);
-      return JSON.stringify(Response.sendError(null, 'command_error', error.message));
+      return Response.sendError(null, 'command_error', error.message);
     }
   }
 
@@ -95,7 +77,6 @@ class Protocol {
         // const data = await this.data.core.adminGetAdmins();
         // return Response.sendData(command, data);
         const adminModule = this.modules.getModuleInstance('Admin');
-        console.log(adminModule);
         return adminModule.runCommand(command);
       }
       case 'admin_add_admin': {

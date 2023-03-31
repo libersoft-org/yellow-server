@@ -1,5 +1,6 @@
 const os = require('os');
 const fs = require('fs');
+const DateU = require('./date');
 
 class Logger {
   constructor(logToFile = true) {
@@ -8,7 +9,7 @@ class Logger {
   }
 
   log(message) {
-    const msg = `${Logger.getDateTime()} ${message === undefined ? '' : message}`;
+    const msg = `${DateU.getDateTime()} ${message === undefined ? '' : message}`;
     // eslint-disable-next-line no-console
     console.log(msg);
     if (this.logToFile) {
@@ -16,15 +17,13 @@ class Logger {
     }
   }
 
-  static getDateTime() {
-    function toString(number, padLength) { return number.toString().padStart(padLength, '0'); }
-    const date = new Date();
-    return `${toString(date.getFullYear(), 4)
-    }-${toString(date.getMonth() + 1, 2)
-    }-${toString(date.getDate(), 2)
-    } ${toString(date.getHours(), 2)
-    }:${toString(date.getMinutes(), 2)
-    }:${toString(date.getSeconds(), 2)}`;
+  error(message) {
+    const msg = `${DateU.getDateTime()} [ERROR] ${message}}`;
+    // eslint-disable-next-line no-console
+    console.error(msg);
+    if (this.logToFile) {
+      fs.appendFileSync(this.logFile, msg + os.EOL);
+    }
   }
 }
 

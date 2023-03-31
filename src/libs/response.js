@@ -11,23 +11,25 @@
 
 class Response {
   static sendSuccess(command) {
-    return {
+    const response = {
       status: 'success',
       command,
       data: null,
     };
+    return JSON.stringify(response);
   }
 
   static sendData(command, data) {
-    return {
+    const response = {
       status: 'success',
       command,
       data,
     };
+    return JSON.stringify(response);
   }
 
   static sendError(command, type, message = null) {
-    return {
+    const response = {
       status: 'error',
       command,
       data: null,
@@ -36,6 +38,7 @@ class Response {
         message,
       },
     };
+    return JSON.stringify(response);
   }
 }
 
