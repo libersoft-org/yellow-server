@@ -1,4 +1,21 @@
-class DateU {
+const fs = require('fs');
+const os = require('os');
+
+class Common {
+  static appName = 'NEMP Server';
+
+  static appVersion = '0.01';
+
+  static settingsFile = 'settings.json';
+
+  static settings;
+
+  static addLog(message) {
+    const msg = `${this.getDateTime()} ${message == undefined ? '' : message}`;
+    console.log(msg);
+    if (this.settings && this.settings.log_to_file) fs.appendFileSync(this.settings.log_file, msg + os.EOL);
+  }
+
   static getDateTime() {
     function toString(number, padLength) { return number.toString().padStart(padLength, '0'); }
     const date = new Date();
@@ -15,4 +32,4 @@ class DateU {
   }
 }
 
-module.exports = DateU;
+exports.Common = Common;

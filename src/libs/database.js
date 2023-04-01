@@ -2,11 +2,18 @@
 
 const sqlite3 = require('sqlite3');
 const sqlite = require('sqlite');
-const { Common } = require('../common');
+const Logger = require('./utils/logger');
+const Settings = require('./settings');
 
 class Database {
+  constructor() {
+    this.logger = new Logger();
+    this.dbFilePath = new Settings().getOne('db_file');
+    this.db = null;
+  }
+
   async open() {
-    this.db = await sqlite.open({ filename: Common.settings.db_file, driver: sqlite3.Database });
+    this.db = await sqlite.open({ filename: this.dbFilePath, driver: sqlite3.Database });
   }
 
   close() {
@@ -21,8 +28,8 @@ class Database {
       });
       this.close();
       return res;
-    } catch (ex) {
-      Common.addLog(ex);
+    } catch (error) {
+      this.logger.error(`[Database][read] error ${error.message}`);
     }
   }
 
@@ -33,16 +40,16 @@ class Database {
         if (err) throw new Error(err);
       });
       this.close();
-    } catch (ex) {
-      Common.addLog(ex);
+    } catch (error) {
+      this.logger.error(`[Database][write] error ${error.message}`);
     }
   }
 
   async tableExists(name) {
     try {
       return (await this.read(`SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type = "table" AND name = "${name}"`))[0].cnt == 1;
-    } catch (ex) {
-      Common.addLog(ex);
+    } catch (error) {
+      this.logger.error(`[Database][tableExists] error ${error.message}`);
     }
   }
 }

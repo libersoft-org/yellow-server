@@ -1,11 +1,13 @@
 const Logger = require('../utils/logger');
 const Authorization = require('../authorization');
 const Response = require('../response');
+const Settings = require('../settings');
 
 class NempModule {
   constructor() {
     this.logger = new Logger();
     this.authorization = new Authorization();
+    this.settings = new Settings();
     this.moduleName = null;
     this.moduleVersion = null;
     this.data = null;
@@ -35,6 +37,9 @@ class NempModule {
     return commands;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  runBeforeCommandExecution() {}
+
   async runCommand(command, data = {}) {
     this.logger.log(`[Module ${this.moduleName}] RUN command: ${command} data: ${JSON.stringify(data)}`);
 
@@ -44,6 +49,8 @@ class NempModule {
       if (!authorization) {
         return Response.sendError(command, 'authorization_failed', 'Authorization error - check token validity');
       }
+
+      this.runBeforeCommandExecution();
 
       return this.commands[command].run(command, data);
     }

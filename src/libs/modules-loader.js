@@ -17,6 +17,7 @@ class NempModulesLoader {
     const requireStructure = {
       'module.js': false,
       'data.js': false,
+      'install.js': false,
     };
 
     const fileNames = fs.readdirSync(modulePath);

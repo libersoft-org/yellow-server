@@ -1,4 +1,5 @@
-const NempModule = require('../../module/nemp-module');
+/* eslint-disable max-len */
+const NempModule = require('../../main-module/nemp-module');
 const Response = require('../../response');
 const AdminData = require('./data');
 
@@ -83,31 +84,6 @@ class Admin extends NempModule {
     return await this.db.write('DELETE FROM admins WHERE id = $1', [id]);
   }
 
-  static getToken(len) {
-    let res = '';
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < len; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
-    return res;
-  }
-
-  static async getHash(
-    password,
-    memoryCost = 2 ** 16,
-    hashLength = 64,
-    timeCost = 20,
-    parallelism = 1,
-  ) {
-    // default: 64 MB RAM, 64 characters length, 20 difficulty to calculate, 1 thread needed
-    const hash = await Argon2.hash(password, {
-      memoryCost, hashLength, timeCost, parallelism,
-    });
-
-    return hash;
-  }
-
-  async verifyHash(hash, password) {
-    return await Argon2.verify(hash, password);
-  }
   */
 }
 
