@@ -2,11 +2,12 @@ const fs = require('fs');
 const Logger = require('./utils/logger');
 
 class Settings {
+  static settingsFile = 'settings.json';
+
   constructor() {
     this.logger = new Logger();
-    this.settingsFile = 'settings.json';
     this.settings = null;
-
+    this.settingsFile = Settings.settingsFile;
     this.load();
   }
 

@@ -8,6 +8,11 @@ class Logger {
     this.logFile = 'nemp.log';
   }
 
+  static logWithoutWriteToFile(message) {
+    // eslint-disable-next-line no-console
+    console.log(`${DateNemp.getDateTime()} ${message}`);
+  }
+
   log(message) {
     const msg = `${DateNemp.getDateTime()} ${message === undefined ? '' : message}`;
     // eslint-disable-next-line no-console
@@ -26,9 +31,14 @@ class Logger {
     }
   }
 
-  static logWithoutWriteToFile(message) {
-    // eslint-disable-next-line no-console
-    console.log(`${DateNemp.getDateTime()} [ERROR] ${message}}`);
+  appRunInfo() {
+    const header = 'NEMP Server - running';
+    const dashes = '='.repeat(header.length);
+    this.log('');
+    this.log(dashes);
+    this.log(header);
+    this.log(dashes);
+    this.log('');
   }
 }
 
