@@ -26,7 +26,7 @@ class NempModule {
   }
 
   getModuleInfo() {
-    return `[Modul ${this.moduleName}] version: ${this.moduleVersion} commands: ${Object.keys(this.commands).length}`;
+    return `[MODULE ${this.moduleName}] version: ${this.moduleVersion} commands: ${Object.keys(this.commands).length}`;
   }
 
   getModuleCommandsList() {
@@ -41,7 +41,7 @@ class NempModule {
   runBeforeCommandExecution() {}
 
   async runCommand(command, data = {}) {
-    this.logger.log(`[Module ${this.moduleName}] RUN command: ${command} data: ${JSON.stringify(data)}`);
+    this.logger.log(`[MODULE ${this.moduleName}] RUN command: ${command} data: ${JSON.stringify(data)}`);
 
     if (this.commands[command]) {
       // eslint-disable-next-line max-len

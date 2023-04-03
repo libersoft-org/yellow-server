@@ -1,7 +1,9 @@
 const fs = require('fs');
-const Logger = require('./utils/logger');
-const Settings = require('./settings');
-const Database = require('./database');
+const prompts = require('prompts');
+const Logger = require('./libs/utils/logger');
+const Settings = require('./libs/settings');
+const Database = require('./libs/database');
+const AdminData = require('./libs/nemp-modules/admin/data');
 
 const defaultSettings = {
   http_port: 80,
@@ -35,12 +37,33 @@ class ServerInit {
     }
   }
 
-  /* Need revision
-  createAdmin() {
-    this.loadSettings();
-    const Data = require('./data.js');
-    const data = new Data();
+  static installModules() {
+    // TODO
+    // run file install.js in every module
+  }
 
+  static deleteAdmin() {
+    (async () => {
+      const response = await prompts(
+        [{
+          type: 'text',
+          name: 'username',
+          message: 'Enter admin username',
+        }],
+      );
+
+      try {
+        const adminData = new AdminData();
+        adminData.adminDeleteAccount(response.username);
+        Logger.logWithoutWriteToFile(`Admin "${response.username}" was deleted sucessfully.`);
+      } catch (error) {
+        Logger.logWithoutWriteToFile(`Delete admin account error: ${error.message}`);
+        process.exit(1);
+      }
+    })();
+  }
+
+  static createAdmin() {
     (async () => {
       const response = await prompts(
         [{
@@ -54,20 +77,23 @@ class ServerInit {
           message: 'Enter admin password',
         }],
       );
-      if (response.username && (response.password && response.password.length > 4)) {
-        data.adminAddAdmin(response.username, response.password);
-        Common.addLog('Admin was created sucessfully.');
-        Common.addLog('');
-      } else {
-        Common.addLog('Invalid input or invalid password length');
+
+      try {
+        const adminData = new AdminData();
+        adminData.adminCreateAccount(response.username, response.password);
+        Logger.logWithoutWriteToFile('Admin was created sucessfully.');
+      } catch (error) {
+        Logger.logWithoutWriteToFile('Invalid input or invalid password length');
         process.exit(1);
       }
     })();
-  } */
+  }
 
   static createAll() {
     ServerInit.createSettings();
     ServerInit.createDatabase();
+    // ServerInit.installModules();
+    ServerInit.createAdmin();
     Logger.logWithoutWriteToFile('[Server init] all done!');
   }
 
@@ -76,6 +102,8 @@ class ServerInit {
     Logger.logWithoutWriteToFile('--help - to see this help');
     Logger.logWithoutWriteToFile(`--create-settings - to create default settings file called "${Settings.settingsFile}"`);
     Logger.logWithoutWriteToFile('--create-database - to create a database defined in settings file.');
+    Logger.logWithoutWriteToFile('--create-admin - to create new admin account');
+    Logger.logWithoutWriteToFile('--delete-admin - to delte admin account');
     Logger.logWithoutWriteToFile('--create-all - to create everything need for server run');
   }
 }
@@ -87,6 +115,12 @@ switch (args[0]) {
     break;
   case '--create-database':
     ServerInit.createDatabase();
+    break;
+  case '--create-admin':
+    ServerInit.createAdmin();
+    break;
+  case '--delete-admin':
+    ServerInit.deleteAdmin();
     break;
   case '--create-all':
     ServerInit.createAll();

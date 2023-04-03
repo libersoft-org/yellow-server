@@ -6,7 +6,7 @@ const Response = require('./response');
 class NempModulesLoader {
   constructor() {
     this.logger = new Logger();
-    this.logger.log('[NEMP Modules loader] start initializing modules');
+    this.logger.log('[NEMP MODULES LOADER] start initializing modules');
     this.modules = {};
     this.modulesCommandsList = {};
     this.failedModules = {};
@@ -51,7 +51,7 @@ class NempModulesLoader {
 
       const structureTest = NempModulesLoader.moduleStructureValidationTest(modulePath);
       if (structureTest.isValid) {
-        this.logger.log(`[NEMP Modules loader] Module: ${module} - structure test OK`);
+        this.logger.log(`[NEMP MODULES LOADER] Module ${module} - structure test OK`);
         try {
           // eslint-disable-next-line import/no-dynamic-require, global-require
           const Module = require(`${path.resolve(modulePath, 'module.js')}`);
@@ -62,7 +62,7 @@ class NempModulesLoader {
             if (!this.modulesCommandsList[command]) {
               this.modulesCommandsList[command] = moduleCommandsList[command];
             } else {
-              this.logger.error(`[NEMP Modules loader] found duplicity command - failse ${command}/${moduleCommandsList[command]} | exist in ${this.modulesCommandsList[command]}`);
+              this.logger.error(`[NEMP MODULES LOADER] found duplicity command - failse ${command}/${moduleCommandsList[command]} | exist in ${this.modulesCommandsList[command]}`);
             }
           });
 
@@ -79,7 +79,7 @@ class NempModulesLoader {
           };
         }
       } else {
-        this.logger.error(`[NEMP Modules loader] module ${module} - structure test failed! \n ${JSON.stringify(structureTest.detail)}`);
+        this.logger.error(`[NEMP MODULES LOADER] module ${module} - structure test failed! \n ${JSON.stringify(structureTest.detail)}`);
       }
     });
 
@@ -110,7 +110,7 @@ class NempModulesLoader {
     if (this.modules[moduleName]) {
       return this.modules[moduleName].instance;
     }
-    this.logger.log(`[NEMP Modules loader] Module: ${module} - get module instance failed`);
+    this.logger.log(`[NEMP MODULES LOADER] Module ${module} - get module instance failed`);
     return null;
   }
 }

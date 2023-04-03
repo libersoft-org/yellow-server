@@ -1,4 +1,4 @@
-const App = require('./libs/app.js');
+const App = require('./libs/app');
 
 const app = new App();
 app.run();
