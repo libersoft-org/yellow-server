@@ -18,6 +18,7 @@ class NempModulesLoader {
       'module.js': false,
       'data.js': false,
       'install.js': false,
+      // 'test.js': false,
     };
 
     const fileNames = fs.readdirSync(modulePath);

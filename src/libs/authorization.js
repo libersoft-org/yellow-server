@@ -23,6 +23,19 @@ class Authorization {
     await this.db.write('UPDATE admins_login SET updated = $1 WHERE token = $2', [DateNemp.getDateTime(new Date()), token]);
   }
 
+  async userTokenIsValid(token) {
+    const res = await this.db.read('SELECT token, updated FROM users_login WHERE token = $1', [token]);
+    return res.length > 0;
+  }
+
+  async userDeleteOldTokens() {
+    await this.db.write("DELETE FROM users_login WHERE DATETIME(updated, ? || ' seconds') < DATETIME('now')", [this.settings.getOne('user_ttl')]);
+  }
+
+  async userUpdateTokenTime(token) {
+    await this.db.write('UPDATE users_login SET updated = $1 WHERE token = $2', [DateNemp.getDateTime(new Date()), token]);
+  }
+
   /**
    * Check authorization for command run
    * @param {string} auth 'public, user, admin'
@@ -39,8 +52,16 @@ class Authorization {
 
     switch (auth) {
       case 'user':
-        // not implemented now
-        break;
+      {
+        const result = await this.userTokenIsValid(data.token);
+
+        if (result === true) {
+          await this.userDeleteOldTokens(); // potencial performance issue - move to crone job
+          await this.userUpdateTokenTime(data.token);
+        }
+
+        return result;
+      }
       case 'admin': {
         const result = await this.adminTokenIsValid(data.token);
 
@@ -55,8 +76,6 @@ class Authorization {
         this.logger.log(`[Authorization] authorization type ${auth} not found - command: ${data.command}`);
         return false;
     }
-
-    return false;
   }
 }
 

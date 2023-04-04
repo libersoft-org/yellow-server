@@ -13,5 +13,4 @@ class ExampleInstall extends NempModuleInstall {
   }
 }
 
-const moduleInstall = new ExampleInstall();
-moduleInstall.run();
+module.exports = ExampleInstall;

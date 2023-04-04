@@ -14,6 +14,22 @@ class Validation {
 
     return false;
   }
+
+  static isValidUserName(userName) {
+    if (userName !== undefined || userName !== '' || !userName) {
+      return true;
+    }
+
+    return false;
+  }
+
+  static isValidUserPass(userPass) {
+    if (!userPass || userPass !== undefined || userPass !== '' || userPass.length < 5) {
+      return true;
+    }
+
+    return false;
+  }
 }
 
 module.exports = Validation;

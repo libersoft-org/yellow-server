@@ -22,6 +22,10 @@ class Admin extends NempModule {
         auth: 'admin',
         run: this.getAdmins.bind(this),
       },
+      admin_get_users: {
+        auth: 'admin',
+        run: this.getUsers.bind(this),
+      },
     };
 
     this.logger.log(this.getModuleInfo());
@@ -54,6 +58,11 @@ class Admin extends NempModule {
 
   async getAdmins(command) {
     const data = await this.data.adminGetAdmins();
+    return Response.sendData(command, data);
+  }
+
+  async getUsers(command) {
+    const data = await this.data.adminGetUsers();
     return Response.sendData(command, data);
   }
 }

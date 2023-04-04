@@ -37,6 +37,66 @@ class ServerInit {
     }
   }
 
+  static moduleInstallation() {
+    (async () => {
+      const response = await prompts(
+        [{
+          type: 'text',
+          name: 'module',
+          message: 'Enter module name',
+        }],
+      );
+
+      const moduleInstallPath = `./libs/nemp-modules/${response.module}/install.js`;
+
+      if (fs.existsSync(moduleInstallPath)) {
+        try {
+          // eslint-disable-next-line import/no-dynamic-require, global-require
+          const ModuleInstall = require(`${moduleInstallPath}`);
+          const moduleInstall = new ModuleInstall();
+          await moduleInstall.run();
+          Logger.logWithoutWriteToFile(`[MODULE INSTALL] Module ${response.module} installed sucessfully.`);
+        } catch (error) {
+          Logger.logWithoutWriteToFile(`[ERROR][MODULE INSTALL] ${error.message}`);
+          process.exit(1);
+        }
+      } else {
+        Logger.logWithoutWriteToFile(`[ERROR][MODULE INSTALL] not found install file "${moduleInstallPath}"`);
+        process.exit(1);
+      }
+    })();
+  }
+
+  static moduleTest() {
+    (async () => {
+      const response = await prompts(
+        [{
+          type: 'text',
+          name: 'module',
+          message: 'Enter module name',
+        }],
+      );
+
+      const moduleTestPath = `./libs/nemp-modules/${response.module}/test.js`;
+
+      if (fs.existsSync(moduleTestPath)) {
+        try {
+          // eslint-disable-next-line import/no-dynamic-require, global-require
+          const ModuleTest = require(`${moduleTestPath}`);
+          const moduleTest = new ModuleTest();
+          await moduleTest.run();
+          Logger.logWithoutWriteToFile(`[MODULE TEST] Module ${response.module} tested sucessfully.`);
+        } catch (error) {
+          Logger.logWithoutWriteToFile(`[ERROR][MODULE TEST] ${error.message}`);
+          process.exit(1);
+        }
+      } else {
+        Logger.logWithoutWriteToFile(`[ERROR][MODULE TEST] not found test file "${moduleTestPath}"`);
+        process.exit(1);
+      }
+    })();
+  }
+
   static installModules() {
     // TODO
     // run file install.js in every module
@@ -104,6 +164,8 @@ class ServerInit {
     Logger.logWithoutWriteToFile('--create-database - to create a database defined in settings file.');
     Logger.logWithoutWriteToFile('--create-admin - to create new admin account');
     Logger.logWithoutWriteToFile('--delete-admin - to delte admin account');
+    Logger.logWithoutWriteToFile('--module-install - install specific module');
+    Logger.logWithoutWriteToFile('--module-test - test specific module');
     Logger.logWithoutWriteToFile('--create-all - to create everything need for server run');
   }
 }
@@ -121,6 +183,12 @@ switch (args[0]) {
     break;
   case '--delete-admin':
     ServerInit.deleteAdmin();
+    break;
+  case '--module-install':
+    ServerInit.moduleInstallation();
+    break;
+  case '--module-test':
+    ServerInit.moduleTest();
     break;
   case '--create-all':
     ServerInit.createAll();
