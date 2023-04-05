@@ -5,18 +5,18 @@ const Encryption = require('../../encryption');
 class UsersData extends NempModuleData {
   async usersCreateAccount(accountData) {
     const {
-      username, pass, firstname, lastname, phone, birth, gender,
+      user, pass, firstname, lastname, phone, birth, gender,
     } = accountData;
 
-    if (!Validation.isValidUserName(username) || !Validation.isValidUserPass(pass)) {
+    if (!Validation.isValidUserName(user) || !Validation.isValidUserPass(pass)) {
       throw new Error('Invalid username or password ');
     }
 
-    const data = await this.db.write(
+    const result = await this.db.write(
       `INSERT INTO users (user, pass, firstname, lastname, phone, birth, gender) 
       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
       [
-        username,
+        user,
         await Encryption.getHash(pass),
         firstname,
         lastname,
@@ -25,7 +25,12 @@ class UsersData extends NempModuleData {
         gender,
       ],
     );
-    return data;
+
+    if (result && result.error) {
+      throw new Error(result.error.message);
+    }
+
+    return result;
   }
 
   async userLogin(user, pass) {
@@ -37,6 +42,16 @@ class UsersData extends NempModuleData {
       return { token, id: res[0].id };
     }
     throw new Error('Wrong username or password');
+  }
+
+  async userLogout(token) {
+    const isTokenExist = await this.db.read('SELECT id FROM users_login WHERE token = $1', [token]);
+
+    if (!isTokenExist) {
+      throw new Error('Token not exist');
+    }
+
+    await this.db.write('DELETE FROM users_login WHERE token = $1', [token]);
   }
 }
 

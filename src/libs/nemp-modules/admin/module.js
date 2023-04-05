@@ -26,6 +26,10 @@ class Admin extends NempModule {
         auth: 'admin',
         run: this.getUsers.bind(this),
       },
+      admin_del_user: {
+        auth: 'admin',
+        run: this.deleteUserAccount.bind(this),
+      },
     };
 
     this.logger.log(this.getModuleInfo());
@@ -64,6 +68,16 @@ class Admin extends NempModule {
   async getUsers(command) {
     const data = await this.data.adminGetUsers();
     return Response.sendData(command, data);
+  }
+
+  async deleteUserAccount(command, data) {
+    const { userId } = data;
+    try {
+      await this.data.deleteUserAccount(userId);
+      return Response.sendSuccess(command);
+    } catch (error) {
+      return Response.sendError(command, 'admin_delete_user', error.message);
+    }
   }
 }
 

@@ -3,8 +3,8 @@
 
 const NempModuleData = require('../../main-module/nemp-module-data');
 
-class AdminData extends NempModuleData {
+class ExampleData extends NempModuleData {
   // here need implement demo load data from DB
 }
 
-module.exports = AdminData;
+module.exports = ExampleData;

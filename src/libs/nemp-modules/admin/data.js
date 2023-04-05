@@ -46,6 +46,16 @@ class AdminData extends NempModuleData {
   async adminDeleteAccount(username) {
     await this.db.write('DELETE FROM admins WHERE user = $1', [username]);
   }
+
+  async userDeleteAccount(userId) {
+    const result = await this.db.write('DELETE FROM users WHERE id = $1', [userId]);
+
+    if (result && result.error) {
+      throw new Error(result.error.message);
+    }
+
+    return result;
+  }
 }
 
 module.exports = AdminData;

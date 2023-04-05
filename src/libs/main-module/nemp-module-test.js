@@ -5,7 +5,8 @@ class NempModuleTest {
   constructor() {
     this.logger = new Logger();
     this.ws = null;
-    this.test = null;
+    this.module = null;
+    this.tests = null;
 
     this.wsConnect();
   }

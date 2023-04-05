@@ -29,19 +29,41 @@ class Database {
       this.close();
       return res;
     } catch (error) {
-      this.logger.error(`[Database][read] error ${error.message}`);
+      this.logger.error(`[DB][READ] ${error.message}`);
     }
   }
 
   async write(query, params = []) {
     try {
       await this.open();
-      await this.db.run(query, params, (err, success) => {
-        if (err) throw new Error(err);
+      await this.db.run(query, params, (err) => {
+        if (err) {
+          throw new Error(err.message);
+        }
       });
       this.close();
-    } catch (error) {
-      this.logger.error(`[Database][write] error ${error.message}`);
+    } catch (err) {
+      this.logger.error(`[DB][WRITE] ${err.message}`);
+      return {
+        error: err,
+      };
+    }
+  }
+
+  async delete(query, params = []) {
+    try {
+      await this.open();
+      await this.db.run(query, params, (err) => {
+        if (err) {
+          throw new Error(err.message);
+        }
+      });
+      this.close();
+    } catch (err) {
+      this.logger.error(`[DB][DELETE] ${err.message}`);
+      return {
+        error: err,
+      };
     }
   }
 
@@ -49,7 +71,7 @@ class Database {
     try {
       return (await this.read(`SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type = "table" AND name = "${name}"`))[0].cnt == 1;
     } catch (error) {
-      this.logger.error(`[Database][tableExists] error ${error.message}`);
+      this.logger.error(`[DB][TABLEEXIST] ${error.message}`);
     }
   }
 }

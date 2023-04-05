@@ -52,7 +52,6 @@ class NempModulesLoader {
 
       const structureTest = NempModulesLoader.moduleStructureValidationTest(modulePath);
       if (structureTest.isValid) {
-        this.logger.log(`[NEMP MODULES LOADER] Module ${module} - structure test OK`);
         try {
           // eslint-disable-next-line import/no-dynamic-require, global-require
           const Module = require(`${path.resolve(modulePath, 'module.js')}`);
