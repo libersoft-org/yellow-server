@@ -12,6 +12,7 @@ class NempModule {
     this.moduleVersion = null;
     this.data = null;
     this.commands = null;
+    this.moduleToModule = null;
   }
 
   getCommandPrefix() {
@@ -40,7 +41,7 @@ class NempModule {
   // eslint-disable-next-line class-methods-use-this
   runBeforeCommandExecution() {}
 
-  async runCommand(command, data = {}) {
+  async runCommand(command, data = {}, ws = null) {
     this.logger.log(`[MODULE ${this.moduleName}] RUN command: ${command} data: ${JSON.stringify(data)}`);
 
     if (this.commands[command]) {
@@ -51,8 +52,8 @@ class NempModule {
       }
 
       this.runBeforeCommandExecution();
-
-      return this.commands[command].run(command, data);
+      const response = await this.commands[command].run(command, data, ws);
+      return response;
     }
 
     return Response.sendError(command, 'command_not_found', `[${this.moduleName}] Command not found`);

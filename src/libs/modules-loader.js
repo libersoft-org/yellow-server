@@ -55,7 +55,7 @@ class NempModulesLoader {
         try {
           // eslint-disable-next-line import/no-dynamic-require, global-require
           const Module = require(`${path.resolve(modulePath, 'module.js')}`);
-          const moduleInstance = new Module();
+          const moduleInstance = new Module(this.moduleToModule.bind(this));
 
           const moduleCommandsList = moduleInstance.getModuleCommandsList();
           Object.keys(moduleCommandsList).forEach((command) => {
@@ -82,11 +82,9 @@ class NempModulesLoader {
         this.logger.error(`[NEMP MODULES LOADER] module ${module} - structure test failed! \n ${JSON.stringify(structureTest.detail)}`);
       }
     });
-
-    // this.logger.log(JSON.stringify(this.modules));
   }
 
-  callModuleCommand(commandData) {
+  callModuleCommand(commandData, ws) {
     try {
       const { command, data } = JSON.parse(commandData);
 
@@ -99,10 +97,30 @@ class NempModulesLoader {
       }
 
       const moduleName = this.modulesCommandsList[command];
-      return this.modules[moduleName].instance.runCommand(command, data);
+      return this.modules[moduleName].instance.runCommand(command, data, ws);
     } catch (error) {
       this.logger.error(error);
       return Response.sendError(null, 'command_error', error.message);
+    }
+  }
+
+  moduleToModule(commandData, ws) {
+    try {
+      const { command, data } = commandData;
+
+      if (command === undefined || command === '') {
+        return JSON.parse(Response.sendError(command, 'command_missing', 'Command was not specified'));
+      }
+
+      if (!this.modulesCommandsList[command]) {
+        return JSON.parse(Response.sendError(command, 'command_unknown', 'Command not found in any module'));
+      }
+
+      const moduleName = this.modulesCommandsList[command];
+      return this.modules[moduleName].instance.runCommand(command, data, ws);
+    } catch (error) {
+      this.logger.error(error);
+      return JSON.parse(Response.sendError(null, 'command_error', error.message));
     }
   }
 

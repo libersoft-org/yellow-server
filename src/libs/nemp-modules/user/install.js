@@ -8,7 +8,7 @@ class UsersInstall extends NempModuleInstall {
     super();
     this.dbPreparations = [
       `CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        id VARCHAR(16) PRIMARY KEY UNIQUE, 
         user VARCHAR(100) NOT NULL UNIQUE, 
         pass VARCHAR(255) NOT NULL, 
         firstname VARCHAR(255) NOT NULL,
@@ -19,7 +19,7 @@ class UsersInstall extends NempModuleInstall {
         confirmed BIT,
         created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )`,
-      'CREATE TABLE IF NOT EXISTS users_login (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, token VARCHAR(64) NOT NULL UNIQUE, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))',
+      'CREATE TABLE IF NOT EXISTS users_login (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user VARCHAR(16), token VARCHAR(64) NOT NULL UNIQUE, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))',
     ];
   }
 }

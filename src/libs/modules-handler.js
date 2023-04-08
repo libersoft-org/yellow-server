@@ -1,37 +1,15 @@
-/* eslint-disable max-len */
-const fs = require('fs');
 const Response = require('./response');
 const ModulesLoader = require('./modules-loader');
 // const DNS = require('./dns.js');
 
-class Protocol {
+class NempModulesHandler {
   constructor() {
-    /* this need revision
-    const data = new Data();
-    this.data = {
-      core: data.core,
-      identity: data.identity,
-      identity_protocol: data['identity-Protocol'],
-      identity_protocol_path: data['identity-path'],
-    };
-    */
-
     this.modules = new ModulesLoader();
-    // this.dns = new DNS();
   }
 
-  static readFileContents(filePath, startLine, endLine) {
-    if (!filePath) return false;
-    const fileContents = fs.readFileSync(filePath, 'utf-8');
-    const lines = fileContents.split('\n');
-    const startIndex = lines.findIndex((line) => line.includes(startLine));
-    const endIndex = lines.findIndex((line) => line.includes(endLine));
-    return lines.slice(startIndex + 1, endIndex).join('\n');
-  }
-
-  async protocolHandler(commandData) {
+  async command(commandData, ws) {
     try {
-      const response = this.modules.callModuleCommand(commandData);
+      const response = this.modules.callModuleCommand(commandData, ws);
       return response;
     } catch (error) {
       console.log(error);
@@ -40,6 +18,15 @@ class Protocol {
   }
 
   /*
+    static readFileContents(filePath, startLine, endLine) {
+    if (!filePath) return false;
+    const fileContents = fs.readFileSync(filePath, 'utf-8');
+    const lines = fileContents.split('\n');
+    const startIndex = lines.findIndex((line) => line.includes(startLine));
+    const endIndex = lines.findIndex((line) => line.includes(endLine));
+    return lines.slice(startIndex + 1, endIndex).join('\n');
+  }
+
   async processAdminCommand(reqData) {
     const { command, token } = reqData;
     await this.data.core.adminDeleteOldTokens();
@@ -115,4 +102,4 @@ class Protocol {
   */
 }
 
-module.exports = Protocol;
+module.exports = NempModulesHandler;

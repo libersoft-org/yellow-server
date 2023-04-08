@@ -164,9 +164,100 @@ class ServerInit {
     Logger.logWithoutWriteToFile('--create-database - to create a database defined in settings file.');
     Logger.logWithoutWriteToFile('--create-admin - to create new admin account');
     Logger.logWithoutWriteToFile('--delete-admin - to delte admin account');
+    Logger.logWithoutWriteToFile('--module-create - create new empty module');
     Logger.logWithoutWriteToFile('--module-install - install specific module');
     Logger.logWithoutWriteToFile('--module-test - test specific module');
-    Logger.logWithoutWriteToFile('--create-all - to create everything need for server run');
+    // Logger.logWithoutWriteToFile('--create-all - to create everything need for server run');
+  }
+
+  static createModule() {
+    (async () => {
+      const response = await prompts(
+        [{
+          type: 'text',
+          name: 'moduleName',
+          message: 'Enter new module name - first letter Capital',
+        }],
+      );
+
+      const { moduleName } = response;
+      const moduleInstallPath = `./libs/nemp-modules/${moduleName.toLowerCase()}/`;
+
+      const moduleBase = `const NempModule = require('../../main-module/nemp-module');
+const ${moduleName}Data = require('./data');
+const Response = require('../../response');
+
+class ${moduleName} extends NempModule {
+  constructor() {
+    super();
+    this.moduleName = '${moduleName}';
+    this.moduleVersion = '1.0.0';
+    this.data = new ${moduleName}Data();
+    this.commands = {
+      first_command: {
+        auth: 'public',
+        run: () => {},
+      },
+    };
+
+    this.logger.log(this.getModuleInfo());
+  }
+}
+
+module.exports = ${moduleName};
+`;
+
+      const moduleData = `const NempModuleData = require('../../main-module/nemp-module-data');
+
+class ${moduleName}Data extends NempModuleData {
+}
+
+module.exports = ${moduleName}Data;
+`;
+
+      const moduleInstall = `const NempModuleInstall = require('../../main-module/nemp-module-install');
+
+class ${moduleName}Install extends NempModuleInstall {
+  constructor() {
+    super();
+    this.dbPreparations = [
+    ];
+  }
+}
+
+module.exports = ${moduleName}Install;
+`;
+
+      const moduleTests = `const NempModuleTest = require('../../main-module/nemp-module-test');
+const ${moduleName}Module = require('./module');
+
+class ${moduleName}Test extends NempModuleTest {
+  constructor() {
+    super();
+    this.module = new ${moduleName}Module();
+    this.tests = [
+      {
+        desc: 'Basic ',
+        command: '',
+        expected: 'success',
+        data: {},
+      },
+    ];
+  }
+}
+
+module.exports = ${moduleName}Test;
+`;
+
+      fs.mkdirSync(moduleInstallPath, { recursive: true });
+      fs.writeFileSync(`${moduleInstallPath}module.js`, moduleBase);
+      fs.writeFileSync(`${moduleInstallPath}data.js`, moduleData);
+      fs.writeFileSync(`${moduleInstallPath}install.js`, moduleInstall);
+      fs.writeFileSync(`${moduleInstallPath}test.js`, moduleTests);
+      fs.writeFileSync(`${moduleInstallPath}README.md`, `NEMP MODULE ${moduleName}`);
+
+      Logger.logWithoutWriteToFile(`[MODULE CREATE] ${moduleName} empty files for module created`);
+    })();
   }
 }
 
@@ -183,6 +274,9 @@ switch (args[0]) {
     break;
   case '--delete-admin':
     ServerInit.deleteAdmin();
+    break;
+  case '--module-create':
+    ServerInit.createModule();
     break;
   case '--module-install':
     ServerInit.moduleInstallation();
