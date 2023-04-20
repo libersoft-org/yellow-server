@@ -1,6 +1,6 @@
 # The New E-Mail Protocol (NEMP) - server software
 
-This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-protocol/).
+This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-documentation/).
 
 If you don't need to start your own **NEMP Server** and just want to get your free NEMP mailbox hosted on our server, please navigate to: **https://nemp.io**
 
