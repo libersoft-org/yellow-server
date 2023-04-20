@@ -57,9 +57,14 @@ class UsersData extends NempModuleData {
     await this.db.write('DELETE FROM users_login WHERE token = $1', [token]);
   }
 
-  async userInfo(token) {
+  async userInfoFromToken(token) {
     const userId = await this.db.read('SELECT id_user FROM users_login WHERE token = $1', [token]);
     const data = await this.db.read('SELECT id, firstname, lastname, gender FROM users WHERE id = $1', [userId[0].id_user]);
+    return data;
+  }
+
+  async userInfoFromId(userId) {
+    const data = await this.db.read('SELECT id, firstname, lastname, gender FROM users WHERE id = $1', [userId]);
     return data;
   }
 
@@ -70,6 +75,15 @@ class UsersData extends NempModuleData {
     }
 
     return null;
+  }
+
+  async userIdExist(userId) {
+    const userExist = await this.db.read('SELECT COUNT(id) FROM users WHERE id = $1', [userId]);
+    if (userExist[0]['COUNT(id)'] > 0) {
+      return true;
+    }
+
+    return false;
   }
 }
 

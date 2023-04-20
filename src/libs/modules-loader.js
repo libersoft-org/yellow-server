@@ -104,7 +104,7 @@ class NempModulesLoader {
     }
   }
 
-  moduleToModule(commandData, ws) {
+  async moduleToModule(commandData, ws) {
     try {
       const { command, data } = commandData;
 
@@ -117,7 +117,7 @@ class NempModulesLoader {
       }
 
       const moduleName = this.modulesCommandsList[command];
-      return this.modules[moduleName].instance.runCommand(command, data, ws);
+      return JSON.parse(await this.modules[moduleName].instance.runCommand(command, data, ws));
     } catch (error) {
       this.logger.error(error);
       return JSON.parse(Response.sendError(null, 'command_error', error.message));

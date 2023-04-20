@@ -26,6 +26,14 @@ class User extends NempModule {
         auth: 'user',
         run: this.getUserInfo.bind(this),
       },
+      user_exist: {
+        auth: 'user',
+        run: this.userIdExist.bind(this),
+      },
+      user_token_id: {
+        auth: 'user',
+        run: this.userTokenToId.bind(this),
+      },
     };
 
     this.logger.log(this.getModuleInfo());
@@ -83,10 +91,38 @@ class User extends NempModule {
   async getUserInfo(command, data) {
     const { token } = data;
     try {
-      const userInfo = await this.data.userInfo(token);
+      const userInfo = await this.data.userInfoFromToken(token);
       return Response.sendData(command, userInfo);
     } catch (error) {
       return Response.sendError(command, 'user_info_error', error.message);
+    }
+  }
+
+  async userIdExist(command, data) {
+    const { userId } = data;
+    if (!userId) {
+      return Response.sendError(command, 'user_exist_error', 'User ID not found');
+    }
+
+    try {
+      const exist = await this.data.userIdExist(userId);
+      return Response.sendData(command, {
+        exist,
+      });
+    } catch (error) {
+      return Response.sendError(command, 'user_exist_error', error.message);
+    }
+  }
+
+  async userTokenToId(command, data) {
+    const { token } = data;
+    try {
+      const userId = await this.data.tokenToUserId(token);
+      return Response.sendData(command, {
+        userId,
+      });
+    } catch (error) {
+      return Response.sendError(command, 'user_tokenid_error', error.message);
     }
   }
 }
