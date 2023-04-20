@@ -1,6 +1,8 @@
 # The New E-Mail Protocol (NEMP) - server software
 
-This is the server implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-protocol/) including official modules, web admin, web mail client and web developer console.
+This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-protocol/).
+
+If you don't need to start your own **NEMP Server** and want to just get your free NEMP mailbox, please navigate to: **https://nemp.io**.
 
 ## Documentation
 
