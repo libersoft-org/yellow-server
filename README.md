@@ -2,7 +2,7 @@
 
 This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-protocol/).
 
-If you don't need to start your own **NEMP Server** and want to just get your free NEMP mailbox, please navigate to: **https://nemp.io**.
+If you don't need to start your own **NEMP Server** and just want to get your free NEMP mailbox hosted on our server, please navigate to: **https://nemp.io**
 
 ## Documentation
 
