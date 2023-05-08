@@ -2,14 +2,21 @@
 
 This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-documentation/).
 
-If you don't need to start your own **NEMP Server** and just want to get your free NEMP mailbox hosted on our server, please navigate to: **https://nemp.io**
+If you don't need to start your own **NEMP Server** and just want to get your free NEMP account hosted on our server, please navigate to: **https://nemp.io**
 
 ## Documentation
 
-- [**Server installation and configuration**](./INSTALL.md)
+- [**Automated server installation and configuration**](https://github.com/libersoft-org/nemp-install)
+- [**Manual server installation and configuration**](./INSTALL.md)
 - [**Development roadmap**](./ROADMAP.md)
 - [**Server documentation**](./SERVER.md)
 - [**License**](./LICENSE)
+
+## Server modules
+
+- [**Identity**](https://github.com/libersoft-org/nemp-server-module-identity)
+- [**Messages**](https://github.com/libersoft-org/nemp-server-module-messages)
+- [**File transfer**](https://github.com/libersoft-org/nemp-server-module-file-transfer)
 
 ## Donations
 
