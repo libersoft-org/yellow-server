@@ -1,4 +1,4 @@
-# The New E-Mail Protocol (NEMP) - server software
+# NEMP Server
 
 This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-documentation/).
 
