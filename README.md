@@ -1,3 +1,5 @@
+[![Visits Badge](https://badges.pufler.dev/visits/libersoft-org/nemp-server)](https://badges.pufler.dev)
+
 # NEMP Server
 
 This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-documentation/).
