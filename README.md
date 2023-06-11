@@ -1,6 +1,6 @@
 # NEMP Server
 
-[![Created Badge](https://badges.pufler.dev/created/libersoft-org/nemp-server)](https://badges.pufler.dev) [![Updated Badge](https://badges.pufler.dev/updated/libersoft-org/nemp-server)](https://badges.pufler.dev) [![Commits Badge](https://badges.pufler.dev/commits/all/libersoft-org)](https://badges.pufler.dev) [![Visits Badge](https://badges.pufler.dev/visits/libersoft-org/nemp-server)](https://badges.pufler.dev)
+[![Created Badge](https://badges.pufler.dev/created/libersoft-org/nemp-server)](https://badges.pufler.dev) [![Updated Badge](https://badges.pufler.dev/updated/libersoft-org/nemp-server)](https://badges.pufler.dev) [![Visits Badge](https://badges.pufler.dev/visits/libersoft-org/nemp-server)](https://badges.pufler.dev)
 
 This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-documentation/).
 
