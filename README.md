@@ -8,8 +8,6 @@ If you don't need to start your own **NEMP Server** and just want to get your fr
 
 [![NEMP.io](logo.png)](https://nemp.io)
 
-**https://nemp.io**
-
 ## Documentation
 
 - [**Automated server installation and configuration**](https://github.com/libersoft-org/nemp-install)
