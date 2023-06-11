@@ -4,7 +4,11 @@
 
 This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-documentation/).
 
-If you don't need to start your own **NEMP Server** and just want to get your free NEMP account hosted on our server, please navigate to: **https://nemp.io**
+If you don't need to start your own **NEMP Server** and just want to get your free NEMP account hosted on our server, please navigate to:
+
+[![NEMP.io](logo.png)](https://nemp.io)
+
+**https://nemp.io**
 
 ## Documentation
 
