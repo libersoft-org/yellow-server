@@ -6,7 +6,7 @@ This is the server software implementation of [**NEMP Protocol**](https://github
 
 If you don't need to start your own **NEMP Server** and just want to get your free NEMP account hosted on our server, please navigate to:
 
-[![NEMP.io](logo.png)](https://nemp.io)
+[![NEMP.io](https://raw.githubusercontent.com/libersoft-org/nemp-documentation/main/logo.png)](https://nemp.io)
 
 ## Documentation
 
