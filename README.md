@@ -1,16 +1,16 @@
-# NEMP Server
+# Yellow Server
 
-[![Created Badge](https://badges.pufler.dev/created/libersoft-org/nemp-server)](https://badges.pufler.dev) [![Updated Badge](https://badges.pufler.dev/updated/libersoft-org/nemp-server)](https://badges.pufler.dev) [![Visits Badge](https://badges.pufler.dev/visits/libersoft-org/nemp-server)](https://badges.pufler.dev)
+[![Created Badge](https://badges.pufler.dev/created/libersoft-org/yellow-server)](https://badges.pufler.dev) [![Updated Badge](https://badges.pufler.dev/updated/libersoft-org/yellow-server)](https://badges.pufler.dev) [![Visits Badge](https://badges.pufler.dev/visits/libersoft-org/yellow-server)](https://badges.pufler.dev)
 
-This is the server software implementation of [**NEMP Protocol**](https://github.com/libersoft-org/nemp-documentation/).
+This is the server software implementation of [**ODTP Protocol**](https://github.com/libersoft-org/odtp-documentation/).
 
-If you don't need to start your own **NEMP Server** and just want to get your free NEMP account hosted on our server, please navigate to:
+If you just want to get your free [**Yellow**](https://yellow.libersoft.org) account hosted on our server, please navigate to:
 
-[![NEMP.io](https://raw.githubusercontent.com/libersoft-org/nemp-documentation/main/logo.png)](https://nemp.io)
+[![YellowNet.io](https://raw.githubusercontent.com/libersoft-org/odtp-documentation/main/logo.png)](https://yellownet.io)
 
 ## Documentation
 
-- [**Automated server installation and configuration**](https://github.com/libersoft-org/nemp-install)
+- [**Automated server installation and configuration**](https://github.com/libersoft-org/yellow-install)
 - [**Manual server installation and configuration**](./INSTALL.md)
 - [**Development roadmap**](./ROADMAP.md)
 - [**Server documentation**](./SERVER.md)
@@ -18,9 +18,9 @@ If you don't need to start your own **NEMP Server** and just want to get your fr
 
 ## Server modules
 
-- [**Identity**](https://github.com/libersoft-org/nemp-server-module-identity)
-- [**Messages**](https://github.com/libersoft-org/nemp-server-module-messages)
-- [**File transfer**](https://github.com/libersoft-org/nemp-server-module-file-transfer)
+- [**Identity**](https://github.com/libersoft-org/yellow-server-module-identity-nemp)
+- [**Messages**](https://github.com/libersoft-org/yellow-server-module-messages)
+- [**File transfer**](https://github.com/libersoft-org/yellow-server-module-file-transfer)
 
 ## Donations
 
@@ -34,4 +34,4 @@ Thank you for being a part of our projects' success!
 
 ## Star history
 
-[![Star History Chart](https://api.star-history.com/svg?repos=libersoft-org/nemp-server&type=Date)](https://star-history.com/#libersoft-org/nemp-server&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=libersoft-org/yellow-server&type=Date)](https://star-history.com/#libersoft-org/yellow-server&Date)
