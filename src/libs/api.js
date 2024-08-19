@@ -13,7 +13,7 @@ class API {
   };
   //this.dns = new DNS();
  }
- async protocolHandler(data) {
+ async processAPI(data) {
   try {
    console.log({ data });
    this.data.identity_protocol ? this.data.identity_protocol.protocolHandler(data) : null;

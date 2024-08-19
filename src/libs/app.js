@@ -66,14 +66,20 @@ class App {
    process.exit(1);
   } else {
    var settings = {
-    http_port: 80,
-    https_port: 443,
-    https_cert_path: '/etc/letsencrypt/live/{DOMAIN}/',
-    web_root: '/var/www/yellow',
-    admin_ttl: 600,
-    log_to_file: true,
-    log_file: 'yellow-server.log',
-    db_file: 'yellow-server.db'
+    web: {
+     standalone: true,
+     http_port: 80,
+     https_port: 443,
+     certificates_path: '/etc/letsencrypt/live/{DOMAIN}/',
+     socket_path: '/run/yellow-server.sock'
+    },
+    other: {
+     ttl_admin: 600,
+     ttl_user: 600,
+     db_file: 'yellow-server.db',
+     log_file: 'yellow-server.log',
+     log_to_file: true
+    }
    };
    await Bun.write(Common.settingsFile, JSON.stringify(settings, null, 1));
    Common.addLog('Settings file was created sucessfully.');

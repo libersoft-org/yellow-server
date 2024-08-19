@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SETTINGS_FILE=settings.json
-echo -n "Enter your server domain name (eg.: mail.domain.tld): "
+echo -n "Enter your server domain name (eg.: amtp.domain.tld): "
 read DOMAIN
 if [ -z $DOMAIN ]; then
  echo ""

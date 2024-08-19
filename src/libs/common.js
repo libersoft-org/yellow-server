@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+import { appendFileSync } from 'fs';
 
 class Common {
  static appName = 'Yellow Server';
@@ -17,7 +18,7 @@ class Common {
   ];
   const msg = message ?? '';
   console.log('\x1b[96m' + date + '\x1b[0m [' + logTypes[type].color + logTypes[type].text + '\x1b[0m] ' + msg);
-  if (this.settings?.other?.log_to_file) Bun.appendFileSync(this.appPath + this.settings.other.log_file, date + ' [' + logTypes[type].text + '] ' + msg + EOL);
+  if (this.settings?.other?.log_to_file) appendFileSync(this.appPath + this.settings.other.log_file, date + ' [' + logTypes[type].text + '] ' + msg + EOL);
  }
 
  static translate(template, dictionary) {
