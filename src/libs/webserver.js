@@ -17,16 +17,14 @@ class WebServer {
  async startServer() {
   const certs = {
    key: Bun.file(path.join(Common.settings.web.certificates_path, 'privkey.pem')),
-   cert: Bun.file(path.join(Common.settings.web.certificates_path, 'cert.pem')),
-   ca: Bun.file(path.join(Common.settings.web.certificates_path, 'chain.pem'))
+   cert: Bun.file(path.join(Common.settings.web.certificates_path, 'cert.pem'))
   };
   console.log(certs);
-  const certs_exist = (await certs.key.exists()) && (await certs.cert.exists()) && (await certs.ca.exists());
+  const certs_exist = (await certs.key.exists()) && (await certs.cert.exists());
   if (!certs_exist) {
    Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path, 2);
    process.exit(1);
   }
-  // TODO: check if certificate is valid
   const app = new Elysia()
    .onRequest(req => {
     console.log(req);

@@ -314,3 +314,54 @@ PEM routines via OPENSSL_internal SSL routines
 2024-08-19 15:42:15 [INFO] 
 2024-08-19 15:42:15 [INFO] HTTP server is running on port: 80
 2024-08-19 15:42:15 [INFO] HTTPS server is running on port: 443
+2024-08-19 16:27:24 [INFO] 
+2024-08-19 16:27:24 [INFO] ====================
+2024-08-19 16:27:24 [INFO] Yellow Server v.0.01
+2024-08-19 16:27:24 [INFO] ====================
+2024-08-19 16:27:24 [INFO] 
+2024-08-19 16:27:24 [INFO] HTTP server is running on port: 80
+2024-08-19 16:27:24 [INFO] HTTPS server is running on port: 443
+2024-08-19 16:31:07 [INFO] GET request from: null (null), URL: /
+2024-08-19 16:33:06 [INFO] 
+2024-08-19 16:33:06 [INFO] ====================
+2024-08-19 16:33:06 [INFO] Yellow Server v.0.01
+2024-08-19 16:33:06 [INFO] ====================
+2024-08-19 16:33:06 [INFO] 
+2024-08-19 16:33:06 [ERROR] Cannot start web server.
+2024-08-19 16:33:06 [ERROR] TypeError: undefined is not an object (evaluating 'certs.ca.exists')
+2024-08-19 16:34:04 [INFO] 
+2024-08-19 16:34:04 [INFO] ====================
+2024-08-19 16:34:04 [INFO] Yellow Server v.0.01
+2024-08-19 16:34:04 [INFO] ====================
+2024-08-19 16:34:04 [INFO] 
+2024-08-19 16:34:04 [INFO] HTTP server is running on port: 80
+2024-08-19 16:34:04 [INFO] HTTPS server is running on port: 443
+2024-08-19 16:34:22 [INFO] GET request from: null (null), URL: /
+2024-08-19 16:34:22 [INFO] GET request from: null (null), URL: /favicon.ico
+2024-08-19 16:34:37 [INFO] GET request from: null (null), URL: /
+2024-08-19 16:34:37 [INFO] GET request from: null (null), URL: /favicon.ico
+2024-08-19 16:34:37 [INFO] GET request from: null (null), URL: /
+2024-08-19 16:34:37 [INFO] GET request from: null (null), URL: /
+2024-08-19 16:34:37 [INFO] GET request from: null (null), URL: /favicon.ico
+2024-08-19 16:35:10 [INFO] 
+2024-08-19 16:35:10 [INFO] ====================
+2024-08-19 16:35:10 [INFO] Yellow Server v.0.01
+2024-08-19 16:35:10 [INFO] ====================
+2024-08-19 16:35:10 [INFO] 
+2024-08-19 16:35:11 [INFO] HTTP server is running on port: 80
+2024-08-19 16:35:11 [INFO] HTTPS server is running on port: 443
+2024-08-19 16:35:13 [INFO] GET request from: null (null), URL: /
+2024-08-19 16:35:13 [INFO] GET request from: null (null), URL: /favicon.ico
+2024-08-19 16:35:15 [INFO] GET request from: null (null), URL: /
+2024-08-19 16:35:15 [INFO] GET request from: null (null), URL: /favicon.ico
+2024-08-19 16:35:41 [INFO] 
+2024-08-19 16:35:41 [INFO] ====================
+2024-08-19 16:35:41 [INFO] Yellow Server v.0.01
+2024-08-19 16:35:41 [INFO] ====================
+2024-08-19 16:35:41 [INFO] 
+2024-08-19 16:35:42 [INFO] HTTP server is running on port: 80
+2024-08-19 16:35:42 [INFO] HTTPS server is running on port: 443
+2024-08-19 16:35:46 [INFO] GET request from: null (null), URL: /
+2024-08-19 16:35:47 [INFO] GET request from: null (null), URL: /favicon.ico
+2024-08-19 16:36:08 [INFO] GET request from: null (null), URL: /aaa/bbb?kkk=jjj&fff=ddd
+2024-08-19 16:36:08 [INFO] GET request from: null (null), URL: /favicon.ico
