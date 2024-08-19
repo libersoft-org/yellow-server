@@ -1,31 +1,27 @@
 const Common = require('./common.js').Common;
-const WebServer = require('./webserver.js');
-const fs = require('fs');
-let prompts = require('prompts');
-// const readline = require('readline');
 
 class App {
- run() {
+ async run() {
   const args = process.argv.slice(2);
   switch (args.length) {
    case 0:
-    this.startServer();
+    await this.startServer();
     break;
    case 1:
-    if (args[0] === '--create-settings') this.createSettings();
-    if (args[0] === '--create-database') this.createDatabase();
-    if (args[0] === '--create-admin') this.createAdmin();
+    if (args[0] === '--create-settings') await this.createSettings();
+    else if (args[0] === '--create-database') this.createDatabase();
+    else if (args[0] === '--create-admin') this.createAdmin();
     else this.getHelp();
     break;
    default:
     this.getHelp();
     break;
-   }
   }
+ }
 
- startServer() {
+ async startServer() {
   try {
-   this.loadSettings();
+   await this.loadSettings();
    const header = Common.appName + ' v.' + Common.appVersion;
    const dashes = '='.repeat(header.length);
    Common.addLog('');
@@ -33,7 +29,9 @@ class App {
    Common.addLog(header);
    Common.addLog(dashes);
    Common.addLog('');
+   const WebServer = require('./webserver.js');
    this.webServer = new WebServer();
+   await this.webServer.run();
   } catch (ex) {
    Common.addLog(ex);
   }
@@ -43,14 +41,16 @@ class App {
   Common.addLog('Command line arguments:');
   Common.addLog('');
   Common.addLog('--help - to see this help');
-  Common.addLog('--create-settings - to create default settings file called "' + Common.settingsFile + '"');
-  Common.addLog('--create-database - to create a database defined in settings file.');
+  Common.addLog('--create-settings - to create a default settings file named "' + Common.settingsFile + '"');
+  Common.addLog('--create-database - to create a database defined in the settings file');
+  Common.addLog('--create-admin - to create an admin account');
   Common.addLog('');
  }
 
- loadSettings() {
-  if (fs.existsSync(Common.settingsFile)) {
-   Common.settings = JSON.parse(fs.readFileSync(Common.settingsFile, { encoding:'utf8', flag:'r' }));
+ async loadSettings() {
+  const file = Bun.file(Common.settingsFile);
+  if (await file.exists()) {
+   Common.settings = await file.json(); // TODO: otestovat, kdyz nebude validni JSON
   } else {
    Common.addLog('Error: Settings file "' + Common.settingsFile + '" not found. Please run this application again using: node index.js --create-settings');
    Common.addLog('');
@@ -58,9 +58,10 @@ class App {
   }
  }
 
- createSettings() {
-  if (fs.existsSync(Common.settingsFile)) {
-   Common.addLog('Error: Settings file "' + Common.settingsFile +  '" already exists. If you need to replace it with default one, delete the old one first.');
+ async createSettings() {
+  const file = Bun.file(Common.settingsFile);
+  if (await file.exists()) {
+   Common.addLog('Error: Settings file "' + Common.settingsFile + '" already exists. If you need to replace it with default one, delete the old one first.');
    Common.addLog('');
    process.exit(1);
   } else {
@@ -68,13 +69,13 @@ class App {
     http_port: 80,
     https_port: 443,
     https_cert_path: '/etc/letsencrypt/live/{DOMAIN}/',
-    web_root: "/var/www/nemp",
+    web_root: '/var/www/yellow',
     admin_ttl: 600,
     log_to_file: true,
-    log_file: 'nemp.log',
-    db_file: 'nemp.db'
-   }
-   fs.writeFileSync(Common.settingsFile, JSON.stringify(settings, null, ' '));
+    log_file: 'yellow-server.log',
+    db_file: 'yellow-server.db'
+   };
+   await Bun.write(Common.settingsFile, JSON.stringify(settings, null, 1));
    Common.addLog('Settings file was created sucessfully.');
    Common.addLog('');
   }
@@ -89,34 +90,40 @@ class App {
   Common.addLog('');
  }
 
-createAdmin() {
-  var username = '', password = '';
-  this.loadSettings();
-  const Data = require('./data.js');
-  const data = new Data();
-  
-  (async () => {
-    const response = await prompts(
-      [{
-      type: 'text',
-      name: 'username',
-      message: 'Enter admin username',
-      },
-      {
-      type: 'password',
-      name: 'password',
-      message: 'Enter admin password',
-      },]
-    );
-    if(response.username && (response.password && response.password.length > 4)) {
-      data.adminAddAdmin(response.username, response.password);
-      Common.addLog('Admin was created sucessfully.');
-      Common.addLog('');
-    } else {
-      Common.addLog('Invalid input or invalid password length')
-      process.exit(1);
-    }
-  })();
+ async createAdmin() {
+  while (true) {
+   let username = await this.getInput('Enter the admin username:');
+   username = username.toLowerCase();
+   if (username.length >= 3 && username.length <= 16 && /^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username)) break;
+   else Common.addLog('Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row.');
+  }
+  while (true) {
+   let password = await this.getInput('Enter the admin password:', true);
+   if (password.length >= 8) {
+    this.loadSettings();
+    const Data = require('./data.js');
+    const data = new Data();
+    data.adminAddAdmin(username, password);
+    Common.addLog('Admin was created successfully.');
+    break;
+   } else Common.addLog('Password has to be 8 or more characters long.');
+  }
+ }
+
+ async getInput(promptMessage, isPassword = false, defaultValue = '') {
+  let input = '';
+  process.stdout.write(promptMessage + (defaultValue ? '[' + defaultValue + ']' : '') + ': ');
+  for await (const chunk of process.stdin) {
+   const char = new TextDecoder().decode(chunk);
+   if (char === '\n') {
+    input = input || defaultValue;
+    break;
+   }
+   if (isPassword) process.stdout.write('*');
+   else process.stdout.write(char);
+   input += char;
+  }
+  return input;
  }
 }
 

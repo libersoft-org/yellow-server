@@ -1,32 +1,29 @@
-const fs = require('fs');
-const os = require('os');
+import { EOL } from 'os';
 
 class Common {
- static appName = 'NEMP Server';
+ static appName = 'Yellow Server';
  static appVersion = '0.01';
  static settingsFile = 'settings.json';
+ static appPath = import.meta.dir + '/';
  static settings;
 
- static addLog(message) {
-  const msg = this.getDateTime() + ' ' + (message == undefined ? '' : message);
-  console.log(msg);
-  if (this.settings && this.settings.log_to_file) fs.appendFileSync(this.settings.log_file, msg + os.EOL);
+ static addLog(message, type = 0) {
+  const d = new Date();
+  const date = d.toISOString().replace('T', ' ').split('.')[0];
+  const logTypes = [
+   { text: 'INFO', color: '\x1b[32m' },
+   { text: 'WARNING', color: '\x1b[33m' },
+   { text: 'ERROR', color: '\x1b[31m' }
+  ];
+  const msg = message ?? '';
+  console.log('\x1b[96m' + date + '\x1b[0m [' + logTypes[type].color + logTypes[type].text + '\x1b[0m] ' + msg);
+  if (this.settings?.other?.log_to_file) Bun.appendFileSync(this.appPath + this.settings.other.log_file, date + ' [' + logTypes[type].text + '] ' + msg + EOL);
  }
 
- static getDateTime() {
-  function toString(number, padLength) { return number.toString().padStart(padLength, '0'); }
-  const date = new Date();
-  return toString(date.getFullYear(), 4)
-   + '-' + toString(date.getMonth() + 1, 2)
-   + '-'  + toString(date.getDate(), 2)
-   + ' ' + toString(date.getHours(), 2)
-   + ':'  + toString(date.getMinutes(), 2)
-   + ':'  + toString(date.getSeconds(), 2);
- }
-
- static getDatePlusSeconds(date, seconds) {
-  return new Date(date.setSeconds(date.getSeconds() + seconds));
+ static translate(template, dictionary) {
+  for (const key in dictionary) template = template.replaceAll(key, dictionary[key]);
+  return template;
  }
 }
 
-exports.Common = Common;
+export { Common };
