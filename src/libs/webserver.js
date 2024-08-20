@@ -23,26 +23,13 @@ class WebServer {
    Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path, 2);
    process.exit(1);
   }
-
   if (Common.settings.web.standalone) {
-   Bun.serve({
-    fetch: this.getFetch(),
-    port: Common.settings.web.http_port
-   });
+   Bun.serve({ fetch: this.getFetch(), port: Common.settings.web.http_port });
    Common.addLog('HTTP server is running on port: ' + Common.settings.web.http_port);
-   Bun.serve({
-    fetch: this.getFetch(),
-    websocket: this.getWebSocket(),
-    port: Common.settings.web.https_port,
-    tls: certs
-   });
+   Bun.serve({ fetch: this.getFetch(), websocket: this.getWebSocket(), port: Common.settings.web.https_port, tls: certs });
    Common.addLog('HTTPS server is running on port: ' + Common.settings.web.https_port);
   } else {
-   Bun.serve({
-    fetch: this.getFetch(),
-    websocket: this.getWebSocket(),
-    unix: Common.settings.web.socket_path
-   });
+   Bun.serve({ fetch: this.getFetch(), websocket: this.getWebSocket(), unix: Common.settings.web.socket_path });
    const fs = require('fs');
    fs.chmodSync(Common.settings.web.socket_path, '777');
    Common.addLog('HTTP server is running on Unix socket: ' + Common.settings.web.socket_path);
@@ -51,12 +38,24 @@ class WebServer {
 
  getFetch() {
   return (req, server) => {
-   //console.log(req);
-   //console.log(server);
-   // TODO: Get proxied IP addresses first ('cf-connecting-ip', 'x-forwarded-for', ...)
-   Common.addLog(req.method + ' request from: ' + server.requestIP(req).address + ', URL: ' + req.url);
-   // TODO: redirect to specific HTTPS port (even other than 443)
-   if (req.url.startsWith('http://')) return new Response(null, { status: 301, headers: { Location: req.url.replace('http://', 'https://') } });
+   let clientIP = server.requestIP(req).address;
+   const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
+   for (const header of forwardedHeaders) {
+    if (header) {
+     clientIP = header.split(',')[0];
+     break;
+    }
+   }
+   Common.addLog(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
+   const url = new URL(req.url);
+   console.log(url);
+   if (url.protocol == 'http:') {
+    url.protocol = 'https:';
+    if (Common.settings.web.https_port !== 443) url.port = Common.settings.web.https_port;
+    else url.port = '';
+    console.log(url.toString());
+    return new Response(null, { status: 301, headers: { Location: url.toString() } });
+   }
    return this.getFile(req);
   };
  }

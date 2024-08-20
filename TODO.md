@@ -1,8 +1,9 @@
 # Bugs
 
+- When HTTPS server is running on a different port than 443, it does not work
+
 # Features
 
-- webserver.js - redirect HTTP to specific HTTPS port (even other than 443)
 - webserver.js - connect messages with this.api.getAPI
 - Convert API.js to Bun
 - Update README.md and INSTALL.md
