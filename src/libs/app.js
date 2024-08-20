@@ -72,7 +72,8 @@ class App {
      http_port: 80,
      https_port: 443,
      certificates_path: '/etc/letsencrypt/live/{DOMAIN}/',
-     socket_path: '/run/yellow-server.sock'
+     socket_path: '/run/yellow-server.sock',
+     root_directory: 'www'
     },
     other: {
      ttl_admin: 600,

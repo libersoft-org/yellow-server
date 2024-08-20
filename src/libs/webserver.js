@@ -48,12 +48,10 @@ class WebServer {
    }
    Common.addLog(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
    const url = new URL(req.url);
-   console.log(url);
    if (url.protocol == 'http:') {
     url.protocol = 'https:';
     if (Common.settings.web.https_port !== 443) url.port = Common.settings.web.https_port;
     else url.port = '';
-    console.log(url.toString());
     return new Response(null, { status: 301, headers: { Location: url.toString() } });
    }
    return this.getFile(req);
@@ -82,11 +80,13 @@ class WebServer {
  }
 
  async getFile(req) {
+  let webRoot = Common.settings.web.root_directory;
+  if (!webRoot.startsWith('/')) webRoot = path.join(Common.appPath, webRoot);
   const url = new URL(req.url);
   if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
-  const file = Bun.file(path.join(Common.appPath, 'www', url.pathname));
+  const file = Bun.file(path.join(webRoot, url.pathname));
   if (await file.exists()) return new Response(file);
-  else return new Response(await Bun.file(path.join(Common.appPath, 'www', 'notfound.html')));
+  else return new Response(await Bun.file(path.join(webRoot, 'notfound.html')));
  }
 }
 
