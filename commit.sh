@@ -7,8 +7,6 @@ EMAIL="info@libersoft.org"
 USER="libersoft-org"
 PASS=`cat ./.secret_git`
 
-# cd src && bun run format && cd ..
-
 if [ "$#" -eq 0 ]; then
  echo ""
  echo "------------------------"
