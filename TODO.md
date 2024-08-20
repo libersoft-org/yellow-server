@@ -4,7 +4,6 @@
 
 # Features
 
-- Test the WebSocket console
 - webserver.js - connect messages with this.api.getAPI
 - Convert API.js to Bun
 - Update README.md and INSTALL.md
