@@ -86,7 +86,11 @@ class WebServer {
   if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
   const file = Bun.file(path.join(webRoot, url.pathname));
   if (await file.exists()) return new Response(file);
-  else return new Response(await Bun.file(path.join(webRoot, 'notfound.html')));
+  else {
+   const notFile = Bun.file(path.join(webRoot, 'notfound.html'));
+   if (await notFile.exists()) return new Response(notFile);
+   else return new Response('<h1>404 Not Found</h1>', { status: 404, headers: { 'Content-Type': 'text/html' } });
+  }
  }
 }
 
