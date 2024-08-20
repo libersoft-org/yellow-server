@@ -24,4 +24,4 @@ class DNS {
  }
 }
 
-module.exports = DNS;
+export default DNS;

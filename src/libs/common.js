@@ -1,11 +1,12 @@
-import { EOL } from 'os';
-import { appendFileSync } from 'fs';
+import os from 'os';
+import fs from 'fs';
+import path from 'path';
 
 class Common {
  static appName = 'Yellow Server';
  static appVersion = '0.01';
- static settingsFile = 'settings.json';
- static appPath = import.meta.dir + '/';
+ static appPath = path.dirname(import.meta.dir) + '/';
+ static settingsFile = path.join(path.dirname(import.meta.dir), 'settings.json');
  static settings;
 
  static addLog(message, type = 0) {
@@ -18,7 +19,7 @@ class Common {
   ];
   const msg = message ?? '';
   console.log('\x1b[96m' + date + '\x1b[0m [' + logTypes[type].color + logTypes[type].text + '\x1b[0m] ' + msg);
-  if (this.settings?.other?.log_to_file) appendFileSync(this.appPath + this.settings.other.log_file, date + ' [' + logTypes[type].text + '] ' + msg + EOL);
+  if (this.settings?.other?.log_to_file) fs.appendFileSync(this.appPath + this.settings.other.log_file, date + ' [' + logTypes[type].text + '] ' + msg + os.EOL);
  }
 
  static translate(template, dictionary) {

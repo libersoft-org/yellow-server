@@ -1,6 +1,6 @@
-const Database = require('./database.js');
-const Common = require('./common.js').Common;
-const Argon2 = require('argon2');
+import Argon2 from 'argon2';
+import Database from './database.js';
+import { Common } from './common.js';
 
 class Data {
  domain_regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
@@ -111,4 +111,4 @@ class Data {
  }
 }
 
-module.exports = Data;
+export default Data;

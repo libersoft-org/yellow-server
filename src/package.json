@@ -1,7 +1,5 @@
 {
   "dependencies": {
-    "argon2": "*",
-    "elysia": "*",
-    "elysia-ip": "^1.0.7"
+    "argon2": "*"
   }
 }

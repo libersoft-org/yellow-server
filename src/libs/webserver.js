@@ -1,7 +1,6 @@
-const path = require('path');
-//const Elysia = require('elysia').Elysia;
-const API = require('./api.js');
-const Common = require('./common.js').Common;
+import path from 'path';
+//import API from './api.js';
+import { Common } from './common.js';
 
 class WebServer {
  async run() {
@@ -24,18 +23,6 @@ class WebServer {
    Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path, 2);
    process.exit(1);
   }
-  //const app = new Elysia()
-  //.onRequest(({ip, req}) => {
-  //console.log(req, ip);
-  // TODO: redirect to specific HTTPS port (even other than 443)
-  //if (req.request.url.startsWith('http://')) return new Response(null, { status: 301, headers: { Location: req.request.url.replace('http://', 'https://') } });
-  //Common.addLog(req.request.method + ' request from: ' + this.getIPAddress(req) + ', URL: ' + '/' + req.request.url.split('/').slice(3).join('/'));
-  //})
-  //.get('/*', async req => {
-  //this.getFile(req);
-  //console.log(req);
-  //});
-  // TODO: add notfound html
 
   if (Common.settings.web.standalone) {
    Bun.serve({
@@ -64,9 +51,15 @@ class WebServer {
 
  getFetch() {
   return (req, server) => {
-   console.log(req, server);
-   console.log(server.requestIP(req));
-   //return new Response('It works!');
+   console.log(req);
+   console.log('----------------------');
+   console.log(server);
+   // TODO: Get proxied IP addresses first ('cf-connecting-ip', 'x-forwarded-for', ...)
+   Common.addLog(req.method + ' request from: ' + server.requestIP(req).address + ', URL: ' + req.url);
+   // TODO: redirect to specific HTTPS port (even other than 443)
+   if (req.url.startsWith('http://')) return new Response(null, { status: 301, headers: { Location: req.url.replace('http://', 'https://') } });
+   return this.getFile(req);
+   // TODO: add notfound
   };
  }
 
@@ -95,16 +88,12 @@ class WebServer {
   const content = await Bun.file(path.join(Common.appPath, '../web/index.html')).text();
   return new Response(Common.translate(content, { '{TITLE}': Common.settings.web.name }), { headers: { 'Content-Type': 'text/html' } });
  }
- /*
+
  async getFile(req) {
-  const file = Bun.file(path.join(Common.appPath, '../web/', req.path));
+  const file = Bun.file(path.join(Common.appPath, 'web/', req.path));
   if (!(await file.exists())) return this.getIndex(req);
   else return new Response(file);
  }
-*/
- getIPAddress(req) {
-  return req.request.headers.get('cf-connecting-ip') || req.request.headers.get('x-forwarded-for') || req.request.remoteAddress || 'unknown';
- }
 }
 
-module.exports = WebServer;
+export default WebServer;

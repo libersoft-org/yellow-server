@@ -1,6 +1,7 @@
-const Data = require('./data.js');
-const Common = require('./common.js').Common;
-//const DNS = require('./dns.js');
+import os from 'os';
+import Data from './data.js';
+import { Common } from './common.js';
+//import DNS from './dns.js';
 
 class API {
  constructor() {
@@ -85,7 +86,6 @@ class API {
  }
 
  getSysInfo() {
-  const os = require('os');
   var networks = [];
   var net = os.networkInterfaces();
   for (var iface in net) {
@@ -144,4 +144,4 @@ class API {
  }
 }
 
-module.exports = API;
+export default API;

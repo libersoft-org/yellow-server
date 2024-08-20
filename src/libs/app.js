@@ -1,4 +1,6 @@
-const Common = require('./common.js').Common;
+import WebServer from './webserver.js';
+import Data from './data.js';
+import { Common } from './common.js';
 
 class App {
  async run() {
@@ -29,7 +31,6 @@ class App {
    Common.addLog(header);
    Common.addLog(dashes);
    Common.addLog('');
-   const WebServer = require('./webserver.js');
    this.webServer = new WebServer();
    await this.webServer.run();
   } catch (ex) {
@@ -89,7 +90,6 @@ class App {
 
  createDatabase() {
   this.loadSettings();
-  const Data = require('./data.js');
   const data = new Data();
   data.createDB();
   Common.addLog('Database was created sucessfully.');
@@ -107,7 +107,6 @@ class App {
    let password = await this.getInput('Enter the admin password:', true);
    if (password.length >= 8) {
     this.loadSettings();
-    const Data = require('./data.js');
     const data = new Data();
     data.adminAddAdmin(username, password);
     Common.addLog('Admin was created successfully.');
@@ -133,4 +132,4 @@ class App {
  }
 }
 
-module.exports = App;
+export default App;

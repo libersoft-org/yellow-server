@@ -1,5 +1,5 @@
-const { Database: SQLiteDatabase } = require('bun:sqlite');
-const Common = require('./common.js').Common;
+import { Database as SQLiteDatabase } from 'bun:sqlite';
+import { Common } from './common.js';
 
 class Database {
  constructor() {
@@ -72,4 +72,4 @@ class Database {
  }
 }
 
-module.exports = Database;
+export default Database;
