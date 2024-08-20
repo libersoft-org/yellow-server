@@ -51,15 +51,13 @@ class WebServer {
 
  getFetch() {
   return (req, server) => {
-   console.log(req);
-   console.log('----------------------');
-   console.log(server);
+   //console.log(req);
+   //console.log(server);
    // TODO: Get proxied IP addresses first ('cf-connecting-ip', 'x-forwarded-for', ...)
    Common.addLog(req.method + ' request from: ' + server.requestIP(req).address + ', URL: ' + req.url);
    // TODO: redirect to specific HTTPS port (even other than 443)
    if (req.url.startsWith('http://')) return new Response(null, { status: 301, headers: { Location: req.url.replace('http://', 'https://') } });
    return this.getFile(req);
-   // TODO: add notfound
   };
  }
 
@@ -84,15 +82,12 @@ class WebServer {
   };
  }
 
- async getIndex(req) {
-  const content = await Bun.file(path.join(Common.appPath, '../web/index.html')).text();
-  return new Response(Common.translate(content, { '{TITLE}': Common.settings.web.name }), { headers: { 'Content-Type': 'text/html' } });
- }
-
  async getFile(req) {
-  const file = Bun.file(path.join(Common.appPath, 'web/', req.path));
-  if (!(await file.exists())) return this.getIndex(req);
-  else return new Response(file);
+  const url = new URL(req.url);
+  if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
+  const file = Bun.file(path.join(Common.appPath, 'www', url.pathname));
+  if (await file.exists()) return new Response(file);
+  else return new Response(await Bun.file(path.join(Common.appPath, 'www', 'notfound.html')));
  }
 }
 
