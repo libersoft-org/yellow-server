@@ -10,7 +10,7 @@ class Common {
 
  static addLog(message, type = 0) {
   const d = new Date();
-  const date = d.toISOString().replace('T', ' ').split('.')[0];
+  const date = d.toLocaleString('sv-SE').replace('T', ' ');
   const logTypes = [
    { text: 'INFO', color: '\x1b[32m' },
    { text: 'WARNING', color: '\x1b[33m' },

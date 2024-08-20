@@ -4,6 +4,7 @@
 
 # Features
 
+- webserver.js - replace Elysia with own middleware (almost done, add file fetch)
 - webserver.js - redirect HTTP to specific HTTPS port (even other than 443)
 - Convert API.js to Bun
 - webserver.js - add 404 page (notfound.html);

