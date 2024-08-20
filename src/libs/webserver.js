@@ -38,6 +38,7 @@ class WebServer {
 
  getFetch() {
   return (req, server) => {
+   if (server.upgrade(req)) return;
    let clientIP = server.requestIP(req).address;
    const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
    for (const header of forwardedHeaders) {
@@ -62,19 +63,20 @@ class WebServer {
   return {
    message(ws, message) {
     // TODO: this.api.processAPI(message);
-    ws.send({ message, time: Date.now() });
+    Common.addLog('WebSocket message from: ' + ws.remoteAddress + ', message: ' + message);
+    const res = JSON.stringify({ message, time: new Date().toLocaleString() });
+    Common.addLog('WebSocket message to:   ' + ws.remoteAddress + ', message: ' + res);
+    ws.send(res);
    },
    open(ws) {
-    console.log(ws);
-    Common.addLog('Client connected: ' + ws.remoteAddress);
+    Common.addLog('WebSocket connected: ' + ws.remoteAddress);
    },
    close(ws, code, message) {
-    console.log(ws);
-    Common.addLog('Client disconnected: ' + ws.remoteAddress);
+    Common.addLog('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
    },
    drain(ws) {
-    console.log(ws);
     // the socket is ready to receive more data
+    console.log('DRAIN', ws);
    }
   };
  }
