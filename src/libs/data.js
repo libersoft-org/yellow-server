@@ -65,10 +65,12 @@ class Data {
   return await this.db.read('SELECT id, user, created FROM admins');
  }
 
- async adminAddAdmin(user, pass) {
-  let callIsValidInput = this.isValidInput([user, pass]);
-  if (!callIsValidInput) return this.res;
-  return await this.db.write('INSERT INTO admins (user, pass) VALUES ($1, $2)', [user, await this.getHash(pass)]);
+ async adminAddAdmin(username, password) {
+  username = username.toLowerCase();
+  if (username.length < 3 || username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username)) return { error: 1, message: 'Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
+  if (password.length < 8) return { error: 2, message: 'Password has to be 8 or more characters long' };
+  await this.db.write('INSERT INTO admins (username, password) VALUES (?, ?)', [username, await this.getHash(password)]);
+  return { error: 0, data: { message: 'Admin was created successfully' } };
  }
 
  async adminSetAdmin(id, user, pass) {
