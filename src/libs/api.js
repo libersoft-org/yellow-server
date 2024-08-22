@@ -104,7 +104,7 @@ class API {
     version: os.release()
    },
    cpu: {
-    cpus: os.cpus(),
+    cpus: os.cpus().map(cpu => cpu.model),
     arch: os.arch(),
     load: Math.min(Math.floor((os.loadavg()[0] * 100) / os.cpus().length), 100)
    },
