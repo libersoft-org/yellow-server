@@ -1,11 +1,11 @@
 import path from 'path';
-//import API from './api.js';
+import API from './api.js';
 import { Common } from './common.js';
 
 class WebServer {
  async run() {
   try {
-   //this.api = new API();
+   this.api = new API();
    await this.startServer();
   } catch (ex) {
    Common.addLog('Cannot start web server.', 2);
@@ -60,11 +60,11 @@ class WebServer {
  }
 
  getWebSocket() {
+  const api = this.api;
   return {
-   message(ws, message) {
-    // TODO: this.api.processAPI(message);
+   async message(ws, message) {
     Common.addLog('WebSocket message from: ' + ws.remoteAddress + ', message: ' + message);
-    const res = JSON.stringify({ message, time: new Date().toLocaleString() });
+    const res = JSON.stringify(await api.processAPI(message));
     Common.addLog('WebSocket message to:   ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
    },

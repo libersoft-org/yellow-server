@@ -21,6 +21,15 @@ class Common {
   console.log('\x1b[96m' + date + '\x1b[0m [' + logTypes[type].color + logTypes[type].text + '\x1b[0m] ' + msg);
   if (this.settings?.other?.log_to_file) fs.appendFileSync(this.appPath + this.settings.other.log_file, date + ' [' + logTypes[type].text + '] ' + msg + os.EOL);
  }
+
+ static isValidJSON(text) {
+  try {
+   JSON.parse(text);
+   return true;
+  } catch (e) {
+   return false;
+  }
+ }
 }
 
 export { Common };
