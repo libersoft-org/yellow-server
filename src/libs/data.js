@@ -23,20 +23,18 @@ class Data {
    process.exit(1);
   }
  }
+
  async adminCheckSession(sessionID) {
   return {};
  }
 
- async adminLogin(username, password) {
-  if (!username) return { error: 1, message: 'Username is missing' };
-  username = username.toLowerCase();
-  const res = await this.db.read('SELECT id, username, password FROM admins WHERE username = ?', [username]);
-  if (res.length !== 1) return { error: 2, message: 'Wrong username' };
-  if (!(await this.verifyHash(res[0].password, password))) return { error: 3, message: 'Wrong password' };
-  const session = this.getSessionID();
-  await this.db.write('INSERT INTO admins_logins (id_admins, session) VALUES (?, ?)', [res[0].id, session]);
-  await this.db.write('INSERT INTO admins_sessions (id_admins, session) VALUES (?, ?)', [res[0].id, session]);
-  return { error: 0, data: { session } };
+ async adminSetLogin(userID, sessionID) {
+  await this.db.write('INSERT INTO admins_logins (id_admins, session) VALUES (?, ?)', [userID, sessionID]);
+  await this.db.write('INSERT INTO admins_sessions (id_admins, session) VALUES (?, ?)', [userID, sessionID]);
+ }
+
+ async getAdminCredentials(username) {
+  return await this.db.read('SELECT id, username, password FROM admins WHERE username = ?', [username]);
  }
 
  async adminLogout(sessionID) {
@@ -61,12 +59,8 @@ class Data {
   return await this.db.read('SELECT id, user, created FROM admins');
  }
 
- async adminAddAdmin(username, password) {
-  username = username.toLowerCase();
-  if (username.length < 3 || username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username)) return { error: 1, message: 'Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
-  if (password.length < 8) return { error: 2, message: 'Password has to be 8 or more characters long' };
-  await this.db.write('INSERT INTO admins (username, password) VALUES (?, ?)', [username, await this.getHash(password)]);
-  return { error: 0, data: { message: 'Admin was created successfully' } };
+ async adminAddAdmin(username, passwordHash) {
+  await this.db.write('INSERT INTO admins (username, password) VALUES (?, ?)', [username, passwordHash]);
  }
 
  async adminSetAdmin(id, user, pass) {
@@ -77,33 +71,19 @@ class Data {
   return await this.db.write('DELETE FROM admins WHERE id = $1', [id]);
  }
 
- async userLogin(address, password) {
-  let [username, domain] = address.split('@');
-  if (!username || !domain) return { error: 1, message: 'Invalid username format' };
-  username = username.toLowerCase();
-  domain = domain.toLowerCase();
+ async getUserCredentials(username, domainID) {
+  const res = await this.db.read('SELECT id, username, password FROM users WHERE username = ? AND id_domains = ?', [username, domainID]);
+  return res.length === 1 ? res[0] : false;
+ }
+
+ async userSetLogin(userID, sessionID) {
+  await this.db.write('INSERT INTO users_logins (id_users, session) VALUES (?, ?)', [userID, sessionID]);
+  await this.db.write('INSERT INTO users_sessions (id_users, session) VALUES (?, ?)', [userID, sessionID]);
+ }
+
+ async getDomainID(domain) {
   const res = await this.db.read('SELECT id FROM domains WHERE name = ?', [domain]);
-  if (res.length !== 1) return { error: 2, message: 'Domain name not found on this server' };
-  const res2 = await this.db.read('SELECT id, username, password FROM users WHERE username = ? AND id_domains = ?', [username, res[0].id]);
-  if (res2.length !== 1) return { error: 3, message: 'Wrong username' };
-  if (!(await this.verifyHash(res2[0].password, password))) return { error: 4, message: 'Wrong password' };
-  const session = this.getSessionID();
-  await this.db.write('INSERT INTO users_logins (id_users, session) VALUES (?, ?)', [res[0].id, session]);
-  await this.db.write('INSERT INTO users_sessions (id_users, session) VALUES (?, ?)', [res[0].id, session]);
-  return { error: 0, data: { session } };
- }
-
- getSessionID(len) {
-  return Crypto.randomBytes(16).toString('hex') + Date.now().toString(16);
- }
-
- async getHash(password, memoryCost = 2 ** 16, hashLength = 64, timeCost = 20, parallelism = 1) {
-  // default: 64 MB RAM, 64 characters length, 20 difficulty to calculate, 1 thread needed
-  return await Argon2.hash(password, { memoryCost: memoryCost, hashLength: hashLength, timeCost: timeCost, parallelism: parallelism });
- }
-
- async verifyHash(hash, password) {
-  return await Argon2.verify(hash, password);
+  return res.length === 1 ? res[0].id : false;
  }
 }
 

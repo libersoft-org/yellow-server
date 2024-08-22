@@ -4,7 +4,6 @@
 
 # Features
 
-- data.js - atomize commands and move error returns to api.js, instead data.js functions should return true / false
 - Add commands to API.js
 - Add admin + user session cleaner from https://github.com/libersoft-org/telegram-memory-game/blob/main/src/libs/api.js
 - Update README.md and INSTALL.md
