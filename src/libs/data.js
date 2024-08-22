@@ -23,7 +23,7 @@ class Data {
    process.exit(1);
   }
  }
- async adminCheckSession(session) {
+ async adminCheckSession(sessionID) {
   return {};
  }
 
@@ -39,26 +39,22 @@ class Data {
   return { error: 0, data: { session } };
  }
 
- async adminGetTokenExists(token) {
-  let res = await this.db.read('SELECT id FROM admins_login WHERE token = $1', [token]);
+ async adminLogout(sessionID) {
+  await this.db.write('DELETE FROM admins_sessions WHERE session = ?', [sessionID]);
+  return true;
+ }
+
+ async adminCheckSession(sessionID) {
+  let res = await this.db.read('SELECT id FROM admins_sessions WHERE session = ?', [sessionID]);
   return res.length === 1 ? true : false;
  }
 
- async adminIsTokenValid(token) {
-  let res = await this.db.read('SELECT token, updated FROM admins_login WHERE token = $1', [token]);
-  return res.length > 0 ? true : false;
+ async adminDeleteSession(sessionID) {
+  return await this.db.write('DELETE FROM admins_login WHERE token = $1', [sessionID]);
  }
 
- async adminDeleteToken(token) {
-  return await this.db.write('DELETE FROM admins_login WHERE token = $1', [token]);
- }
-
- async adminDeleteOldTokens() {
-  return await this.db.write("DELETE FROM admins_login WHERE DATETIME(updated, ? || ' seconds') < DATETIME('now')", [Common.settings.admin_ttl]);
- }
-
- async adminUpdateTokenTime(token) {
-  return await this.db.write('UPDATE admins_login SET updated = $1 WHERE token = $2', [Common.getDateTime(new Date()), token]);
+ async adminUpdateSessionTime(sessionID) {
+  return await this.db.write('UPDATE admins_login SET updated = $1 WHERE token = $2', [Common.getDateTime(new Date()), sessionID]);
  }
 
  async adminGetAdmins() {

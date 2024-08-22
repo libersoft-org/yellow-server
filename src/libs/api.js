@@ -24,11 +24,11 @@ class API {
   if (!apiMethod) return { error: 903, message: 'Unknown command' };
   if (apiMethod.reqAdminSession) {
    if (!objReq.session) return { error: 995, message: 'Admin session is missing' };
-   if (await this.data.adminCheckSession(objReq.session)) return { error: 997, message: 'Admin session is not valid' };
+   if (!(await this.data.adminCheckSession(objReq.session))) return { error: 997, message: 'Admin session is not valid' };
   }
   if (apiMethod.reqUserSession && objReq.session) {
    if (!objReq.session) return { error: 996, message: 'User session is missing' };
-   if (await this.data.userCheckSession(objReq.session)) return { error: 998, message: 'User session is not valid' };
+   if (!(await this.data.userCheckSession(objReq.session))) return { error: 998, message: 'User session is not valid' };
   }
   return await apiMethod.method.call(this, objReq.data);
  }
@@ -37,19 +37,16 @@ class API {
   return await this.data.adminLogin(p.username, p.password);
  }
 
- adminLogout(p = null) {
-  console.log('admin logout');
-  return {};
+ async adminLogout(p = null) {
+  return await this.data.adminLogout(p.session);
  }
 
- userLogin(p = null) {
-  console.log('user login');
-  return {};
+ async userLogin(p = null) {
+  return await this.data.userLogin(p.username, p.password);
  }
 
- userLogout(p = null) {
-  console.log('user logout');
-  return {};
+ async userLogout(p = null) {
+  return await this.data.userLogout(p.session);
  }
 
  adminSysInfo() {
