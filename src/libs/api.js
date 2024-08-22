@@ -1,4 +1,6 @@
 import os from 'os';
+import Crypto from 'crypto';
+import Argon2 from 'argon2';
 import Data from './data.js';
 //import DNS from './dns.js';
 import { Common } from './common.js';
@@ -35,12 +37,12 @@ class API {
 
  async adminLogin(p = null) {
   if (!p.username) return { error: 1, message: 'Username is missing' };
-  username = username.toLowerCase();
-  const res = this.data.getAdminCredentials(username);
-  if (!res) return { error: 2, message: 'Wrong username' };
-  if (!(await this.data.verifyHash(res.password, p.password))) return { error: 3, message: 'Wrong password' };
+  p.username = p.username.toLowerCase();
+  const userCredentials = await this.data.getAdminCredentials(p.username);
+  if (!userCredentials) return { error: 2, message: 'Wrong username' };
+  if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 3, message: 'Wrong password' };
   const session = this.getSessionID();
-  await this.data.adminSetLogin(res.id, session);
+  await this.data.adminSetLogin(userCredentials.id, session);
   return { error: 0, data: { session } };
  }
 
@@ -63,7 +65,7 @@ class API {
   domain = domain.toLowerCase();
   const domainID = await this.data.getDomainID(domain);
   if (!domainID) return { error: 2, message: 'Domain name not found on this server' };
-  const userCredentials = this.data.getUserCredentials(username, domainID);
+  const userCredentials = await this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 3, message: 'Wrong user address' };
   if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 4, message: 'Wrong password' };
   const session = this.getSessionID();
