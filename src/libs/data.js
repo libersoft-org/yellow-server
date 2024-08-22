@@ -1,66 +1,51 @@
 import Argon2 from 'argon2';
+import Crypto from 'crypto';
 import Database from './database.js';
 import { Common } from './common.js';
 
 class Data {
- domain_regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
- name_regex = /^$|\s+/;
- alias_regex = /^[a-zA-Z*-]+(-[a-zA-Z*-]+)*$/;
-
  constructor() {
   this.db = new Database();
  }
 
  async createDB() {
   try {
-   await this.db.write('CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, user VARCHAR(32) NOT NULL UNIQUE, pass VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
-   await this.db.write('CREATE TABLE IF NOT EXISTS admins_login (id INTEGER PRIMARY KEY AUTOINCREMENT, id_admin INTEGER, token VARCHAR(64) NOT NULL UNIQUE, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_admin) REFERENCES admins(id))');
-   await this.db.write('CREATE TABLE IF NOT EXISTS aliases (id INTEGER PRIMARY KEY AUTOINCREMENT, alias VARCHAR(64) NOT NULL UNIQUE, id_domain INTEGER REFERENCES domains(id), mail VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (alias) REFERENCES users(name), UNIQUE(alias, id_domain))');
-   await this.db.write('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, email VARCHAR(255) NOT NULL, message TEXT NOT NULL, encryption VARCHAR(5) NOT NULL DEFAULT "", public_key VARCHAR(64) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
-   await this.db.write('CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT, id_user INTEGER, name VARCHAR(64) NOT NULL, visible_name VARCHAR(255), email VARCHAR(255) NOT NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_user) REFERENCES users(id))');
+   await this.db.write('CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(32) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+   await this.db.write('CREATE TABLE IF NOT EXISTS admins_logins (id INTEGER PRIMARY KEY AUTOINCREMENT, id_admins INTEGER, session VARCHAR(128) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_admins) REFERENCES admins(id))');
+   await this.db.write('CREATE TABLE IF NOT EXISTS admins_sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, id_admins INTEGER, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_admins) REFERENCES admins(id))');
+   await this.db.write('CREATE TABLE IF NOT EXISTS domains (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(255) NOT NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+   await this.db.write('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, id_domains INTEGER, name VARCHAR(64) NOT NULL UNIQUE, visible_name VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domains) REFERENCES domains(id), UNIQUE (name, id_domains))');
+   await this.db.write('CREATE TABLE IF NOT EXISTS users_logins (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, session VARCHAR(128) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
+   await this.db.write('CREATE TABLE IF NOT EXISTS users_sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
+   await this.db.write('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, recipient VARCHAR(255) NOT NULL, message TEXT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
   } catch (ex) {
    Common.addLog(ex);
    process.exit(1);
   }
  }
-
- isValidInput(input) {
-  for (let i = 0; i < input.length; i++) {
-   if (input[i] === undefined || input[i] === '' || !input[i]) return false;
-  }
-  return true;
+ async adminCheckSession(session) {
+  return {};
  }
 
- isValidString(str) {
-  return !/^\.|\.$|\s/.test(str);
- }
-
- validateIDN(input) {
-  input = input.toString();
-  const normalizedValue = input.normalize('NFC');
-  const punycodeValue = punycode.toASCII(normalizedValue);
-  if (input !== punycodeValue) return false;
-  else return true;
- }
-
- async adminGetLogin(user, pass) {
-  var res = await this.db.read('SELECT id, user, pass FROM admins WHERE user = $1', [user.toLowerCase()]);
-  if (res.length === 1) {
-   if (await this.verifyHash(res[0].pass, pass)) {
-    var token = this.getToken(64);
-    await this.db.write('INSERT INTO admins_login (id_admin, token) VALUES ($1, $2)', [res[0].id, token]);
-    return { logged: true, token: token, id: res[0].id };
-   } else return { logged: false, message: 'Wrong username or password' };
-  } else return { logged: false, message: 'Wrong username or password' };
+ async adminLogin(username, password) {
+  if (!username) return { error: 1, message: 'Username is missing' };
+  username = username.toLowerCase();
+  const res = await this.db.read('SELECT id, username, password FROM admins WHERE username = ?', [username]);
+  if (res.length !== 1) return { error: 2, message: 'Wrong username' };
+  if (!(await this.verifyHash(res[0].password, password))) return { error: 3, message: 'Wrong password' };
+  const session = this.getSessionID();
+  await this.db.write('INSERT INTO admins_logins (id_admins, session) VALUES (?, ?)', [res[0].id, session]);
+  await this.db.write('INSERT INTO admins_sessions (id_admins, session) VALUES (?, ?)', [res[0].id, session]);
+  return { error: 0, data: { session } };
  }
 
  async adminGetTokenExists(token) {
-  var res = await this.db.read('SELECT id FROM admins_login WHERE token = $1', [token]);
+  let res = await this.db.read('SELECT id FROM admins_login WHERE token = $1', [token]);
   return res.length === 1 ? true : false;
  }
 
  async adminIsTokenValid(token) {
-  var res = await this.db.read('SELECT token, updated FROM admins_login WHERE token = $1', [token]);
+  let res = await this.db.read('SELECT token, updated FROM admins_login WHERE token = $1', [token]);
   return res.length > 0 ? true : false;
  }
 
@@ -94,11 +79,24 @@ class Data {
   return await this.db.write('DELETE FROM admins WHERE id = $1', [id]);
  }
 
- getToken(len) {
-  let res = '';
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < len; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
-  return res;
+ async userLogin(address, password) {
+  let [username, domain] = address.split('@');
+  if (!username || !domain) return { error: 1, message: 'Invalid username format' };
+  username = username.toLowerCase();
+  domain = domain.toLowerCase();
+  const res = await this.db.read('SELECT id FROM domains WHERE name = ?', [domain]);
+  if (res.length !== 1) return { error: 2, message: 'Domain name not found on this server' };
+  const res2 = await this.db.read('SELECT id, username, password FROM users WHERE username = ? AND id_domains = ?', [username, res[0].id]);
+  if (res2.length !== 1) return { error: 3, message: 'Wrong username' };
+  if (!(await this.verifyHash(res2[0].password, password))) return { error: 4, message: 'Wrong password' };
+  const session = this.getSessionID();
+  await this.db.write('INSERT INTO users_logins (id_users, session) VALUES (?, ?)', [res[0].id, session]);
+  await this.db.write('INSERT INTO users_sessions (id_users, session) VALUES (?, ?)', [res[0].id, session]);
+  return { error: 0, data: { session } };
+ }
+
+ getSessionID(len) {
+  return Crypto.randomBytes(16).toString('hex') + Date.now().toString(16);
  }
 
  async getHash(password, memoryCost = 2 ** 16, hashLength = 64, timeCost = 20, parallelism = 1) {

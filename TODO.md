@@ -4,8 +4,8 @@
 
 # Features
 
-- webserver.js - connect messages with this.api.getAPI
-- Convert API.js to Bun
+- Add commands to API.js
+- Add admin + user session cleaner from https://github.com/libersoft-org/telegram-memory-game/blob/main/src/libs/api.js
 - Update README.md and INSTALL.md
 - Delete ROADMAP.md when it's not needed anymore
 

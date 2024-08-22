@@ -1,16 +1,16 @@
-# The New E-Mail Protocol (NEMP) - server installation and configuration
+# Yellow Server - installation and configuration
 
 ## Before the installation
 
 Before you start the server installation, you need to have Linux server with root access and your own domain name.
 
-Then add this domain record in your DNS for your NEMP server:
+Then add this domain record in your DNS for your AMTP server:
 
-- **A** record of your NEMP server, eg.: **A - nemp.domain.tld** targeting your NEMP server IP address
+- **A** record of your AMTP server, eg.: **A - amtp.domain.tld** targeting your AMTP server IP address
 
-Now for each domain you'd like to use with your NEMP server add this record:
+Now for each domain you'd like to use with your AMTP server add this record:
 
-- **TXT** record that identifies your NEMP server, eg.: **domain.tld TXT nemp=nemp.domain.tld:443**
+- **TXT** record that identifies your AMTP server, eg.: **domain.tld TXT amtp=amtp.domain.tld:443**
 
 ## Installation
 
@@ -30,8 +30,8 @@ cd /root/
 curl -fsSL https://deb.nodesource.com/setup_19.x | bash -
 apt -y install nodejs
 npm i -g npm
-git clone https://github.com/libersoft-org/nemp-server.git
-cd nemp-server/src/
+git clone https://github.com/libersoft-org/amtp-server.git
+cd amtp-server/src/
 npm i
 ```
 
@@ -46,8 +46,8 @@ cd /root/
 curl -fsSL https://rpm.nodesource.com/setup_19.x | bash -
 dnf -y install nodejs
 npm i -g npm
-git clone https://github.com/libersoft-org/nemp-server.git
-cd nemp-server/src/
+git clone https://github.com/libersoft-org/amtp-server.git
+cd amtp-server/src/
 npm i
 ```
 
@@ -56,19 +56,19 @@ npm i
 **1. After the installation is completed, you need to create a new server settings file using:**
 
 ```console
-node index.js --create-settings
+./start.sh --create-settings
 ```
 
 **2. Create a new database file using:**
 
 ```console
-node index.js --create-database
+./start.sh --create-database
 ```
 
 **3. Create a new admin account:**
 
 ```console
-node index.js --create-admin
+./start.sh --create-admin
 ```
 
 ... and enter you admin name and password when prompted.
@@ -106,7 +106,7 @@ Now you can just start the server using:
 You can attach the server screen using:
 
 ```console
-screen -x nemp
+screen -x amtp
 ```
 
 To detach screen press **CTRL+A** and then **CTRL+D**.
@@ -114,18 +114,18 @@ To detach screen press **CTRL+A** and then **CTRL+D**.
 Alternatively you can run server without using **screen** by:
 
 ```console
-node index.js
+./start.sh
 ```
 
 To stop the server just press **CTRL+C**.
 
 ## Web Admin
 
-- [**Installation instructions for NEMP Web Admin**](https://github.com/libersoft-org/nemp-admin-web/blob/main/INSTALL.md)
+- [**Installation instructions for AMTP Web Admin**](https://github.com/libersoft-org/amtp-admin-web/blob/main/INSTALL.md)
 
 ## Web Mail Client
 
-- [**installation instructions for NEMP Web Client**](https://github.com/libersoft-org/nemp-client-web/blob/main/INSTALL.md)
+- [**installation instructions for AMTP Web Client**](https://github.com/libersoft-org/amtp-client-web/blob/main/INSTALL.md)
 
 ## Developer Console
 

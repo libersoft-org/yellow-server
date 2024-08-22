@@ -11,7 +11,7 @@ class App {
     break;
    case 1:
     if (args[0] === '--create-settings') await this.createSettings();
-    else if (args[0] === '--create-database') this.createDatabase();
+    else if (args[0] === '--create-database') await this.createDatabase();
     else if (args[0] === '--create-admin') this.createAdmin();
     else this.getHelp();
     break;
@@ -51,7 +51,7 @@ class App {
  async loadSettings() {
   const file = Bun.file(Common.settingsFile);
   if (await file.exists()) {
-   Common.settings = await file.json(); // TODO: otestovat, kdyz nebude validni JSON
+   Common.settings = await file.json(); // TODO: test what happens if JSON is invalid
   } else {
    Common.addLog('Error: Settings file "' + Common.settingsFile + '" not found. Please run this application again using: node index.js --create-settings');
    Common.addLog('');
@@ -89,47 +89,66 @@ class App {
   }
  }
 
- createDatabase() {
-  this.loadSettings();
+ async createDatabase() {
+  await this.loadSettings();
   const data = new Data();
-  data.createDB();
+  await data.createDB();
   Common.addLog('Database was created sucessfully.');
   Common.addLog('');
  }
 
  async createAdmin() {
+  let username;
+  let password;
   while (true) {
-   let username = await this.getInput('Enter the admin username:');
+   username = await this.getInput('Enter the admin username', false, 'admin');
    username = username.toLowerCase();
-   if (username.length >= 3 && username.length <= 16 && /^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username)) break;
-   else Common.addLog('Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row.');
+   if (username.length < 3 || username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username)) Common.addLog('Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row.');
+   else break;
   }
   while (true) {
-   let password = await this.getInput('Enter the admin password:', true);
-   if (password.length >= 8) {
-    this.loadSettings();
-    const data = new Data();
-    data.adminAddAdmin(username, password);
-    Common.addLog('Admin was created successfully.');
-    break;
-   } else Common.addLog('Password has to be 8 or more characters long.');
+   password = await this.getInput('Enter the admin password', true);
+   if (password.length < 8) Common.addLog('Password has to be 8 or more characters long.');
+   else break;
   }
+  await this.loadSettings();
+  const data = new Data();
+  await data.adminAddAdmin(username, password);
+  Common.addLog('Admin was created successfully.');
+  Common.addLog('');
+  process.exit(1);
  }
 
  async getInput(promptMessage, isPassword = false, defaultValue = '') {
-  let input = '';
-  process.stdout.write(promptMessage + (defaultValue ? '[' + defaultValue + ']' : '') + ': ');
-  for await (const chunk of process.stdin) {
-   const char = new TextDecoder().decode(chunk);
-   if (char === '\n') {
-    input = input || defaultValue;
-    break;
-   }
-   if (isPassword) process.stdout.write('*');
-   else process.stdout.write(char);
-   input += char;
-  }
-  return input;
+  return new Promise(resolve => {
+   let input = '';
+   process.stdin.setRawMode(true);
+   process.stdin.resume();
+   process.stdout.write(promptMessage + (defaultValue ? ' [' + defaultValue + ']' : '') + ': ');
+   const onData = chunk => {
+    const char = chunk.toString();
+    if (char === '\n' || char === '\r') {
+     process.stdin.setRawMode(false);
+     process.stdin.removeListener('data', onData);
+     input = input.trim() || defaultValue;
+     process.stdout.write('\n');
+     resolve(input);
+    } else if (char === '\u0003') {
+     process.stdin.setRawMode(false);
+     process.exit();
+    } else if (char === '\u007f') {
+     if (input.length > 0) {
+      input = input.slice(0, -1);
+      process.stdout.write('\b \b');
+     }
+    } else {
+     if (isPassword) process.stdout.write('*');
+     else process.stdout.write(char);
+     input += char;
+    }
+   };
+   process.stdin.on('data', onData);
+  });
  }
 }
 
