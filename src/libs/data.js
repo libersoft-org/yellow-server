@@ -34,7 +34,8 @@ class Data {
  }
 
  async getAdminCredentials(username) {
-  return await this.db.read('SELECT id, username, password FROM admins WHERE username = ?', [username]);
+  const res = await this.db.read('SELECT id, username, password FROM admins WHERE username = ?', [username]);
+  return res.length === 1 ? res[0] : false;
  }
 
  async adminLogout(sessionID) {

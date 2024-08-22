@@ -37,10 +37,10 @@ class API {
   if (!p.username) return { error: 1, message: 'Username is missing' };
   username = username.toLowerCase();
   const res = this.data.getAdminCredentials(username);
-  if (res.length !== 1) return { error: 2, message: 'Wrong username' };
-  if (!(await this.data.verifyHash(res[0].password, password))) return { error: 3, message: 'Wrong password' };
+  if (!res) return { error: 2, message: 'Wrong username' };
+  if (!(await this.data.verifyHash(res.password, p.password))) return { error: 3, message: 'Wrong password' };
   const session = this.getSessionID();
-  await this.data.adminSetLogin(res[0].id, session);
+  await this.data.adminSetLogin(res.id, session);
   return { error: 0, data: { session } };
  }
 
@@ -65,7 +65,7 @@ class API {
   if (!domainID) return { error: 2, message: 'Domain name not found on this server' };
   const userCredentials = this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 3, message: 'Wrong user address' };
-  if (!(await this.verifyHash(userCredentials.password, userCredentials.password))) return { error: 4, message: 'Wrong password' };
+  if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 4, message: 'Wrong password' };
   const session = this.getSessionID();
   this.data.userSetLogin(userID, session);
   return { error: 0, data: { session } };
