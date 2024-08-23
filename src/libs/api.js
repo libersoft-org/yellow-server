@@ -11,10 +11,21 @@ class API {
   //this.dns = new DNS();
   this.apiMethods = {
    admin_login: { method: this.adminLogin, reqAdminSession: false, reqUserSession: false },
-   admin_logout: { method: this.adminLogout, reqAdminSession: true, reqUserSession: false },
+   admin_list_sessions: { method: this.adminListSessions, reqAdminSession: true, reqUserSession: false },
+   admin_del_session: { method: this.adminDelSession, reqAdminSession: true, reqUserSession: false },
+   admin_add_admin: { method: this.adminAddAdmin, reqAdminSession: true, reqUserSession: false },
+   admin_edit_admin: { method: this.adminEditAdmin, reqAdminSession: true, reqUserSession: false },
+   admin_del_admin: { method: this.adminDelAdmin, reqAdminSession: true, reqUserSession: false },
+   admin_add_domain: { method: this.adminAddDomain, reqAdminSession: true, reqUserSession: false },
+   admin_edit_domain: { method: this.adminEditDomain, reqAdminSession: true, reqUserSession: false },
+   admin_del_domain: { method: this.adminDelDomain, reqAdminSession: true, reqUserSession: false },
+   admin_add_user: { method: this.adminAddUser, reqAdminSession: true, reqUserSession: false },
+   admin_edit_user: { method: this.adminEditUser, reqAdminSession: true, reqUserSession: false },
+   admin_del_user: { method: this.adminDelUser, reqAdminSession: true, reqUserSession: false },
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true, reqUserSession: false },
    user_login: { method: this.userLogin, reqAdminSession: false, reqUserSession: false },
-   user_logout: { method: this.userLogout, reqAdminSession: false, reqUserSession: true }
+   user_list_sessions: { method: this.userListSessions, reqAdminSession: false, reqUserSession: true },
+   user_del_session: { method: this.userDelSession, reqAdminSession: false, reqUserSession: true }
   };
  }
 
@@ -35,60 +46,106 @@ class API {
   return await apiMethod.method.call(this, objReq.data);
  }
 
- async adminLogin(p = null) {
-  if (!p.username) return { error: 1, message: 'Username is missing' };
+ async adminLogin(p) {
+  if (!p) return { error: 1, message: 'Parameters are missing' };
+  if (!p.username) return { error: 2, message: 'Username is missing' };
+  if (!p.password) return { error: 3, message: 'Password is missing' };
   p.username = p.username.toLowerCase();
   const userCredentials = await this.data.getAdminCredentials(p.username);
-  if (!userCredentials) return { error: 2, message: 'Wrong username' };
-  if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 3, message: 'Wrong password' };
+  if (!userCredentials) return { error: 4, message: 'Wrong username' };
+  if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 5, message: 'Wrong password' };
   const session = this.getSessionID();
   await this.data.adminSetLogin(userCredentials.id, session);
   return { error: 0, data: { session } };
  }
 
- async adminLogout(p = null) {
-  return await this.data.adminLogout(p.session);
+ async adminListSessions() {
+  const res = await this.data.adminListSessions();
+  return { error: 950, message: 'Not yet implemented' };
  }
 
- async adminAddAdmin(p = null) {
-  username = username.toLowerCase();
-  if (username.length < 3 || username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username)) return { error: 1, message: 'Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
-  if (password.length < 8) return { error: 2, message: 'Password has to be 8 or more characters long' };
-  await this.data.adminAddAdmin(username, await this.getHash(password));
+ async adminDelSession(p) {
+  if (!p) return { error: 1, message: 'Parameters are missing' };
+  if (!p.session) return { error: 2, message: 'Session to be deleted not set' };
+  const res = await this.data.adminDelSession(p.session);
+  if (!res) return { error: 3, message: 'Session to be deleted not found' };
+  return { error: 0, message: 'Session was deleted' };
+ }
+
+ async adminAddAdmin(p) {
+  if (!p) return { error: 1, message: 'Parameters are missing' };
+  if (!p.username) return { error: 2, message: 'Username is missing' };
+  if (!p.password) return { error: 3, message: 'Password is missing' };
+  p.username = p.username.toLowerCase();
+  if (p.username.length < 3 || p.username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username)) return { error: 4, message: 'Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
+  if (p.password.length < 8) return { error: 5, message: 'Password has to be 8 or more characters long' };
+  await this.data.adminAddAdmin(p.username, await this.getHash(p.password));
   return { error: 0, data: { message: 'Admin was created successfully' } };
  }
 
- async userLogin(p = null) {
+ async adminEditAdmin(p) {
+  return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async adminDelAdmin(p) {
+  return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async adminAddDomain(p) {
+  return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async adminEditDomain(p) {
+  return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async adminDelDomain(p) {
+  return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async adminAddUser(p) {
+  return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async adminEditUser(p) {
+  return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async adminDelUser(p) {
+  return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async userLogin(p) {
+  if (!p) return { error: 1, message: 'Parameters are missing' };
+  if (!p.address) return { error: 2, message: 'Address is missing' };
+  if (!p.password) return { error: 3, message: 'Password is missing' };
   let [username, domain] = p.address.split('@');
-  if (!username || !domain) return { error: 1, message: 'Invalid username format' };
+  if (!username || !domain) return { error: 4, message: 'Invalid username format' };
   username = username.toLowerCase();
   domain = domain.toLowerCase();
   const domainID = await this.data.getDomainID(domain);
-  if (!domainID) return { error: 2, message: 'Domain name not found on this server' };
+  if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
   const userCredentials = await this.data.getUserCredentials(username, domainID);
-  if (!userCredentials) return { error: 3, message: 'Wrong user address' };
-  if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 4, message: 'Wrong password' };
+  if (!userCredentials) return { error: 6, message: 'Wrong user address' };
+  if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 7, message: 'Wrong password' };
   const session = this.getSessionID();
   this.data.userSetLogin(userID, session);
   return { error: 0, data: { session } };
  }
 
- async userLogout(p = null) {
-  return await this.data.userLogout(p.session);
+ async userListSessions(p = null) {
+  return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async userDelSession(p) {
+  if (!p) return { error: 1, message: 'Parameters are missing' };
+  if (!p.session) return { error: 2, message: 'Session to be deleted not set' };
+  const res = await this.data.userLogout(p.session);
+  if (!res) return { error: 3, message: 'Session to be deleted not found' };
+  return { error: 0, message: 'Session was deleted' };
  }
 
  adminSysInfo() {
-  let networks = [];
-  let net = os.networkInterfaces();
-  for (let iface in net) {
-   let ifc = {};
-   if (iface != 'lo') {
-    let addresses = [];
-    for (let i = 0; i < net[iface].length; i++) addresses.push(net[iface][i].address);
-    ifc[iface] = addresses;
-    networks.push(ifc);
-   }
-  }
   function getUptime(seconds) {
    const days = Math.floor(seconds / 86400);
    const hours = Math.floor((seconds % 86400) / 3600);
@@ -113,8 +170,7 @@ class API {
     free: os.freemem()
    },
    hostname: os.hostname(),
-   // networks: JSON.stringify(networks),
-   networks: networks,
+   networks: os.networkInterfaces(),
    uptime: getUptime(os.uptime())
   };
  }

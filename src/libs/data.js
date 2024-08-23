@@ -22,8 +22,9 @@ class Data {
   }
  }
 
- async adminCheckSession(sessionID) {
-  return {};
+ async getAdminCredentials(username) {
+  const res = await this.db.read('SELECT id, username, password FROM admins WHERE username = ?', [username]);
+  return res.length === 1 ? res[0] : false;
  }
 
  async adminSetLogin(userID, sessionID) {
@@ -31,30 +32,21 @@ class Data {
   await this.db.write('INSERT INTO admins_sessions (id_admins, session) VALUES (?, ?)', [userID, sessionID]);
  }
 
- async getAdminCredentials(username) {
-  const res = await this.db.read('SELECT id, username, password FROM admins WHERE username = ?', [username]);
-  return res.length === 1 ? res[0] : false;
- }
-
- async adminLogout(sessionID) {
-  await this.db.write('DELETE FROM admins_sessions WHERE session = ?', [sessionID]);
-  return true;
- }
-
  async adminCheckSession(sessionID) {
   let res = await this.db.read('SELECT id FROM admins_sessions WHERE session = ?', [sessionID]);
   return res.length === 1 ? true : false;
  }
 
- async adminDeleteSession(sessionID) {
-  return await this.db.write('DELETE FROM admins_login WHERE token = $1', [sessionID]);
+ async adminDelSession(sessionID) {
+  await this.db.write('DELETE FROM admins_sessions WHERE session = ?', [sessionID]);
+  return true;
  }
 
  async adminUpdateSessionTime(sessionID) {
-  return await this.db.write('UPDATE admins_login SET updated = $1 WHERE token = $2', [Common.getDateTime(new Date()), sessionID]);
+  return await this.db.write('UPDATE admins_sessions SET last = CURRENT_TIMESTAMP WHERE session = ?', [sessionID]);
  }
 
- async adminGetAdmins() {
+ async adminListAdmins() {
   return await this.db.read('SELECT id, user, created FROM admins');
  }
 
@@ -62,12 +54,14 @@ class Data {
   await this.db.write('INSERT INTO admins (username, password) VALUES (?, ?)', [username, passwordHash]);
  }
 
- async adminSetAdmin(id, user, pass) {
-  return await this.db.write('UPDATE admins SET user = $1, pass = $2 WHERE id = $3', [user, pass != '' ? ', pass = "' + pass + '"' : '', id]);
+ async adminEditAdmin(id, user, pass) {
+  return await this.db.write('UPDATE admins SET user = ?, pass = ? WHERE id = ?', [user, pass != '' ? ', pass = "' + pass + '"' : '', id]);
  }
 
  async adminDelAdmin(id) {
-  return await this.db.write('DELETE FROM admins WHERE id = $1', [id]);
+  await this.db.write('DELETE FROM admins_logins WHERE id_admins = ?', [id]);
+  await this.db.write('DELETE FROM admins_sessions WHERE id_admins = ?', [id]);
+  await this.db.write('DELETE FROM admins WHERE id = ?', [id]);
  }
 
  async getUserCredentials(username, domainID) {
@@ -80,9 +74,23 @@ class Data {
   await this.db.write('INSERT INTO users_sessions (id_users, session) VALUES (?, ?)', [userID, sessionID]);
  }
 
+ async userCheckSession(sessionID) {
+  let res = await this.db.read('SELECT id FROM users_sessions WHERE session = ?', [sessionID]);
+  return res.length === 1 ? true : false;
+ }
+
  async getDomainID(domain) {
   const res = await this.db.read('SELECT id FROM domains WHERE name = ?', [domain]);
   return res.length === 1 ? res[0].id : false;
+ }
+
+ async userDelSession(sessionID) {
+  await this.db.write('DELETE FROM admins_sessions WHERE session = ?', [sessionID]);
+  return true;
+ }
+
+ async userUpdateSessionTime(sessionID) {
+  return await this.db.write('UPDATE users_sessions SET last = CURRENT_TIMESTAMP WHERE session = ?', [sessionID]);
  }
 }
 

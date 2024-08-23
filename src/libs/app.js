@@ -24,7 +24,7 @@ class App {
  async startServer() {
   try {
    await this.loadSettings();
-   const header = Common.appName + ' v.' + Common.appVersion;
+   const header = Common.appName + ' ver. ' + Common.appVersion;
    const dashes = '='.repeat(header.length);
    Common.addLog('');
    Common.addLog(dashes);
