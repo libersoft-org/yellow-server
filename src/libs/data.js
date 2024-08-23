@@ -27,22 +27,29 @@ class Data {
   return res.length === 1 ? res[0] : false;
  }
 
- async adminSetLogin(userID, sessionID) {
-  await this.db.write('INSERT INTO admins_logins (id_admins, session) VALUES (?, ?)', [userID, sessionID]);
-  await this.db.write('INSERT INTO admins_sessions (id_admins, session) VALUES (?, ?)', [userID, sessionID]);
+ async adminSetLogin(adminID, sessionID) {
+  await this.db.write('INSERT INTO admins_logins (id_admins, session) VALUES (?, ?)', [adminID, sessionID]);
+  await this.db.write('INSERT INTO admins_sessions (id_admins, session) VALUES (?, ?)', [adminID, sessionID]);
  }
 
  async adminCheckSession(sessionID) {
-  let res = await this.db.read('SELECT id FROM admins_sessions WHERE session = ?', [sessionID]);
+  const res = await this.db.read('SELECT id FROM admins_sessions WHERE session = ?', [sessionID]);
   return res.length === 1 ? true : false;
  }
 
  async getAdminIDBySession(sessionID) {
-  let res = await this.db.read('SELECT id_admins FROM admins_sessions WHERE session = ?', [sessionID]);
+  const res = await this.db.read('SELECT id_admins FROM admins_sessions WHERE session = ?', [sessionID]);
   return res.length === 1 ? res[0].id_admins : false;
  }
 
- async adminDelSession(sessionID) {
+ async adminListSessions(adminID) {
+  console.log(adminID);
+  const res = await this.db.read('SELECT session, last, created FROM admins_sessions WHERE id_admins = ?', [adminID]);
+  console.log(res);
+  return res.length > 0 ? res : false;
+ }
+
+ async adminDelSession(adminID, sessionID) {
   await this.db.write('DELETE FROM admins_sessions WHERE session = ?', [sessionID]);
   return true;
  }
@@ -59,8 +66,8 @@ class Data {
   await this.db.write('INSERT INTO admins (username, password) VALUES (?, ?)', [username, passwordHash]);
  }
 
- async adminEditAdmin(id, user, pass) {
-  return await this.db.write('UPDATE admins SET user = ?, pass = ? WHERE id = ?', [user, pass != '' ? ', pass = "' + pass + '"' : '', id]);
+ async adminEditAdmin(id, username, password) {
+  return await this.db.write('UPDATE admins SET user = ?, pass = ? WHERE id = ?', [username, password != '' ? ', pass = "' + password + '"' : '', id]);
  }
 
  async adminDelAdmin(id) {
@@ -80,7 +87,7 @@ class Data {
  }
 
  async userCheckSession(sessionID) {
-  let res = await this.db.read('SELECT id FROM users_sessions WHERE session = ?', [sessionID]);
+  const res = await this.db.read('SELECT id FROM users_sessions WHERE session = ?', [sessionID]);
   return res.length === 1 ? true : false;
  }
 

@@ -5,7 +5,18 @@
 # Features
 
 - Fix user logout, admin login and admin logout
-- Add new commands to API.js
+- Add new commands to API.js:
+  - Admin - Logout - Allow delete only own session IDs
+  - Admin - List / add / edit / delete admins
+  - Admin - List / add / edit / delete domains
+  - Admin - List / add / edit / delete users
+  - User - Login
+  - User - List sessions
+  - User - Logout
+  - User - Send message
+  - User - Get other user's info (visible name etc.)
+  - User - Get messages - with count, offset
+  - User - Subscribe to get new messages
 - Add admin + user session cleaner from https://github.com/libersoft-org/telegram-memory-game/blob/main/src/libs/api.js
 - Update README.md and INSTALL.md
 - Delete ROADMAP.md when it's not needed anymore

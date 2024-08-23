@@ -13,12 +13,15 @@ class API {
    admin_login: { method: this.adminLogin },
    admin_list_sessions: { method: this.adminListSessions, reqAdminSession: true },
    admin_del_session: { method: this.adminDelSession, reqAdminSession: true },
+   admin_list_admins: { method: this.adminListAdmins, reqAdminSession: true },
    admin_add_admin: { method: this.adminAddAdmin, reqAdminSession: true },
    admin_edit_admin: { method: this.adminEditAdmin, reqAdminSession: true },
    admin_del_admin: { method: this.adminDelAdmin, reqAdminSession: true },
+   admin_list_domians: { method: this.adminListDomains, reqAdminSession: true },
    admin_add_domain: { method: this.adminAddDomain, reqAdminSession: true },
    admin_edit_domain: { method: this.adminEditDomain, reqAdminSession: true },
    admin_del_domain: { method: this.adminDelDomain, reqAdminSession: true },
+   admin_list_users: { method: this.adminListUsers, reqAdminSession: true },
    admin_add_user: { method: this.adminAddUser, reqAdminSession: true },
    admin_edit_user: { method: this.adminEditUser, reqAdminSession: true },
    admin_del_user: { method: this.adminDelUser, reqAdminSession: true },
@@ -35,19 +38,23 @@ class API {
   if (!req.command) return { error: 999, message: 'Command not set' };
   const apiMethod = this.apiMethods[req.command];
   if (!apiMethod) return { error: 903, message: 'Unknown command' };
-  let userID;
-  if (apiMethod.reqAdminSession) {
-   if (!req.session) return { error: 995, message: 'Admin session is missing' };
-   if (!(await this.data.adminCheckSession(req.session))) return { error: 997, message: 'Admin session is not valid' };
-   userID = await this.data.getAdminIDBySession(req.session);
-  } else if (apiMethod.reqUserSession) {
-   if (!req.session) return { error: 996, message: 'User session is missing' };
-   if (!(await this.data.userCheckSession(req.session))) return { error: 998, message: 'User session is not valid' };
-   userID = await this.data.getUserIDBySession(req.session);
-  }
   const context = {};
-  if (req.session) context.sessionID = req.session;
-  if (userID) context.userID = userID;
+  if (apiMethod.reqAdminSession) {
+   if (!req.sessionID) return { error: 995, message: 'Admin session is missing' };
+   if (!(await this.data.adminCheckSession(req.sessionID))) return { error: 997, message: 'Admin session ID is not valid' };
+   // TODO: check if session is not expired
+   // TODO: update LAST time
+   const adminID = await this.data.getAdminIDBySession(req.sessionID);
+   if (adminID) context.adminID = adminID;
+  } else if (apiMethod.reqUserSession) {
+   if (!req.sessionID) return { error: 996, message: 'User session is missing' };
+   if (!(await this.data.userCheckSession(req.sessionID))) return { error: 998, message: 'User session ID is not valid' };
+   // TODO: check if session is not expired
+   // TODO: update LAST time
+   const userID = await this.data.getUserIDBySession(req.sessionID);
+   if (userID) context.userID = userID;
+  }
+  if (req.sessionID) context.sessionID = req.sessionID;
   if (req.params) context.params = req.params;
   console.log('SENDING CONTEXT:', context);
   return await apiMethod.method.call(this, context);
@@ -61,75 +68,75 @@ class API {
   const userCredentials = await this.data.getAdminCredentials(c.params.username);
   if (!userCredentials) return { error: 4, message: 'Wrong username' };
   if (!(await this.verifyHash(userCredentials.password, c.params.password))) return { error: 5, message: 'Wrong password' };
-  const session = this.getNewSessionID();
-  await this.data.adminSetLogin(userCredentials.id, session);
-  return { error: 0, data: { session } };
+  const sessionID = this.getNewSessionID();
+  await this.data.adminSetLogin(userCredentials.id, sessionID);
+  return { error: 0, data: { sessionID } };
  }
 
- async adminListSessions(p) {
-  const res = await this.data.adminListSessions();
-  //console.log(res);
-  return { error: 950, message: 'Not yet implemented' };
+ async adminListSessions(c) {
+  const res = await this.data.adminListSessions(c.adminID);
+  if (!res) return { error: 1, message: 'No sessions found for this user' };
+  return res;
  }
 
- async adminDelSession(p) {
-  if (!p) return { error: 1, message: 'Parameters are missing' };
-  if (!p.session) return { error: 2, message: 'Session to be deleted not set' };
-  // TODO: add list session and check if session exists
+ async adminDelSession(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.sessionID) return { error: 2, message: 'Session ID to be deleted not set' };
+  // TODO: check if session exists for this user
   // TODO: allow to delete only own sessions!!!
-  const res = await this.data.adminDelSession(p.session);
-  if (!res) return { error: 3, message: 'Session to be deleted not found' };
+  const res = await this.data.adminDelSession(c.adminID, c.params.sessionID);
+  if (!res) return { error: 3, message: 'Session ID to be deleted not found' };
   return { error: 0, message: 'Session was deleted' };
  }
 
- async adminAddAdmin(p) {
-  if (!p) return { error: 1, message: 'Parameters are missing' };
-  if (!p.username) return { error: 2, message: 'Username is missing' };
-  if (!p.password) return { error: 3, message: 'Password is missing' };
-  p.username = p.username.toLowerCase();
-  if (p.username.length < 3 || p.username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username)) return { error: 4, message: 'Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
-  if (p.password.length < 8) return { error: 5, message: 'Password has to be 8 or more characters long' };
-  await this.data.adminAddAdmin(p.username, await this.getHash(p.password));
+ async adminAddAdmin(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.username) return { error: 2, message: 'Username is missing' };
+  if (!c.params.password) return { error: 3, message: 'Password is missing' };
+  c.params.username = c.params.username.toLowerCase();
+  if (c.params.username.length < 3 || c.params.username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username)) return { error: 4, message: 'Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
+  if (c.params.password.length < 8) return { error: 5, message: 'Password has to be 8 or more characters long' };
+  await this.data.adminAddAdmin(c.params.username, await this.getHash(c.params.password));
   return { error: 0, data: { message: 'Admin was created successfully' } };
  }
 
- async adminEditAdmin(p) {
+ async adminEditAdmin(c) {
   return { error: 950, message: 'Not yet implemented' };
  }
 
- async adminDelAdmin(p) {
+ async adminDelAdmin(c) {
   return { error: 950, message: 'Not yet implemented' };
  }
 
- async adminAddDomain(p) {
+ async adminAddDomain(c) {
   return { error: 950, message: 'Not yet implemented' };
  }
 
- async adminEditDomain(p) {
+ async adminEditDomain(c) {
   return { error: 950, message: 'Not yet implemented' };
  }
 
- async adminDelDomain(p) {
+ async adminDelDomain(c) {
   return { error: 950, message: 'Not yet implemented' };
  }
 
- async adminAddUser(p) {
+ async adminAddUser(c) {
   return { error: 950, message: 'Not yet implemented' };
  }
 
- async adminEditUser(p) {
+ async adminEditUser(c) {
   return { error: 950, message: 'Not yet implemented' };
  }
 
- async adminDelUser(p) {
+ async adminDelUser(c) {
   return { error: 950, message: 'Not yet implemented' };
  }
 
- async userLogin(p) {
-  if (!p) return { error: 1, message: 'Parameters are missing' };
-  if (!p.address) return { error: 2, message: 'Address is missing' };
-  if (!p.password) return { error: 3, message: 'Password is missing' };
-  let [username, domain] = p.address.split('@');
+ async userLogin(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.address) return { error: 2, message: 'Address is missing' };
+  if (!c.params.password) return { error: 3, message: 'Password is missing' };
+  let [username, domain] = c.params.address.split('@');
   if (!username || !domain) return { error: 4, message: 'Invalid username format' };
   username = username.toLowerCase();
   domain = domain.toLowerCase();
@@ -137,20 +144,22 @@ class API {
   if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
   const userCredentials = await this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 6, message: 'Wrong user address' };
-  if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 7, message: 'Wrong password' };
-  const session = this.getNewSessionID();
-  this.data.userSetLogin(userID, session);
-  return { error: 0, data: { session } };
+  if (!(await this.verifyHash(userCredentials.password, c.params.password))) return { error: 7, message: 'Wrong password' };
+  const sessionID = this.getNewSessionID();
+  this.data.userSetLogin(userID, sessionID);
+  return { error: 0, data: { sessionID } };
  }
 
- async userListSessions(p) {
-  return { error: 950, message: 'Not yet implemented' };
+ async userListSessions(c) {
+  const res = await this.data.userListSessions(c.userID);
+  if (!res) return { error: 1, message: 'No sessions found for this user' };
+  return res;
  }
 
- async userDelSession(p) {
-  if (!p) return { error: 1, message: 'Parameters are missing' };
-  if (!p.session) return { error: 2, message: 'Session to be deleted not set' };
-  const res = await this.data.userLogout(p.session);
+ async userDelSession(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.sessionID) return { error: 2, message: 'Session to be deleted not set' };
+  const res = await this.data.userLogout(c.sessionID);
   if (!res) return { error: 3, message: 'Session to be deleted not found' };
   return { error: 0, message: 'Session was deleted' };
  }
