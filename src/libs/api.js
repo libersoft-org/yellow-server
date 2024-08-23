@@ -17,7 +17,7 @@ class API {
    admin_add_admin: { method: this.adminAddAdmin, reqAdminSession: true },
    admin_edit_admin: { method: this.adminEditAdmin, reqAdminSession: true },
    admin_del_admin: { method: this.adminDelAdmin, reqAdminSession: true },
-   admin_list_domians: { method: this.adminListDomains, reqAdminSession: true },
+   admin_list_domains: { method: this.adminListDomains, reqAdminSession: true },
    admin_add_domain: { method: this.adminAddDomain, reqAdminSession: true },
    admin_edit_domain: { method: this.adminEditDomain, reqAdminSession: true },
    admin_del_domain: { method: this.adminDelDomain, reqAdminSession: true },
@@ -74,9 +74,9 @@ class API {
  }
 
  async adminListSessions(c) {
-  const res = await this.data.adminListSessions(c.adminID);
+  const res = await this.data.adminListSessions(c.adminID, c.params?.count, c.params?.offset);
   if (!res) return { error: 1, message: 'No sessions found for this user' };
-  return res;
+  return { error: 0, data: { sessions: res } };
  }
 
  async adminDelSession(c) {
@@ -87,6 +87,12 @@ class API {
   const res = await this.data.adminDelSession(c.adminID, c.params.sessionID);
   if (!res) return { error: 3, message: 'Session ID to be deleted not found' };
   return { error: 0, message: 'Session was deleted' };
+ }
+
+ async adminListAdmins(c) {
+  const res = await this.data.adminListAdmins(c.params?.count, c.params?.offset);
+  if (!res) return { error: 1, message: 'No admins found' };
+  return { error: 0, data: { admins: res } };
  }
 
  async adminAddAdmin(c) {
@@ -108,8 +114,18 @@ class API {
   return { error: 950, message: 'Not yet implemented' };
  }
 
+ async adminListDomains(c) {
+  const res = await this.data.adminListDomains(c.params?.count, c.params?.offset);
+  if (!res) return { error: 1, message: 'No domains found' };
+  return { error: 0, data: { domains: res } };
+ }
+
  async adminAddDomain(c) {
-  return { error: 950, message: 'Not yet implemented' };
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.name) return { error: 2, message: 'Domain name is missing' };
+  c.params.name = c.params.name.toLowerCase();
+  await this.data.adminAddDomain(c.params.name);
+  return { error: 0, data: { message: 'Domain was created successfully' } };
  }
 
  async adminEditDomain(c) {
@@ -118,6 +134,12 @@ class API {
 
  async adminDelDomain(c) {
   return { error: 950, message: 'Not yet implemented' };
+ }
+
+ async adminListUsers(c) {
+  const res = await this.data.adminListUsers(c.params?.count, c.params?.offset);
+  if (!res) return { error: 1, message: 'No users found' };
+  return { error: 0, data: { users: res } };
  }
 
  async adminAddUser(c) {
