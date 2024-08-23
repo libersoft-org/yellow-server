@@ -10,63 +10,73 @@ class API {
   this.data = new Data();
   //this.dns = new DNS();
   this.apiMethods = {
-   admin_login: { method: this.adminLogin, reqAdminSession: false, reqUserSession: false },
-   admin_list_sessions: { method: this.adminListSessions, reqAdminSession: true, reqUserSession: false },
-   admin_del_session: { method: this.adminDelSession, reqAdminSession: true, reqUserSession: false },
-   admin_add_admin: { method: this.adminAddAdmin, reqAdminSession: true, reqUserSession: false },
-   admin_edit_admin: { method: this.adminEditAdmin, reqAdminSession: true, reqUserSession: false },
-   admin_del_admin: { method: this.adminDelAdmin, reqAdminSession: true, reqUserSession: false },
-   admin_add_domain: { method: this.adminAddDomain, reqAdminSession: true, reqUserSession: false },
-   admin_edit_domain: { method: this.adminEditDomain, reqAdminSession: true, reqUserSession: false },
-   admin_del_domain: { method: this.adminDelDomain, reqAdminSession: true, reqUserSession: false },
-   admin_add_user: { method: this.adminAddUser, reqAdminSession: true, reqUserSession: false },
-   admin_edit_user: { method: this.adminEditUser, reqAdminSession: true, reqUserSession: false },
-   admin_del_user: { method: this.adminDelUser, reqAdminSession: true, reqUserSession: false },
-   admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true, reqUserSession: false },
-   user_login: { method: this.userLogin, reqAdminSession: false, reqUserSession: false },
-   user_list_sessions: { method: this.userListSessions, reqAdminSession: false, reqUserSession: true },
-   user_del_session: { method: this.userDelSession, reqAdminSession: false, reqUserSession: true }
+   admin_login: { method: this.adminLogin },
+   admin_list_sessions: { method: this.adminListSessions, reqAdminSession: true },
+   admin_del_session: { method: this.adminDelSession, reqAdminSession: true },
+   admin_add_admin: { method: this.adminAddAdmin, reqAdminSession: true },
+   admin_edit_admin: { method: this.adminEditAdmin, reqAdminSession: true },
+   admin_del_admin: { method: this.adminDelAdmin, reqAdminSession: true },
+   admin_add_domain: { method: this.adminAddDomain, reqAdminSession: true },
+   admin_edit_domain: { method: this.adminEditDomain, reqAdminSession: true },
+   admin_del_domain: { method: this.adminDelDomain, reqAdminSession: true },
+   admin_add_user: { method: this.adminAddUser, reqAdminSession: true },
+   admin_edit_user: { method: this.adminEditUser, reqAdminSession: true },
+   admin_del_user: { method: this.adminDelUser, reqAdminSession: true },
+   admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
+   user_login: { method: this.userLogin },
+   user_list_sessions: { method: this.userListSessions, reqUserSession: true },
+   user_del_session: { method: this.userDelSession, reqUserSession: true }
   };
  }
 
- async processAPI(req) {
-  if (!Common.isValidJSON(req)) return { error: 902, message: 'Invalid JSON command' };
-  const objReq = JSON.parse(req);
-  if (!objReq.command) return { error: 999, message: 'Command not set' };
-  const apiMethod = this.apiMethods[objReq.command];
+ async processAPI(json) {
+  if (!Common.isValidJSON(json)) return { error: 902, message: 'Invalid JSON command' };
+  const req = JSON.parse(json);
+  if (!req.command) return { error: 999, message: 'Command not set' };
+  const apiMethod = this.apiMethods[req.command];
   if (!apiMethod) return { error: 903, message: 'Unknown command' };
+  let userID;
   if (apiMethod.reqAdminSession) {
-   if (!objReq.session) return { error: 995, message: 'Admin session is missing' };
-   if (!(await this.data.adminCheckSession(objReq.session))) return { error: 997, message: 'Admin session is not valid' };
+   if (!req.session) return { error: 995, message: 'Admin session is missing' };
+   if (!(await this.data.adminCheckSession(req.session))) return { error: 997, message: 'Admin session is not valid' };
+   userID = await this.data.getAdminIDBySession(req.session);
+  } else if (apiMethod.reqUserSession) {
+   if (!req.session) return { error: 996, message: 'User session is missing' };
+   if (!(await this.data.userCheckSession(req.session))) return { error: 998, message: 'User session is not valid' };
+   userID = await this.data.getUserIDBySession(req.session);
   }
-  if (apiMethod.reqUserSession && objReq.session) {
-   if (!objReq.session) return { error: 996, message: 'User session is missing' };
-   if (!(await this.data.userCheckSession(objReq.session))) return { error: 998, message: 'User session is not valid' };
-  }
-  return await apiMethod.method.call(this, objReq.data);
+  const context = {};
+  if (req.session) context.sessionID = req.session;
+  if (userID) context.userID = userID;
+  if (req.params) context.params = req.params;
+  console.log('SENDING CONTEXT:', context);
+  return await apiMethod.method.call(this, context);
  }
 
- async adminLogin(p) {
-  if (!p) return { error: 1, message: 'Parameters are missing' };
-  if (!p.username) return { error: 2, message: 'Username is missing' };
-  if (!p.password) return { error: 3, message: 'Password is missing' };
-  p.username = p.username.toLowerCase();
-  const userCredentials = await this.data.getAdminCredentials(p.username);
+ async adminLogin(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.username) return { error: 2, message: 'Username is missing' };
+  if (!c.params.password) return { error: 3, message: 'Password is missing' };
+  c.params.username = c.params.username.toLowerCase();
+  const userCredentials = await this.data.getAdminCredentials(c.params.username);
   if (!userCredentials) return { error: 4, message: 'Wrong username' };
-  if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 5, message: 'Wrong password' };
-  const session = this.getSessionID();
+  if (!(await this.verifyHash(userCredentials.password, c.params.password))) return { error: 5, message: 'Wrong password' };
+  const session = this.getNewSessionID();
   await this.data.adminSetLogin(userCredentials.id, session);
   return { error: 0, data: { session } };
  }
 
- async adminListSessions() {
+ async adminListSessions(p) {
   const res = await this.data.adminListSessions();
+  //console.log(res);
   return { error: 950, message: 'Not yet implemented' };
  }
 
  async adminDelSession(p) {
   if (!p) return { error: 1, message: 'Parameters are missing' };
   if (!p.session) return { error: 2, message: 'Session to be deleted not set' };
+  // TODO: add list session and check if session exists
+  // TODO: allow to delete only own sessions!!!
   const res = await this.data.adminDelSession(p.session);
   if (!res) return { error: 3, message: 'Session to be deleted not found' };
   return { error: 0, message: 'Session was deleted' };
@@ -128,12 +138,12 @@ class API {
   const userCredentials = await this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 6, message: 'Wrong user address' };
   if (!(await this.verifyHash(userCredentials.password, p.password))) return { error: 7, message: 'Wrong password' };
-  const session = this.getSessionID();
+  const session = this.getNewSessionID();
   this.data.userSetLogin(userID, session);
   return { error: 0, data: { session } };
  }
 
- async userListSessions(p = null) {
+ async userListSessions(p) {
   return { error: 950, message: 'Not yet implemented' };
  }
 
@@ -175,7 +185,7 @@ class API {
   };
  }
 
- getSessionID(len) {
+ getNewSessionID(len) {
   return Crypto.randomBytes(16).toString('hex') + Date.now().toString(16);
  }
 

@@ -37,6 +37,11 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
+ async getAdminIDBySession(sessionID) {
+  let res = await this.db.read('SELECT id_admins FROM admins_sessions WHERE session = ?', [sessionID]);
+  return res.length === 1 ? res[0].id_admins : false;
+ }
+
  async adminDelSession(sessionID) {
   await this.db.write('DELETE FROM admins_sessions WHERE session = ?', [sessionID]);
   return true;
