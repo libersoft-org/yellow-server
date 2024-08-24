@@ -51,7 +51,13 @@ class App {
  async loadSettings() {
   const file = Bun.file(Common.settingsFile);
   if (await file.exists()) {
-   Common.settings = await file.json(); // TODO: test what happens if JSON is invalid
+   try {
+    Common.settings = await file.json(); // TODO: test what happens if JSON is invalid
+   } catch {
+    Common.addLog('Error: Settings file "' + Common.settingsFile + '" has an invalid format.');
+    Common.addLog('');
+    process.exit(1);
+   }
   } else {
    Common.addLog('Error: Settings file "' + Common.settingsFile + '" not found. Please run this application again using: node index.js --create-settings');
    Common.addLog('');

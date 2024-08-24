@@ -19,6 +19,3 @@
 - Update README.md, INSTALL.md, SERVER.md
 
 # Test
-
-- app.js - loadSettings - test what happens if the settings.json file is not a valid JSON
-- webserver.js - startServer - test what happens if some of the certificate file is invalid

@@ -23,16 +23,21 @@ class WebServer {
    Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path, 2);
    process.exit(1);
   }
-  if (Common.settings.web.standalone) {
-   Bun.serve({ fetch: this.getFetch(), port: Common.settings.web.http_port });
-   Common.addLog('HTTP server is running on port: ' + Common.settings.web.http_port);
-   Bun.serve({ fetch: this.getFetch(), websocket: this.getWebSocket(), port: Common.settings.web.https_port, tls: certs });
-   Common.addLog('HTTPS server is running on port: ' + Common.settings.web.https_port);
-  } else {
-   Bun.serve({ fetch: this.getFetch(), websocket: this.getWebSocket(), unix: Common.settings.web.socket_path });
-   const fs = require('fs');
-   fs.chmodSync(Common.settings.web.socket_path, '777');
-   Common.addLog('HTTP server is running on Unix socket: ' + Common.settings.web.socket_path);
+  try {
+   if (Common.settings.web.standalone) {
+    Bun.serve({ fetch: this.getFetch(), port: Common.settings.web.http_port });
+    Common.addLog('HTTP server is running on port: ' + Common.settings.web.http_port);
+    Bun.serve({ fetch: this.getFetch(), websocket: this.getWebSocket(), port: Common.settings.web.https_port, tls: certs });
+    Common.addLog('HTTPS server is running on port: ' + Common.settings.web.https_port);
+   } else {
+    Bun.serve({ fetch: this.getFetch(), websocket: this.getWebSocket(), unix: Common.settings.web.socket_path });
+    const fs = require('fs');
+    fs.chmodSync(Common.settings.web.socket_path, '777');
+    Common.addLog('HTTP server is running on Unix socket: ' + Common.settings.web.socket_path);
+   }
+  } catch (ex) {
+   Common.addLog('Error: ' + ex.message, 2);
+   process.exit(1);
   }
  }
 
