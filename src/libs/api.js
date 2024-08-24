@@ -153,7 +153,7 @@ class API {
   c.params.username = c.params.username.toLowerCase();
   if (c.params.username.length < 1 || c.params.username.length > 64 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username)) return { error: 6, message: 'Invalid username. Username must be 1-64 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
   if (!(await this.data.domainIDExists(c.params.domainID))) return { error: 6, message: 'Wrong domain ID' };
-  if (await this.data.userExists(c.params.username, c.params.domainID)) return { error: 7, message: 'User already exists' };
+  if (await this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID)) return { error: 7, message: 'User already exists' };
   if (c.params.password.length < 8) return { error: 7, message: 'Password has to be 8 or more characters long' };
   await this.data.adminAddUser(c.params.username, c.params.domainID, c.params.visible_name, await this.getHash(c.params.password));
   return { error: 0, message: 'User was added successfully' };
@@ -164,7 +164,11 @@ class API {
  }
 
  async adminDelUser(c) {
-  return { error: 950, message: 'Not yet implemented' };
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
+  if (!(await this.data.userExistsByID(c.params.userID))) return { error: 3, message: 'Wrong user ID' };
+  await this.data.adminDelUser(c.params.userID);
+  return { error: 0, message: 'User was deleted successfully' };
  }
 
  async userLogin(c) {

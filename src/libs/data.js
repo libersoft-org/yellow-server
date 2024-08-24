@@ -107,9 +107,22 @@ class Data {
   await this.db.write('INSERT INTO users (username, id_domains, visible_name, password) VALUES (?, ?, ?, ?)', [username, domainID, visible_name, passwordHash]);
  }
 
- async userExists(username, domainID) {
+ async userExistsByID(userID) {
+  const res = await this.db.read('SELECT id FROM users WHERE id = ?', [userID]);
+  return res.length === 1 ? true : false;
+ }
+
+ async userExistsByUserNameAndDomain(username, domainID) {
   const res = await this.db.read('SELECT id FROM users WHERE username = ? AND id_domains = ?', [username, domainID]);
   return res.length === 1 ? true : false;
+ }
+
+ async adminEditUser(id, username, domainID, visible_name, passwordHash) {
+  // TODO
+ }
+
+ async adminDelUser(id) {
+  await this.db.write('DELETE FROM users WHERE id = ?', [id]);
  }
 
  async getUserCredentials(username, domainID) {

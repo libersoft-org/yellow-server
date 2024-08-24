@@ -7,7 +7,7 @@
   - Admin - Logout - Allow delete only own session IDs
   - Admin - Edit / delete admins
   - Admin - Edit / delete domains
-  - Admin - Edit / delete users
+  - Admin - Edit users
   - User - Login
   - User - List own sessions
   - User - Logout - Allow delete only own session IDs
