@@ -11,14 +11,13 @@
   - Admin - When adding admin / domain / user@domain, check if they don't exist first, otherwise throw some error
   - User - Login
   - User - List own sessions
-  - User - Logout - Allow delete onl own session IDs
+  - User - Logout - Allow delete only own session IDs
   - User - Send message
   - User - Get other user's info (visible name etc.)
   - User - Get messages - with count, offset
   - User - Subscribe to get new messages
 - Add admin + user session cleaner from https://github.com/libersoft-org/telegram-memory-game/blob/main/src/libs/api.js
-- Update README.md and INSTALL.md
-- Delete ROADMAP.md when it's not needed anymore
+- Update README.md, INSTALL.md, SERVER.md
 
 # Test
 
