@@ -1,7 +1,5 @@
 # Bugs
 
-- When HTTPS server is running on a different port than 443, it does not work
-
 # Features
 
 - Fix user logout, admin login and admin logout
