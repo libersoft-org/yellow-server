@@ -5,8 +5,8 @@
 - Fix user logout, admin login and admin logout
 - Add new commands to API.js:
   - Admin - Logout - Allow delete only own session IDs
-  - Admin - Edit / delete admins
-  - Admin - Edit / delete domains
+  - Admin - Edit admins
+  - Admin - Edit domains
   - Admin - Edit users
   - User - Login
   - User - List own sessions

@@ -64,13 +64,18 @@ class Data {
   await this.db.write('INSERT INTO admins (username, password) VALUES (?, ?)', [username, passwordHash]);
  }
 
- async adminExists(username) {
+ async adminExistsByID(adminID) {
+  const res = await this.db.read('SELECT id FROM admins WHERE id = ?', [adminID]);
+  return res.length === 1 ? true : false;
+ }
+
+ async adminExistsByUsername(username) {
   const res = await this.db.read('SELECT id FROM admins WHERE username = ?', [username]);
   return res.length === 1 ? true : false;
  }
 
- async adminEditAdmin(id, username, password) {
-  return await this.db.write('UPDATE admins SET user = ?, pass = ? WHERE id = ?', [username, password != '' ? ', pass = "' + password + '"' : '', id]);
+ async adminEditAdmin(id, username, passwordHash) {
+  // TODO
  }
 
  async adminDelAdmin(id) {
@@ -88,14 +93,22 @@ class Data {
   await this.db.write('INSERT INTO domains (name) VALUES (?)', [name]);
  }
 
- async domainIDExists(id) {
-  const res = await this.db.read('SELECT id FROM domains WHERE id = ?', [id]);
+ async domainExistsByID(domainID) {
+  const res = await this.db.read('SELECT id FROM domains WHERE id = ?', [domainID]);
   return res.length === 1 ? true : false;
  }
 
- async domainNameExists(name) {
+ async domainExistsByName(name) {
   const res = await this.db.read('SELECT id FROM domains WHERE name = ?', [name]);
   return res.length === 1 ? true : false;
+ }
+
+ async adminEditDomain(id, name) {
+  // TODO
+ }
+
+ async adminDelDomain(id) {
+  await this.db.write('DELETE FROM domains WHERE id = ?', [id]);
  }
 
  async adminListUsers(count = 10, offset = 0) {
