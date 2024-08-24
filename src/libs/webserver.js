@@ -38,7 +38,7 @@ class WebServer {
 
  getFetch() {
   return (req, server) => {
-   if (server.upgrade(req)) return;
+   if (server.websocket && server.upgrade(req)) return;
    let clientIP = server.requestIP(req).address;
    const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
    for (const header of forwardedHeaders) {
