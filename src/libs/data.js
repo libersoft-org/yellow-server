@@ -12,7 +12,7 @@ class Data {
    await this.db.write('CREATE TABLE IF NOT EXISTS admins_logins (id INTEGER PRIMARY KEY AUTOINCREMENT, id_admins INTEGER, session VARCHAR(128) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_admins) REFERENCES admins(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS admins_sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, id_admins INTEGER, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_admins) REFERENCES admins(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS domains (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255) NOT NULL UNIQUE, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
-   await this.db.write('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(64) NOT NULL, id_domains INTEGER, visible_name VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domains) REFERENCES domains(id), UNIQUE (name, id_domains))');
+   await this.db.write('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(64) NOT NULL, id_domains INTEGER, visible_name VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domains) REFERENCES domains(id), UNIQUE (username, id_domains))');
    await this.db.write('CREATE TABLE IF NOT EXISTS users_logins (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, session VARCHAR(128) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS users_sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.write('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, recipient VARCHAR(255) NOT NULL, message TEXT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
@@ -64,6 +64,11 @@ class Data {
   await this.db.write('INSERT INTO admins (username, password) VALUES (?, ?)', [username, passwordHash]);
  }
 
+ async adminExists(username) {
+  const res = await this.db.read('SELECT id FROM admins WHERE username = ?', [username]);
+  return res.length === 1 ? true : false;
+ }
+
  async adminEditAdmin(id, username, password) {
   return await this.db.write('UPDATE admins SET user = ?, pass = ? WHERE id = ?', [username, password != '' ? ', pass = "' + password + '"' : '', id]);
  }
@@ -83,9 +88,28 @@ class Data {
   await this.db.write('INSERT INTO domains (name) VALUES (?)', [name]);
  }
 
+ async domainIDExists(id) {
+  const res = await this.db.read('SELECT id FROM domains WHERE id = ?', [id]);
+  return res.length === 1 ? true : false;
+ }
+
+ async domainNameExists(name) {
+  const res = await this.db.read('SELECT id FROM domains WHERE name = ?', [name]);
+  return res.length === 1 ? true : false;
+ }
+
  async adminListUsers(count = 10, offset = 0) {
-  const res = await this.db.read('SELECT id, name, id_domains, visible_name, created FROM users LIMIT ? OFFSET ?', [count, offset]);
+  const res = await this.db.read('SELECT id, username, id_domains, visible_name, created FROM users LIMIT ? OFFSET ?', [count, offset]);
   return res.length > 0 ? res : false;
+ }
+
+ async adminAddUser(username, domainID, visible_name, passwordHash) {
+  await this.db.write('INSERT INTO users (username, id_domains, visible_name, password) VALUES (?, ?, ?, ?)', [username, domainID, visible_name, passwordHash]);
+ }
+
+ async userExists(username, domainID) {
+  const res = await this.db.read('SELECT id FROM users WHERE username = ? AND id_domains = ?', [username, domainID]);
+  return res.length === 1 ? true : false;
  }
 
  async getUserCredentials(username, domainID) {

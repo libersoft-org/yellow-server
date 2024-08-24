@@ -5,10 +5,10 @@
 - Fix user logout, admin login and admin logout
 - Add new commands to API.js:
   - Admin - Logout - Allow delete only own session IDs
-  - Admin - Add / edit / delete admins
-  - Admin - Add / edit / delete domains
-  - Admin - Add / edit / delete users
-  - Admin - When adding admin / domain / user@domain, check if they don't exist first, otherwise throw some error
+  - Admin - Edit / delete admins
+  - Admin - Edit / delete domains
+  - Admin - Edit / delete users
+  - Admin - When adding user@domain, check if they don't exist first, otherwise throw some error
   - User - Login
   - User - List own sessions
   - User - Logout - Allow delete only own session IDs
