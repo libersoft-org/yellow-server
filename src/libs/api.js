@@ -9,6 +9,13 @@ class API {
  constructor() {
   this.data = new Data();
   //this.dns = new DNS();
+
+  setInterval(async () => {
+   const resAdmin = await this.data.adminDelOldSessions();
+   const resUser = await this.data.userDelOldSessions();
+   Common.addLog('Expired sessions cleaner: ' + resAdmin.changes + ' admin sessions and ' + resUser.changes + ' user sessions deleted.');
+  }, Common.settings.other.session_cleaner * 1000);
+
   this.apiMethods = {
    admin_login: { method: this.adminLogin },
    admin_list_sessions: { method: this.adminListSessions, reqAdminSession: true },
@@ -43,23 +50,15 @@ class API {
   if (apiMethod.reqAdminSession) {
    if (!req.sessionID) return { error: 995, message: 'Admin session is missing' };
    if (!this.data.adminCheckSession(req.sessionID)) return { error: 997, message: 'Admin session ID is not valid' };
-   // TODO: check if session is not expired
-   const last = this.data.adminLastSessionAccess(req.sessionID);
-   console.log(last);
-   //if (this.data.adminLastSessionAccess(req.sessionID)) return { error: 993, message: 'Admin session is expired' };
-   // TODO: update LAST time
-   //this.data.adminUpdateSessionTime(req.sessionID);
+   if (this.data.adminSessionExpired(req.sessionID)) return { error: 994, message: 'Admin session is expired' };
+   this.data.adminUpdateSessionTime(req.sessionID);
    const adminID = this.data.getAdminIDBySession(req.sessionID);
    if (adminID) context.adminID = adminID;
   } else if (apiMethod.reqUserSession) {
    if (!req.sessionID) return { error: 996, message: 'User session is missing' };
    if (!this.data.userCheckSession(req.sessionID)) return { error: 998, message: 'User session ID is not valid' };
-   // TODO: check if session is not expired
-   const last = this.data.adminLastSessionAccess(req.sessionID);
-   console.log(last);
-   //if (this.data.userLastSessionAccess(req.sessionID)) return { error: 994, message: 'User session is expired' };
-   // TODO: update LAST time
-   //this.data.userUpdateSessionTime(req.sessionID);
+   if (this.data.userSessionExpired(req.sessionID)) return { error: 994, message: 'User session is expired' };
+   this.data.userUpdateSessionTime(req.sessionID);
    const userID = this.data.getUserIDBySession(req.sessionID);
    if (userID) context.userID = userID;
   }

@@ -27,6 +27,10 @@ class Data {
   return res.length === 1 ? res[0] : false;
  }
 
+ adminDelOldSessions() {
+  return this.db.query('DELETE FROM admins_sessions WHERE last <= DATETIME("now", ?)', [`-${Common.settings.other.session_admin} SECONDS`]);
+ }
+
  adminSetLogin(adminID, sessionID) {
   this.db.query('INSERT INTO admins_logins (id_admins, session) VALUES (?, ?)', [adminID, sessionID]);
   this.db.query('INSERT INTO admins_sessions (id_admins, session) VALUES (?, ?)', [adminID, sessionID]);
@@ -56,9 +60,9 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
- adminLastSessionAccess(sessionID) {
-  const res = this.db.query('SELECT last FROM admins_sessions WHERE session = ?', [sessionID]);
-  return res.length === 1 ? res[0].last : false;
+ adminSessionExpired(sessionID) {
+  const res = this.db.query('SELECT (strftime("%s", "now") - strftime("%s", last)) > ? AS expired FROM admins_sessions WHERE session = ?', [Common.settings.other.session_admin, sessionID]);
+  return res[0].expired === 1 ? true : false;
  }
 
  adminUpdateSessionTime(sessionID) {
@@ -130,6 +134,10 @@ class Data {
   this.db.query('INSERT INTO users (username, id_domains, visible_name, password) VALUES (?, ?, ?, ?)', [username, domainID, visible_name, passwordHash]);
  }
 
+ userDelOldSessions() {
+  return this.db.query('DELETE FROM users_sessions WHERE last <= DATETIME("now", ?)', [`-${Common.settings.other.session_user} SECONDS`]);
+ }
+
  userExistsByID(userID) {
   const res = this.db.query('SELECT id FROM users WHERE id = ?', [userID]);
   return res.length === 1 ? true : false;
@@ -187,9 +195,9 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
- userLastSessionAccess(sessionID) {
-  const res = this.db.query('SELECT last FROM users_sessions WHERE session = ?', [sessionID]);
-  return res.length === 1 ? res[0].last : false;
+ userSessionExpired(sessionID) {
+  const res = this.db.query('SELECT (strftime("%s", "now") - strftime("%s", last)) > ? AS expired FROM users_sessions WHERE session = ?', [Common.settings.other.session_user, sessionID]);
+  return res[0].expired === 1 ? true : false;
  }
 
  userUpdateSessionTime(sessionID) {
