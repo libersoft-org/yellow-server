@@ -7,8 +7,8 @@
   - Admin - Edit admins
   - Admin - Edit domains
   - Admin - Edit users
-  - User - Send message
   - User - Get other user's info (visible name etc.)
+  - User - Send message
   - User - Get messages - with count, offset
   - User - Subscribe to get new messages
 - Add admin + user session cleaner from https://github.com/libersoft-org/telegram-memory-game/blob/main/src/libs/api.js
