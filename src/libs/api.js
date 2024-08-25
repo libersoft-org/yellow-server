@@ -82,10 +82,8 @@ class API {
  async adminDelSession(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.sessionID) return { error: 2, message: 'Session ID to be deleted not set' };
-  // TODO: check if session exists for this user
-  // TODO: allow to delete only own sessions!!!
-  const res = await this.data.adminDelSession(c.adminID, c.params.sessionID);
-  if (!res) return { error: 3, message: 'Session ID to be deleted not found' };
+  if (!(await this.data.sessionExists(c.adminID, c.params.sessionID))) return { error: 3, message: 'Session ID to be deleted not found for this admin' };
+  await this.data.adminDelSession(c.adminID, c.params.sessionID);
   return { error: 0, message: 'Session was deleted' };
  }
 

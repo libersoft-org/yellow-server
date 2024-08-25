@@ -2,9 +2,7 @@
 
 # Features
 
-- Fix user logout, admin login and admin logout
 - Add new commands to API.js:
-  - Admin - Logout - Allow delete only own session IDs
   - Admin - Edit admins
   - Admin - Edit domains
   - Admin - Edit users

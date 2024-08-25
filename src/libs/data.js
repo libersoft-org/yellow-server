@@ -48,7 +48,12 @@ class Data {
  }
 
  async adminDelSession(adminID, sessionID) {
-  await this.db.write('DELETE FROM admins_sessions WHERE session = ?', [sessionID]);
+  await this.db.write('DELETE FROM admins_sessions WHERE id_admins = ? AND session = ?', [adminID, sessionID]);
+ }
+
+ async sessionExists(adminID, sessionID) {
+  const res = await this.db.read('SELECT session FROM admins_sessions WHERE id_admins = ? AND session = ?', [adminID, sessionID]);
+  return res.length === 1 ? true : false;
  }
 
  async adminUpdateSessionTime(sessionID) {
