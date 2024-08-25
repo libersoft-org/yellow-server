@@ -158,6 +158,16 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
+ async getUserIDBySession(sessionID) {
+  const res = await this.db.read('SELECT id_users FROM users_sessions WHERE session = ?', [sessionID]);
+  return res.length === 1 ? res[0].id_users : false;
+ }
+
+ async userListSessions(userID, count = 10, offset = 0) {
+  const res = await this.db.read('SELECT session, last, created FROM users_sessions WHERE id_users = ? LIMIT ? OFFSET ?', [userID, count, offset]);
+  return res.length > 0 ? res : false;
+ }
+
  async getDomainID(domain) {
   const res = await this.db.read('SELECT id FROM domains WHERE name = ?', [domain]);
   return res.length === 1 ? res[0].id : false;
