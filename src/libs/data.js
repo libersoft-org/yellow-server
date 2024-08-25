@@ -185,6 +185,16 @@ class Data {
  async userUpdateSessionTime(sessionID) {
   return await this.db.write('UPDATE users_sessions SET last = CURRENT_TIMESTAMP WHERE session = ?', [sessionID]);
  }
+
+ async getUserIDByUsernameAndDomain(username, domainID) {
+  const res = await this.db.read('SELECT id FROM users WHERE username = ? AND id_domains = ?', [username, domainID]);
+  return res.length === 1 ? res[0].id : false;
+ }
+
+ async userGetUserinfo(userID) {
+  const res = await this.db.read('SELECT visible_name FROM users WHERE id = ?', [userID]);
+  return res ? res : false;
+ }
 }
 
 export default Data;

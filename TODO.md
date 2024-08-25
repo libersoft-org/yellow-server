@@ -7,7 +7,7 @@
   - Admin - Edit admins
   - Admin - Edit domains
   - Admin - Edit users
-  - User - Get other user's info (visible name etc.)
+  - db.read and db.write -> db.query
   - User - Send message
   - User - Get messages - with count, offset
   - User - Subscribe to get new messages

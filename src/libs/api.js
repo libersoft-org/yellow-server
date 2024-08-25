@@ -28,7 +28,8 @@ class API {
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
    user_login: { method: this.userLogin },
    user_list_sessions: { method: this.userListSessions, reqUserSession: true },
-   user_del_session: { method: this.userDelSession, reqUserSession: true }
+   user_del_session: { method: this.userDelSession, reqUserSession: true },
+   user_get_userinfo: { method: this.userGetUserinfo, reqUserSession: true }
   };
  }
 
@@ -177,6 +178,36 @@ class API {
   return { error: 0, message: 'User was deleted successfully' };
  }
 
+ adminSysInfo() {
+  function getUptime(seconds) {
+   const days = Math.floor(seconds / 86400);
+   const hours = Math.floor((seconds % 86400) / 3600);
+   const minutes = Math.floor((seconds % 3600) / 60);
+   const secs = Math.floor(seconds % 60);
+   return days + ' days, ' + hours + ' hours, ' + minutes + ' minutes, ' + secs + ' seconds';
+  }
+  return {
+   app_name: Common.appName,
+   app_version: Common.appVersion,
+   os: {
+    name: os.type(),
+    version: os.release()
+   },
+   cpu: {
+    cpus: os.cpus().map(cpu => cpu.model),
+    arch: os.arch(),
+    load: Math.min(Math.floor((os.loadavg()[0] * 100) / os.cpus().length), 100)
+   },
+   ram: {
+    total: os.totalmem(),
+    free: os.freemem()
+   },
+   hostname: os.hostname(),
+   networks: os.networkInterfaces(),
+   uptime: getUptime(os.uptime())
+  };
+ }
+
  async userLogin(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.address) return { error: 2, message: 'Address is missing' };
@@ -209,34 +240,19 @@ class API {
   return { error: 0, message: 'Session was deleted' };
  }
 
- adminSysInfo() {
-  function getUptime(seconds) {
-   const days = Math.floor(seconds / 86400);
-   const hours = Math.floor((seconds % 86400) / 3600);
-   const minutes = Math.floor((seconds % 3600) / 60);
-   const secs = Math.floor(seconds % 60);
-   return days + ' days, ' + hours + ' hours, ' + minutes + ' minutes, ' + secs + ' seconds';
-  }
-  return {
-   app_name: Common.appName,
-   app_version: Common.appVersion,
-   os: {
-    name: os.type(),
-    version: os.release()
-   },
-   cpu: {
-    cpus: os.cpus().map(cpu => cpu.model),
-    arch: os.arch(),
-    load: Math.min(Math.floor((os.loadavg()[0] * 100) / os.cpus().length), 100)
-   },
-   ram: {
-    total: os.totalmem(),
-    free: os.freemem()
-   },
-   hostname: os.hostname(),
-   networks: os.networkInterfaces(),
-   uptime: getUptime(os.uptime())
-  };
+ async userGetUserinfo(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.address) return { error: 2, message: 'Address is missing' };
+  let [username, domain] = c.params.address.split('@');
+  if (!username || !domain) return { error: 4, message: 'Invalid username format' };
+  username = username.toLowerCase();
+  domain = domain.toLowerCase();
+  const domainID = await this.data.getDomainID(domain);
+  if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
+  const userID = await this.data.getUserIDByUsernameAndDomain(username, domainID);
+  if (!userID) return { error: 6, message: 'User name not found on this server' };
+  const userInfo = await this.data.userGetUserinfo(userID);
+  return { error: 0, data: { userInfo } };
  }
 
  getNewSessionID(len) {
