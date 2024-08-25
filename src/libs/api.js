@@ -65,11 +65,11 @@ class API {
   if (!c.params.username) return { error: 2, message: 'Username is missing' };
   if (!c.params.password) return { error: 3, message: 'Password is missing' };
   c.params.username = c.params.username.toLowerCase();
-  const userCredentials = await this.data.getAdminCredentials(c.params.username);
-  if (!userCredentials) return { error: 4, message: 'Wrong username' };
-  if (!(await this.verifyHash(userCredentials.password, c.params.password))) return { error: 5, message: 'Wrong password' };
+  const adminCredentials = await this.data.getAdminCredentials(c.params.username);
+  if (!adminCredentials) return { error: 4, message: 'Wrong username' };
+  if (!(await this.verifyHash(adminCredentials.password, c.params.password))) return { error: 5, message: 'Wrong password' };
   const sessionID = this.getNewSessionID();
-  await this.data.adminSetLogin(userCredentials.id, sessionID);
+  await this.data.adminSetLogin(adminCredentials.id, sessionID);
   return { error: 0, data: { sessionID } };
  }
 
@@ -191,7 +191,7 @@ class API {
   if (!userCredentials) return { error: 6, message: 'Wrong user address' };
   if (!(await this.verifyHash(userCredentials.password, c.params.password))) return { error: 7, message: 'Wrong password' };
   const sessionID = this.getNewSessionID();
-  this.data.userSetLogin(userID, sessionID);
+  await this.data.userSetLogin(userCredentials.id, sessionID);
   return { error: 0, data: { sessionID } };
  }
 

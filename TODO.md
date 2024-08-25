@@ -3,10 +3,10 @@
 # Features
 
 - Add new commands to API.js:
+  - Admin - Delete domain - if there are still users, don't allow to delete domain
   - Admin - Edit admins
   - Admin - Edit domains
   - Admin - Edit users
-  - User - Login
   - User - List own sessions
   - User - Logout - Allow delete only own session IDs
   - User - Send message
