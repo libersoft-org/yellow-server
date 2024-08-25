@@ -7,7 +7,6 @@
   - Admin - Edit admins
   - Admin - Edit domains
   - Admin - Edit users
-  - User - Logout - Allow delete only own session IDs
   - User - Send message
   - User - Get other user's info (visible name etc.)
   - User - Get messages - with count, offset

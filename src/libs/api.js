@@ -82,7 +82,7 @@ class API {
  async adminDelSession(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.sessionID) return { error: 2, message: 'Session ID to be deleted not set' };
-  if (!(await this.data.sessionExists(c.adminID, c.params.sessionID))) return { error: 3, message: 'Session ID to be deleted not found for this admin' };
+  if (!(await this.data.adminSessionExists(c.adminID, c.params.sessionID))) return { error: 3, message: 'Session ID to be deleted not found for this admin' };
   await this.data.adminDelSession(c.adminID, c.params.sessionID);
   return { error: 0, message: 'Session was deleted' };
  }
@@ -196,16 +196,16 @@ class API {
  }
 
  async userListSessions(c) {
-  const res = await this.data.userListSessions(c.userID);
+  const res = await this.data.userListSessions(c.userID, c.params?.count, c.params?.offset);
   if (!res) return { error: 1, message: 'No sessions found for this user' };
-  return res;
+  return { error: 0, data: { sessions: res } };
  }
 
  async userDelSession(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.sessionID) return { error: 2, message: 'Session to be deleted not set' };
-  const res = await this.data.userLogout(c.sessionID);
-  if (!res) return { error: 3, message: 'Session to be deleted not found' };
+  if (!c.params.sessionID) return { error: 2, message: 'Session ID to be deleted not set' };
+  if (!(await this.data.userSessionExists(c.userID, c.params.sessionID))) return { error: 3, message: 'Session ID to be deleted not found for this user' };
+  await this.data.userDelSession(c.userID, c.sessionID);
   return { error: 0, message: 'Session was deleted' };
  }
 
