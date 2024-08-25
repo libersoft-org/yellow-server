@@ -82,8 +82,8 @@ class App {
      root_directory: 'www'
     },
     other: {
-     ttl_admin: 600,
-     ttl_user: 600,
+     ttl_admin: 600, // 10 minutes
+     ttl_user: 86400, // 1 day
      db_file: 'yellow-server.db',
      log_file: 'yellow-server.log',
      log_to_file: true

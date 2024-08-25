@@ -56,6 +56,11 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
+ adminLastSessionAccess(sessionID) {
+  const res = this.db.query('SELECT last FROM admins_sessions WHERE session = ?', [sessionID]);
+  return res.length === 1 ? res[0].last : false;
+ }
+
  adminUpdateSessionTime(sessionID) {
   return this.db.query('UPDATE admins_sessions SET last = CURRENT_TIMESTAMP WHERE session = ?', [sessionID]);
  }
@@ -180,6 +185,11 @@ class Data {
  userSessionExists(userID, sessionID) {
   const res = this.db.query('SELECT session FROM users_sessions WHERE id_users = ? AND session = ?', [userID, sessionID]);
   return res.length === 1 ? true : false;
+ }
+
+ userLastSessionAccess(sessionID) {
+  const res = this.db.query('SELECT last FROM users_sessions WHERE session = ?', [sessionID]);
+  return res.length === 1 ? res[0].last : false;
  }
 
  userUpdateSessionTime(sessionID) {

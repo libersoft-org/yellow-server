@@ -44,14 +44,22 @@ class API {
    if (!req.sessionID) return { error: 995, message: 'Admin session is missing' };
    if (!this.data.adminCheckSession(req.sessionID)) return { error: 997, message: 'Admin session ID is not valid' };
    // TODO: check if session is not expired
+   const last = this.data.adminLastSessionAccess(req.sessionID);
+   console.log(last);
+   //if (this.data.adminLastSessionAccess(req.sessionID)) return { error: 993, message: 'Admin session is expired' };
    // TODO: update LAST time
+   //this.data.adminUpdateSessionTime(req.sessionID);
    const adminID = this.data.getAdminIDBySession(req.sessionID);
    if (adminID) context.adminID = adminID;
   } else if (apiMethod.reqUserSession) {
    if (!req.sessionID) return { error: 996, message: 'User session is missing' };
    if (!this.data.userCheckSession(req.sessionID)) return { error: 998, message: 'User session ID is not valid' };
    // TODO: check if session is not expired
+   const last = this.data.adminLastSessionAccess(req.sessionID);
+   console.log(last);
+   //if (this.data.userLastSessionAccess(req.sessionID)) return { error: 994, message: 'User session is expired' };
    // TODO: update LAST time
+   //this.data.userUpdateSessionTime(req.sessionID);
    const userID = this.data.getUserIDBySession(req.sessionID);
    if (userID) context.userID = userID;
   }
