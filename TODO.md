@@ -7,6 +7,7 @@
   - Admin - Edit admins
   - Admin - Edit domains
   - Admin - Edit users
+  - adminCheckSession + userCheckSession - check if session is not expired + update LAST time
   - User - Send message
   - User - Get messages - with count, offset
   - User - Subscribe to get new messages
