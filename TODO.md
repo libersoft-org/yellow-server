@@ -7,7 +7,6 @@
   - Admin - Edit admins
   - Admin - Edit domains
   - Admin - Edit users
-  - db.read and db.write -> db.query
   - User - Send message
   - User - Get messages - with count, offset
   - User - Subscribe to get new messages
