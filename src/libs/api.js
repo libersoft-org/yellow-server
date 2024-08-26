@@ -37,7 +37,8 @@ class API {
    user_list_sessions: { method: this.userListSessions, reqUserSession: true },
    user_del_session: { method: this.userDelSession, reqUserSession: true },
    user_get_userinfo: { method: this.userGetUserInfo, reqUserSession: true },
-   user_send_message: { method: this.userSendMessage, reqUserSession: true }
+   user_send_message: { method: this.userSendMessage, reqUserSession: true },
+   user_list_messages: { method: this.userListMessages, reqUserSession: true }
   };
  }
 
@@ -283,6 +284,14 @@ class API {
   this.data.userSendMessage(c.userID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   this.data.userSendMessage(userToID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   return { error: 0, message: 'Message sent' };
+ }
+
+ userListMessages(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.address) return { error: 2, message: 'Recipient address is missing' };
+  const messages = this.data.userListMessages(c.userID, c.params.address, c.params?.count, c.params?.offset);
+  if (!messages) return { error: 3, message: 'No messages found' };
+  return { error: 0, data: { messages } };
  }
 
  getNewSessionID(len) {

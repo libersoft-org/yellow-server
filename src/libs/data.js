@@ -229,6 +229,11 @@ class Data {
  userSendMessage(userID, address_from, address_to, message) {
   this.db.query('INSERT INTO messages (id_users, address_from, address_to, message) VALUES (?, ?, ?, ?)', [userID, address_from, address_to, message]);
  }
+
+ userListMessages(userID, address, count = 10, offset = 0) {
+  const res = this.db.query('SELECT id, address_from, address_to, message, created FROM messages WHERE id_users = ? AND (address_from = ? OR address_to = ?) ORDER BY id DESC LIMIT ? OFFSET ?', [userID, address, address, count, offset]);
+  return res.length > 0 ? res : false;
+ }
 }
 
 export default Data;
