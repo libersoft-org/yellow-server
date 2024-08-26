@@ -15,7 +15,7 @@ class Data {
    this.db.query('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(64) NOT NULL, id_domains INTEGER, visible_name VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domains) REFERENCES domains(id), UNIQUE (username, id_domains))');
    this.db.query('CREATE TABLE IF NOT EXISTS users_logins (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, session VARCHAR(128) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    this.db.query('CREATE TABLE IF NOT EXISTS users_sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
-   this.db.query('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, recipient VARCHAR(255) NOT NULL, message TEXT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
+   this.db.query('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, address_from VARCHAR(255) NOT NULL, address_to VARCHAR(255) NOT NULL, message TEXT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
   } catch (ex) {
    Common.addLog(ex);
    process.exit(1);
@@ -158,6 +158,8 @@ class Data {
  }
 
  adminDelUser(id) {
+  this.db.query('DELETE FROM users_sessions WHERE id_users = ?', [id]);
+  this.db.query('DELETE FROM users_logins WHERE id_users = ?', [id]);
   this.db.query('DELETE FROM users WHERE id = ?', [id]);
  }
 
@@ -186,9 +188,14 @@ class Data {
   return res.length > 0 ? res : false;
  }
 
- getDomainID(domain) {
+ getDomainIDByName(domain) {
   const res = this.db.query('SELECT id FROM domains WHERE name = ?', [domain]);
   return res.length === 1 ? res[0].id : false;
+ }
+
+ getDomainNameByID(domainID) {
+  const res = this.db.query('SELECT name FROM domains WHERE id = ?', [domainID]);
+  return res.length === 1 ? res[0].name : false;
  }
 
  userDelSession(userID, sessionID) {
@@ -209,14 +216,18 @@ class Data {
   return this.db.query('UPDATE users_sessions SET last = CURRENT_TIMESTAMP WHERE session = ?', [sessionID]);
  }
 
- getUserIDByUsernameAndDomain(username, domainID) {
+ getUserIDByUsernameAndDomainID(username, domainID) {
   const res = this.db.query('SELECT id FROM users WHERE username = ? AND id_domains = ?', [username, domainID]);
   return res.length === 1 ? res[0].id : false;
  }
 
- userGetUserinfo(userID) {
-  const res = this.db.query('SELECT visible_name FROM users WHERE id = ?', [userID]);
-  return res ? res : false;
+ userGetUserInfo(userID) {
+  const res = this.db.query('SELECT id, username, id_domains, visible_name FROM users WHERE id = ?', [userID]);
+  return res.length === 1 ? res[0] : false;
+ }
+
+ userSendMessage(userID, address_from, address_to, message) {
+  this.db.query('INSERT INTO messages (id_users, address_from, address_to, message) VALUES (?, ?, ?, ?)', [userID, address_from, address_to, message]);
  }
 }
 

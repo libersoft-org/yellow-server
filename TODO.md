@@ -3,7 +3,6 @@
 # Features
 
 - Add new commands to API.js:
-  - User - Send message
   - User - Get messages - with count, offset
   - User - Subscribe to get new messages
   - Admin - Edit admins

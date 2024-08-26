@@ -36,7 +36,8 @@ class API {
    user_login: { method: this.userLogin },
    user_list_sessions: { method: this.userListSessions, reqUserSession: true },
    user_del_session: { method: this.userDelSession, reqUserSession: true },
-   user_get_userinfo: { method: this.userGetUserinfo, reqUserSession: true }
+   user_get_userinfo: { method: this.userGetUserInfo, reqUserSession: true },
+   user_send_message: { method: this.userSendMessage, reqUserSession: true }
   };
  }
 
@@ -226,7 +227,7 @@ class API {
   if (!username || !domain) return { error: 4, message: 'Invalid username format' };
   username = username.toLowerCase();
   domain = domain.toLowerCase();
-  const domainID = this.data.getDomainID(domain);
+  const domainID = this.data.getDomainIDByName(domain);
   if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
   const userCredentials = this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 6, message: 'Wrong user address' };
@@ -250,19 +251,38 @@ class API {
   return { error: 0, message: 'Session was deleted' };
  }
 
- userGetUserinfo(c) {
+ userGetUserInfo(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.address) return { error: 2, message: 'Address is missing' };
   let [username, domain] = c.params.address.split('@');
   if (!username || !domain) return { error: 4, message: 'Invalid username format' };
   username = username.toLowerCase();
   domain = domain.toLowerCase();
-  const domainID = this.data.getDomainID(domain);
+  const domainID = this.data.getDomainIDByName(domain);
   if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
-  const userID = this.data.getUserIDByUsernameAndDomain(username, domainID);
+  const userID = this.data.getUserIDByUsernameAndDomainID(username, domainID);
   if (!userID) return { error: 6, message: 'User name not found on this server' };
-  const userInfo = this.data.userGetUserinfo(userID);
-  return { error: 0, data: { userInfo } };
+  const userInfo = this.data.userGetUserInfo(userID);
+  return { error: 0, data: userInfo };
+ }
+
+ userSendMessage(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.address) return { error: 2, message: 'Recipient address is missing' };
+  let [usernameTo, domainTo] = c.params.address.split('@');
+  if (!usernameTo || !domainTo) return { error: 4, message: 'Invalid username format' };
+  usernameTo = usernameTo.toLowerCase();
+  domainTo = domainTo.toLowerCase();
+  const domainToID = this.data.getDomainIDByName(domainTo);
+  if (!domainToID) return { error: 5, message: 'Domain name not found on this server' };
+  const userToID = this.data.getUserIDByUsernameAndDomainID(usernameTo, domainToID);
+  if (!userToID) return { error: 6, message: 'User name not found on this server' };
+  const userFromInfo = this.data.userGetUserInfo(c.userID);
+  const userFromDomain = this.data.getDomainNameByID(userFromInfo.id_domains);
+  if (!c.params.message) return { error: 7, message: 'Message is missing' };
+  this.data.userSendMessage(c.userID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
+  this.data.userSendMessage(userToID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
+  return { error: 0, message: 'Message sent' };
  }
 
  getNewSessionID(len) {
