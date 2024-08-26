@@ -1,6 +1,6 @@
 # Bugs
 
-  - User - Subscribe to get new messages is not working
+- User - Subscribe to get new messages is not working
 
 # Features
 
