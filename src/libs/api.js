@@ -6,16 +6,15 @@ import Data from './data.js';
 import { Common } from './common.js';
 
 class API {
- constructor() {
+ constructor(webServer) {
+  this.webServer = webServer;
   this.data = new Data();
   //this.dns = new DNS();
-
   setInterval(async () => {
    const resAdmin = await this.data.adminDelOldSessions();
    const resUser = await this.data.userDelOldSessions();
    Common.addLog('Expired sessions cleaner: ' + resAdmin.changes + ' admin sessions and ' + resUser.changes + ' user sessions deleted.');
   }, Common.settings.other.session_cleaner * 1000);
-
   this.apiMethods = {
    admin_login: { method: this.adminLogin },
    admin_list_sessions: { method: this.adminListSessions, reqAdminSession: true },
@@ -38,17 +37,18 @@ class API {
    user_del_session: { method: this.userDelSession, reqUserSession: true },
    user_get_userinfo: { method: this.userGetUserInfo, reqUserSession: true },
    user_send_message: { method: this.userSendMessage, reqUserSession: true },
-   user_list_messages: { method: this.userListMessages, reqUserSession: true }
+   user_list_messages: { method: this.userListMessages, reqUserSession: true },
+   user_subscribe_messages: { method: this.userSubscribeMessages, reqUserSession: true }
   };
  }
 
- async processAPI(json) {
+ async processAPI(ws, json) {
   if (!Common.isValidJSON(json)) return { error: 902, message: 'Invalid JSON command' };
   const req = JSON.parse(json);
   if (!req.command) return { error: 999, message: 'Command not set' };
   const apiMethod = this.apiMethods[req.command];
   if (!apiMethod) return { error: 903, message: 'Unknown command' };
-  const context = {};
+  const context = { ws };
   if (apiMethod.reqAdminSession) {
    if (!req.sessionID) return { error: 995, message: 'Admin session is missing' };
    if (!this.data.adminCheckSession(req.sessionID)) return { error: 997, message: 'Admin session ID is not valid' };
@@ -283,6 +283,11 @@ class API {
   if (!c.params.message) return { error: 7, message: 'Message is missing' };
   this.data.userSendMessage(c.userID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   this.data.userSendMessage(userToID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
+  this.notifySubscribers('new_message', {
+   from: userFromInfo.username + '@' + domainTo,
+   to: usernameTo + '@' + domainTo,
+   message: c.params.message
+  });
   return { error: 0, message: 'Message sent' };
  }
 
@@ -292,6 +297,21 @@ class API {
   const messages = this.data.userListMessages(c.userID, c.params.address, c.params?.count, c.params?.offset);
   if (!messages) return { error: 3, message: 'No messages found' };
   return { error: 0, data: { messages } };
+ }
+
+ userSubscribeMessages(c) {
+  const clientData = this.webServer.wsClients.get(c.ws);
+  if (!clientData) return { error: 990, message: 'Client not found' };
+  clientData.subscriptions.add('messages');
+  Common.addLog('Client ' + c.ws.remoteAddress + ' subscribed to messages event');
+  return { error: 0, message: 'Subscribed to messages event' };
+ }
+
+ notifySubscribers(event, data) {
+  const clients = this.webServer.wsClients;
+  for (const [ws, clientData] of clients) {
+   if (clientData.subscriptions.has(event)) ws.send(JSON.stringify({ event, data }));
+  }
  }
 
  getNewSessionID(len) {

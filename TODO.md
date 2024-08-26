@@ -1,9 +1,10 @@
 # Bugs
 
+  - User - Subscribe to get new messages is not working
+
 # Features
 
 - Add new commands to API.js:
-  - User - Subscribe to get new messages
   - Admin - Edit admins
   - Admin - Edit domains
   - Admin - Edit users

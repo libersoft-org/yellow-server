@@ -5,7 +5,8 @@ import { Common } from './common.js';
 class WebServer {
  async run() {
   try {
-   this.api = new API();
+   this.wsClients = new Map();
+   this.api = new API(this);
    await this.startServer();
   } catch (ex) {
    Common.addLog('Cannot start web server.', 2);
@@ -67,19 +68,21 @@ class WebServer {
  getWebSocket() {
   const api = this.api;
   return {
-   async message(ws, message) {
+   message: async (ws, message) => {
     Common.addLog('WebSocket message from: ' + ws.remoteAddress + ', message: ' + message);
-    const res = JSON.stringify(await api.processAPI(message));
+    const res = JSON.stringify(await api.processAPI(ws, message));
     Common.addLog('WebSocket message to:   ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
    },
-   open(ws) {
+   open: ws => {
+    this.wsClients.set(ws, { subscriptions: new Set() });
     Common.addLog('WebSocket connected: ' + ws.remoteAddress);
    },
-   close(ws, code, message) {
+   close: (ws, code, message) => {
+    this.wsClients.delete(ws);
     Common.addLog('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
    },
-   drain(ws) {
+   drain: ws => {
     // the socket is ready to receive more data
     console.log('DRAIN', ws);
    }
