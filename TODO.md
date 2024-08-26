@@ -1,7 +1,5 @@
 # Bugs
 
-- Admin - Delete domain - if there are still users, don't allow to delete domain
-
 # Features
 
 - Add new commands to API.js:

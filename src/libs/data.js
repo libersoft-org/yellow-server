@@ -125,9 +125,14 @@ class Data {
   this.db.query('DELETE FROM domains WHERE id = ?', [id]);
  }
 
- adminListUsers(count = 10, offset = 0) {
-  const res = this.db.query('SELECT id, username, id_domains, visible_name, created FROM users LIMIT ? OFFSET ?', [count, offset]);
+ adminListUsers(domainID, count = 10, offset = 0) {
+  const res = this.db.query('SELECT id, username, id_domains, visible_name, created FROM users WHERE id_domains = ? LIMIT ? OFFSET ?', [domainID, count, offset]);
   return res.length > 0 ? res : false;
+ }
+
+ adminCountUsers(domainID) {
+  const res = this.db.query('SELECT id FROM users WHERE id_domains = ?', [domainID]);
+  return res.length;
  }
 
  adminAddUser(username, domainID, visible_name, passwordHash) {

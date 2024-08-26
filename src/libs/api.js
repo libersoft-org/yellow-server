@@ -148,12 +148,15 @@ class API {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
   if (!this.data.domainExistsByID(c.params.domainID)) return { error: 3, message: 'Wrong domain ID' };
+  if (this.data.adminCountUsers(c.params.domainID) > 0) return { error: 4, message: 'Cannot delete this domain, as it still has some users' };
   this.data.adminDelDomain(c.params.domainID);
   return { error: 0, message: 'Domain was deleted successfully' };
  }
 
  adminListUsers(c) {
-  const res = this.data.adminListUsers(c.params?.count, c.params?.offset);
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
+  const res = this.data.adminListUsers(c.params.domainID, c.params?.count, c.params?.offset);
   if (!res) return { error: 1, message: 'No users found' };
   return { error: 0, data: { users: res } };
  }
