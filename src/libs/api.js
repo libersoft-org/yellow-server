@@ -35,6 +35,7 @@ class API {
    user_del_session: { method: this.userDelSession, reqUserSession: true },
    user_get_userinfo: { method: this.userGetUserInfo, reqUserSession: true },
    user_send_message: { method: this.userSendMessage, reqUserSession: true },
+   user_list_conversations: { method: this.userListConversations, reqUserSession: true },
    user_list_messages: { method: this.userListMessages, reqUserSession: true },
    user_subscribe: { method: this.userSubscribe, reqUserSession: true }
   };
@@ -287,6 +288,12 @@ class API {
    message: c.params.message
   });
   return { error: 0, message: 'Message sent' };
+ }
+
+ userListConversations(c) {
+  const conversations = this.data.userListConversations(c.userID);
+  if (!conversations) return { error: 1, message: 'No conversations found' };
+  return { error: 0, data: { conversations } };
  }
 
  userListMessages(c) {
