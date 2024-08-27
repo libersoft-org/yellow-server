@@ -2,25 +2,40 @@
 
 [![Created Badge](https://badges.pufler.dev/created/libersoft-org/yellow-server)](https://badges.pufler.dev) [![Updated Badge](https://badges.pufler.dev/updated/libersoft-org/yellow-server)](https://badges.pufler.dev) [![Visits Badge](https://badges.pufler.dev/visits/libersoft-org/yellow-server)](https://badges.pufler.dev)
 
-This is the server software implementation of [**ODTP Protocol**](https://github.com/libersoft-org/odtp-documentation/).
+
+## Table of contents
+- [**About**](#about)
+- [**Installation**](#installation)
+- [**Server Modules**](#server-modules)
+- [**License**](#license)
+- [**Contribution**](#contribution)
+- [**Donations**](#donations)
+- [**Star history**](#star-history)
+
+## About
+
+This is the server software implementation of [**Yellow**](https://github.com/libersoft-org/yellow-documentation/) application.
 
 If you just want to get your free [**Yellow**](https://yellow.libersoft.org) account hosted on our server, please navigate to:
 
 [![YellowNet.io](https://raw.githubusercontent.com/libersoft-org/odtp-documentation/main/logo.png)](https://yellownet.io)
 
-## Documentation
+## Installation
 
-- [**Automated server installation and configuration**](https://github.com/libersoft-org/yellow-install)
-- [**Manual server installation and configuration**](./INSTALL.md)
-- [**Development roadmap**](./ROADMAP.md)
-- [**Server documentation**](./SERVER.md)
-- [**License**](./LICENSE)
+- For installation instructions follow [**this document**](./INSTALL.md).
 
 ## Server modules
 
-- [**Identity**](https://github.com/libersoft-org/yellow-server-module-identity-nemp)
-- [**Messages**](https://github.com/libersoft-org/yellow-server-module-messages)
-- [**File transfer**](https://github.com/libersoft-org/yellow-server-module-file-transfer)
+- Not yet implemented
+
+## License
+
+- This software is developed under the license called [**Unlicense**](./LICENSE).
+
+## Contribution
+
+If you are interested in contributing to the development of this project, we would love to hear from you! Developers can reach out to us through one of the contact methods listed on [**our contacts page**](https://libersoft.org/contacts). We prefer communication through our Telegram chat group, but feel free to use any method that suits you.
+In addition to direct communication, you are welcome to contribute by submitting issues or pull requests on our project repository. Your insights and contributions are valuable to us. We look forward to collaborating with you!
 
 ## Donations
 
