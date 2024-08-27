@@ -3,6 +3,7 @@
 # Features
 
 - Add new commands to API.js:
+  - User - Get conversations
   - Admin - Edit admins
   - Admin - Edit domains
   - Admin - Edit users
