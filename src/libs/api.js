@@ -281,7 +281,7 @@ class API {
   if (!c.params.message) return { error: 7, message: 'Message is missing' };
   this.data.userSendMessage(c.userID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   this.data.userSendMessage(userToID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
-  this.notifySubscribers('new_message', {
+  this.notifySubscriber(userToID, 'new_message', {
    from: userFromInfo.username + '@' + domainTo,
    to: usernameTo + '@' + domainTo,
    message: c.params.message
@@ -304,15 +304,17 @@ class API {
   if (!allowedEvents.includes(c.params.event)) return { error: 3, message: 'Unsupported event name' };
   const clientData = this.webServer.wsClients.get(c.ws);
   if (!clientData) return { error: 4, message: 'Client not found' };
+  clientData.userID = c.userID;
   clientData.subscriptions.add(c.params.event);
   Common.addLog('Client ' + c.ws.remoteAddress + ' subscribed to event: ' + c.params.event);
   return { error: 0, message: 'Event subscribed' };
  }
 
- notifySubscribers(event, data) {
+ notifySubscriber(userID, event, data) {
   const clients = this.webServer.wsClients;
   for (const [ws, clientData] of clients) {
-   if (clientData.subscriptions.has(event)) {
+   console.log(clientData);
+   if (clientData.userID === userID && clientData.subscriptions.has(event)) {
     const res = JSON.stringify({ event, data });
     Common.addLog('WebSocket event to: ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
