@@ -50,14 +50,14 @@ class API {
   const context = { ws };
   if (apiMethod.reqAdminSession) {
    if (!req.sessionID) return { error: 995, message: 'Admin session is missing' };
-   if (!this.data.adminCheckSession(req.sessionID)) return { error: 997, message: 'Admin session ID is not valid' };
+   if (!this.data.adminCheckSession(req.sessionID)) return { error: 997, message: 'Invalid admin session ID' };
    if (this.data.adminSessionExpired(req.sessionID)) return { error: 994, message: 'Admin session is expired' };
    this.data.adminUpdateSessionTime(req.sessionID);
    const adminID = this.data.getAdminIDBySession(req.sessionID);
    if (adminID) context.adminID = adminID;
   } else if (apiMethod.reqUserSession) {
    if (!req.sessionID) return { error: 996, message: 'User session is missing' };
-   if (!this.data.userCheckSession(req.sessionID)) return { error: 998, message: 'User session ID is not valid' };
+   if (!this.data.userCheckSession(req.sessionID)) return { error: 998, message: 'Invalid user session ID' };
    if (this.data.userSessionExpired(req.sessionID)) return { error: 994, message: 'User session is expired' };
    this.data.userUpdateSessionTime(req.sessionID);
    const userID = this.data.getUserIDBySession(req.sessionID);
@@ -65,7 +65,7 @@ class API {
   }
   if (req.sessionID) context.sessionID = req.sessionID;
   if (req.params) context.params = req.params;
-  console.log('SENDING CONTEXT:', context);
+  //console.log('SENDING CONTEXT:', context);
   return await apiMethod.method.call(this, context);
  }
 
