@@ -24,9 +24,9 @@ class App {
  async startServer() {
   try {
    await this.loadSettings();
+   await this.checkDatabase();
    const header = Common.appName + ' ver. ' + Common.appVersion;
    const dashes = '='.repeat(header.length);
-   Common.addLog('');
    Common.addLog(dashes);
    Common.addLog(header);
    Common.addLog(dashes);
@@ -45,22 +45,19 @@ class App {
   Common.addLog('--create-settings - to create a default settings file named "' + Common.settingsFile + '"');
   Common.addLog('--create-database - to create a database defined in the settings file');
   Common.addLog('--create-admin - to create an admin account');
-  Common.addLog('');
  }
 
  async loadSettings() {
   const file = Bun.file(Common.settingsFile);
   if (await file.exists()) {
    try {
-    Common.settings = await file.json(); // TODO: test what happens if JSON is invalid
+    Common.settings = await file.json();
    } catch {
-    Common.addLog('Error: Settings file "' + Common.settingsFile + '" has an invalid format.');
-    Common.addLog('');
+    Common.addLog('Settings file "' + Common.settingsFile + '" has an invalid format.', 2);
     process.exit(1);
    }
   } else {
-   Common.addLog('Error: Settings file "' + Common.settingsFile + '" not found. Please run this application again using: node index.js --create-settings');
-   Common.addLog('');
+   Common.addLog('Settings file "' + Common.settingsFile + '" not found. Please run this application again using: "./start.sh --create-settings"', 2);
    process.exit(1);
   }
  }
@@ -68,8 +65,7 @@ class App {
  async createSettings() {
   const file = Bun.file(Common.settingsFile);
   if (await file.exists()) {
-   Common.addLog('Error: Settings file "' + Common.settingsFile + '" already exists. If you need to replace it with default one, delete the old one first.');
-   Common.addLog('');
+   Common.addLog('Settings file "' + Common.settingsFile + '" already exists. If you need to replace it with default one, delete the old one first.', 2);
    process.exit(1);
   } else {
    var settings = {
@@ -97,7 +93,14 @@ class App {
    };
    await Bun.write(Common.settingsFile, JSON.stringify(settings, null, 1));
    Common.addLog('Settings file was created sucessfully.');
-   Common.addLog('');
+  }
+ }
+
+ async checkDatabase() {
+  const data = new Data();
+  if (!(await data.databaseExists())) {
+   Common.addLog('Database is not yet created. Please run "./start.sh --create-database" first.', 2);
+   process.exit(1);
   }
  }
 
@@ -106,7 +109,6 @@ class App {
   const data = new Data();
   await data.createDB();
   Common.addLog('Database was created sucessfully.');
-  Common.addLog('');
  }
 
  async createAdmin() {
@@ -127,7 +129,6 @@ class App {
   const data = new Data();
   await data.adminAddAdmin(username, password);
   Common.addLog('Admin was created successfully.');
-  Common.addLog('');
   process.exit(1);
  }
 

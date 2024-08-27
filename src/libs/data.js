@@ -6,6 +6,10 @@ class Data {
   this.db = new Database();
  }
 
+ databaseExists() {
+  return this.db.databaseExists();
+ }
+
  createDB() {
   try {
    this.db.query('CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(32) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
