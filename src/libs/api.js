@@ -301,7 +301,7 @@ class API {
  userSubscribeMessages(c) {
   const clientData = this.webServer.wsClients.get(c.ws);
   if (!clientData) return { error: 990, message: 'Client not found' };
-  clientData.subscriptions.add('messages');
+  clientData.subscriptions.add('new_message');
   Common.addLog('Client ' + c.ws.remoteAddress + ' subscribed to messages event');
   return { error: 0, message: 'Subscribed to messages event' };
  }
@@ -309,7 +309,10 @@ class API {
  notifySubscribers(event, data) {
   const clients = this.webServer.wsClients;
   for (const [ws, clientData] of clients) {
-   if (clientData.subscriptions.has(event)) ws.send(JSON.stringify({ event, data }));
+   if (clientData.subscriptions.has(event)) {
+    console.log('SENDING EVENT', event, data);
+    ws.send(JSON.stringify({ event, data }));
+   }
   }
  }
 
