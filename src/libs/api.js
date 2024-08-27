@@ -1,5 +1,4 @@
 import os from 'os';
-import Crypto from 'crypto';
 import Data from './data.js';
 //import DNS from './dns.js';
 import { Common } from './common.js';
@@ -320,7 +319,7 @@ class API {
  }
 
  getNewSessionID(len) {
-  return Crypto.randomBytes(16).toString('hex') + Date.now().toString(16);
+  return crypto.randomUUID();
  }
 }
 
