@@ -318,7 +318,7 @@ class API {
   }
  }
 
- getNewSessionID(len) {
+ getNewSessionID() {
   return crypto.randomUUID();
  }
 }
