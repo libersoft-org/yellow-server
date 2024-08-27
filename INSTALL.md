@@ -129,7 +129,7 @@ crontab -e
   - **log_file** - the path to your log file (ignored if log_to_file is false)
   - **log_to_file** - if you'd like to log to console and log file (true) or to console only (false)
 
-## 3. Start the server
+## 4. Start the server
 
 a) to start the server in **console**:
 
