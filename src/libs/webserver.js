@@ -72,7 +72,7 @@ class WebServer {
    message: async (ws, message) => {
     Common.addLog('WebSocket message from: ' + ws.remoteAddress + ', message: ' + message);
     const res = JSON.stringify(await api.processAPI(ws, message));
-    Common.addLog('WebSocket message to:   ' + ws.remoteAddress + ', message: ' + res);
+    Common.addLog('WebSocket message to: ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
    },
    open: ws => {

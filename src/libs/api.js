@@ -37,7 +37,7 @@ class API {
    user_get_userinfo: { method: this.userGetUserInfo, reqUserSession: true },
    user_send_message: { method: this.userSendMessage, reqUserSession: true },
    user_list_messages: { method: this.userListMessages, reqUserSession: true },
-   user_subscribe_messages: { method: this.userSubscribeMessages, reqUserSession: true }
+   user_subscribe: { method: this.userSubscribe, reqUserSession: true }
   };
  }
 
@@ -298,20 +298,23 @@ class API {
   return { error: 0, data: { messages } };
  }
 
- userSubscribeMessages(c) {
+ userSubscribe(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.event) return { error: 1, message: 'Event parameter is missing' };
   const clientData = this.webServer.wsClients.get(c.ws);
   if (!clientData) return { error: 990, message: 'Client not found' };
-  clientData.subscriptions.add('new_message');
-  Common.addLog('Client ' + c.ws.remoteAddress + ' subscribed to messages event');
-  return { error: 0, message: 'Subscribed to messages event' };
+  clientData.subscriptions.add(c.params.event);
+  Common.addLog('Client ' + c.ws.remoteAddress + ' subscribed to event: ' + c.params.event);
+  return { error: 0, message: 'Subscribed to event: ' + c.params.event };
  }
 
  notifySubscribers(event, data) {
   const clients = this.webServer.wsClients;
   for (const [ws, clientData] of clients) {
    if (clientData.subscriptions.has(event)) {
-    console.log('SENDING EVENT', event, data);
-    ws.send(JSON.stringify({ event, data }));
+    const res = JSON.stringify({ event, data });
+    Common.addLog('WebSocket event to: ' + ws.remoteAddress + ', message: ' + res);
+    ws.send(res);
    }
   }
  }
