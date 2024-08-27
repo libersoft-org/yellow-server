@@ -90,17 +90,31 @@ class WebServer {
  }
 
  async getFile(req) {
-  let webRoot = Common.settings.web.root_directory;
-  if (!webRoot.startsWith('/')) webRoot = path.join(Common.appPath, webRoot);
   const url = new URL(req.url);
-  if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
-  const file = Bun.file(path.join(webRoot, url.pathname));
-  if (await file.exists()) return new Response(file);
-  else {
-   const notFile = Bun.file(path.join(webRoot, 'notfound.html'));
-   if (await notFile.exists()) return new Response(notFile);
-   else return new Response('<h1>404 Not Found</h1>', { status: 404, headers: { 'Content-Type': 'text/html' } });
+  let matchedPath = null;
+  let matchedRoute = null;
+  const sortedPaths = Common.settings.web.web_paths.sort((a, b) => b.route.length - a.route.length);
+  for (const webPath of sortedPaths) {
+   if (url.pathname.startsWith(webPath.route)) {
+    matchedPath = webPath.path;
+    matchedRoute = webPath.route;
+    break;
+   }
   }
+  if (!matchedPath) return await this.getNotFound();
+  if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
+  const file = Bun.file(path.join(matchedPath, url.pathname.replace(matchedRoute, '')));
+  if (await file.exists()) return new Response(file);
+  return await this.getNotFound();
+ }
+
+ async getNotFound() {
+  const rootPathObj = Common.settings.web.web_paths.find(path => path.route === '/');
+  if (rootPathObj) {
+   const notFoundFile = Bun.file(path.join(rootPathObj.path, 'notfound.html'));
+   if (await notFoundFile.exists()) return new Response(notFoundFile);
+  }
+  return new Response('<h1>404 Not Found</h1>', { status: 404, headers: { 'Content-Type': 'text/html' } });
  }
 }
 
