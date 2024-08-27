@@ -299,12 +299,14 @@ class API {
 
  userSubscribe(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.event) return { error: 1, message: 'Event parameter is missing' };
+  if (!c.params.event) return { error: 2, message: 'Event parameter is missing' };
+  const allowedEvents = ['new_message'];
+  if (!allowedEvents.includes(c.params.event)) return { error: 3, message: 'Unsupported event name' };
   const clientData = this.webServer.wsClients.get(c.ws);
-  if (!clientData) return { error: 990, message: 'Client not found' };
+  if (!clientData) return { error: 4, message: 'Client not found' };
   clientData.subscriptions.add(c.params.event);
   Common.addLog('Client ' + c.ws.remoteAddress + ' subscribed to event: ' + c.params.event);
-  return { error: 0, message: 'Subscribed to event: ' + c.params.event };
+  return { error: 0, message: 'Event subscribed' };
  }
 
  notifySubscribers(event, data) {
