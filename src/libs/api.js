@@ -1,6 +1,5 @@
 import os from 'os';
 import Crypto from 'crypto';
-import Argon2 from 'argon2';
 import Data from './data.js';
 //import DNS from './dns.js';
 import { Common } from './common.js';
@@ -10,9 +9,9 @@ class API {
   this.webServer = webServer;
   this.data = new Data();
   //this.dns = new DNS();
-  setInterval(async () => {
-   const resAdmin = await this.data.adminDelOldSessions();
-   const resUser = await this.data.userDelOldSessions();
+  setInterval(() => {
+   const resAdmin = this.data.adminDelOldSessions();
+   const resUser = this.data.userDelOldSessions();
    Common.addLog('Expired sessions cleaner: ' + resAdmin.changes + ' admin sessions and ' + resUser.changes + ' user sessions deleted.');
   }, Common.settings.other.session_cleaner * 1000);
   this.apiMethods = {
@@ -70,14 +69,14 @@ class API {
   return await apiMethod.method.call(this, context);
  }
 
- async adminLogin(c) {
+ adminLogin(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.username) return { error: 2, message: 'Username is missing' };
   if (!c.params.password) return { error: 3, message: 'Password is missing' };
   c.params.username = c.params.username.toLowerCase();
   const adminCredentials = this.data.getAdminCredentials(c.params.username);
   if (!adminCredentials) return { error: 4, message: 'Wrong username' };
-  if (!(await this.verifyHash(adminCredentials.password, c.params.password))) return { error: 5, message: 'Wrong password' };
+  if (!this.data.verifyHash(adminCredentials.password, c.params.password)) return { error: 5, message: 'Wrong password' };
   const sessionID = this.getNewSessionID();
   this.data.adminSetLogin(adminCredentials.id, sessionID);
   return { error: 0, data: { sessionID } };
@@ -103,7 +102,7 @@ class API {
   return { error: 0, data: { admins: res } };
  }
 
- async adminAddAdmin(c) {
+ adminAddAdmin(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.username) return { error: 2, message: 'Username is missing' };
   if (!c.params.password) return { error: 3, message: 'Password is missing' };
@@ -111,7 +110,7 @@ class API {
   if (this.data.adminExistsByUsername(c.params.username)) return { error: 4, message: 'This admin already exists' };
   if (c.params.username.length < 3 || c.params.username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username)) return { error: 5, message: 'Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
   if (c.params.password.length < 8) return { error: 6, message: 'Password has to be 8 or more characters long' };
-  this.data.adminAddAdmin(c.params.username, await this.getHash(c.params.password));
+  this.data.adminAddAdmin(c.params.username, c.params.password);
   return { error: 0, data: { message: 'Admin was created successfully' } };
  }
 
@@ -163,7 +162,7 @@ class API {
   return { error: 0, data: { users: res } };
  }
 
- async adminAddUser(c) {
+ adminAddUser(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.username) return { error: 2, message: 'Username is missing' };
   if (!c.params.domainID) return { error: 3, message: 'Domain ID is missing' };
@@ -174,7 +173,7 @@ class API {
   if (!this.data.domainExistsByID(c.params.domainID)) return { error: 6, message: 'Wrong domain ID' };
   if (this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID)) return { error: 7, message: 'User already exists' };
   if (c.params.password.length < 8) return { error: 7, message: 'Password has to be 8 or more characters long' };
-  this.data.adminAddUser(c.params.username, c.params.domainID, c.params.visible_name, await this.getHash(c.params.password));
+  this.data.adminAddUser(c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
   return { error: 0, message: 'User was added successfully' };
  }
 
@@ -220,7 +219,7 @@ class API {
   };
  }
 
- async userLogin(c) {
+ userLogin(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.address) return { error: 2, message: 'Address is missing' };
   if (!c.params.password) return { error: 3, message: 'Password is missing' };
@@ -232,7 +231,7 @@ class API {
   if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
   const userCredentials = this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 6, message: 'Wrong user address' };
-  if (!(await this.verifyHash(userCredentials.password, c.params.password))) return { error: 7, message: 'Wrong password' };
+  if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 7, message: 'Wrong password' };
   const sessionID = this.getNewSessionID();
   this.data.userSetLogin(userCredentials.id, sessionID);
   return { error: 0, data: { sessionID } };
@@ -316,15 +315,6 @@ class API {
 
  getNewSessionID(len) {
   return Crypto.randomBytes(16).toString('hex') + Date.now().toString(16);
- }
-
- async getHash(password, memoryCost = 65536, hashLength = 64, timeCost = 20, parallelism = 1) {
-  // default: 64 MB RAM, 64 characters length, 20 difficulty to calculate, 1 thread needed
-  return await Argon2.hash(password, { memoryCost, hashLength, timeCost, parallelism });
- }
-
- async verifyHash(hash, password) {
-  return await Argon2.verify(hash, password);
  }
 }
 

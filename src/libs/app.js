@@ -74,7 +74,7 @@ class App {
      http_port: 80,
      https_port: 443,
      certificates_path: '/etc/letsencrypt/live/{DOMAIN}/',
-     socket_path: '/run/yellow-server.sock',
+     socket_path: 'server.sock',
      web_paths: [
       {
        route: '/',
@@ -86,8 +86,8 @@ class App {
      session_admin: 600, // 10 minutes
      session_user: 2592000, // 30 days
      session_cleaner: 600, // 10 minutes
-     db_file: 'yellow-server.db',
-     log_file: 'yellow-server.log',
+     db_file: 'server.db',
+     log_file: 'server.log',
      log_to_file: true
     }
    };
@@ -112,6 +112,7 @@ class App {
  }
 
  async createAdmin() {
+  await this.loadSettings();
   let username;
   let password;
   while (true) {
@@ -125,7 +126,6 @@ class App {
    if (password.length < 8) Common.addLog('Password has to be 8 or more characters long.');
    else break;
   }
-  await this.loadSettings();
   const data = new Data();
   await data.adminAddAdmin(username, password);
   Common.addLog('Admin was created successfully.');

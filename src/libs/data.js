@@ -78,8 +78,8 @@ class Data {
   return res.length > 0 ? res : false;
  }
 
- adminAddAdmin(username, passwordHash) {
-  this.db.query('INSERT INTO admins (username, password) VALUES (?, ?)', [username, passwordHash]);
+ adminAddAdmin(username, password) {
+  this.db.query('INSERT INTO admins (username, password) VALUES (?, ?)', [username, this.getHash(password)]);
  }
 
  adminExistsByID(adminID) {
@@ -92,7 +92,7 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
- adminEditAdmin(id, username, passwordHash) {
+ adminEditAdmin(id, username, password) {
   // TODO
  }
 
@@ -139,8 +139,8 @@ class Data {
   return res.length;
  }
 
- adminAddUser(username, domainID, visible_name, passwordHash) {
-  this.db.query('INSERT INTO users (username, id_domains, visible_name, password) VALUES (?, ?, ?, ?)', [username, domainID, visible_name, passwordHash]);
+ adminAddUser(username, domainID, visible_name, password) {
+  this.db.query('INSERT INTO users (username, id_domains, visible_name, password) VALUES (?, ?, ?, ?)', [username, domainID, visible_name, this.getHash(password)]);
  }
 
  userDelOldSessions() {
@@ -157,7 +157,7 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
- adminEditUser(id, username, domainID, visible_name, passwordHash) {
+ adminEditUser(id, username, domainID, visible_name, password) {
   // TODO
  }
 
@@ -237,6 +237,15 @@ class Data {
  userListMessages(userID, address, count = 10, offset = 0) {
   const res = this.db.query('SELECT id, address_from, address_to, message, created FROM messages WHERE id_users = ? AND (address_from = ? OR address_to = ?) ORDER BY id DESC LIMIT ? OFFSET ?', [userID, address, address, count, offset]);
   return res.length > 0 ? res : false;
+ }
+
+ getHash(password, memoryCost = 65536, hashLength = 64, timeCost = 20, parallelism = 1) {
+  // default: 64 MB RAM, 64 characters length, 20 difficulty to calculate, 1 thread needed
+  return Bun.password.hashSync(password, { algorithm: 'argon2id', memoryCost, hashLength, timeCost, parallelism });
+ }
+
+ verifyHash(hash, password) {
+  return Bun.password.verifySync(password, hash);
  }
 }
 

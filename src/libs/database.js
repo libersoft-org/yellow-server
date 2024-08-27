@@ -1,9 +1,10 @@
+import path from 'path';
 import { Database as SQLiteDatabase } from 'bun:sqlite';
 import { Common } from './common.js';
 
 class Database {
  constructor() {
-  this.dbFile = Common.appPath + Common.settings.other.db_file;
+  this.dbFile = Common.settings.other.db_file.startsWith('/') ? Common.settings.other.db_file : path.join(Common.appPath, Common.settings.other.db_file);
  }
 
  execute(callback) {

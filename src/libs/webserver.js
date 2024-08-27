@@ -31,10 +31,11 @@ class WebServer {
     Bun.serve({ fetch: this.getFetch(), websocket: this.getWebSocket(), port: Common.settings.web.https_port, tls: certs });
     Common.addLog('HTTPS server is running on port: ' + Common.settings.web.https_port);
    } else {
-    Bun.serve({ fetch: this.getFetch(), websocket: this.getWebSocket(), unix: Common.settings.web.socket_path });
+    const socketPath = Common.settings.web.socket_path.startsWith('/') ? Common.settings.web.socket_path : path.join(Common.appPath, Common.settings.web.socket_path);
+    Bun.serve({ fetch: this.getFetch(), websocket: this.getWebSocket(), unix: socketPath });
     const fs = require('fs');
-    fs.chmodSync(Common.settings.web.socket_path, '777');
-    Common.addLog('HTTP server is running on Unix socket: ' + Common.settings.web.socket_path);
+    fs.chmodSync(socketPath, '777');
+    Common.addLog('HTTP server is running on Unix socket: ' + socketPath);
    }
   } catch (ex) {
    Common.addLog('Error: ' + ex.message, 2);
@@ -96,7 +97,7 @@ class WebServer {
   const sortedPaths = Common.settings.web.web_paths.sort((a, b) => b.route.length - a.route.length);
   for (const webPath of sortedPaths) {
    if (url.pathname.startsWith(webPath.route)) {
-    matchedPath = webPath.path;
+    matchedPath = webPath.path.startsWith('/') ? webPath.path : path.join(Common.appPath, webPath.path);
     matchedRoute = webPath.route;
     break;
    }
