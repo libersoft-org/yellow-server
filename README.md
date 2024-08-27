@@ -16,10 +16,6 @@
 
 This is the server software implementation of [**Yellow**](https://github.com/libersoft-org/yellow-documentation/) application.
 
-If you just want to get your free [**Yellow**](https://yellow.libersoft.org) account hosted on our server, please navigate to:
-
-[![YellowNet.io](https://raw.githubusercontent.com/libersoft-org/odtp-documentation/main/logo.png)](https://yellownet.io)
-
 ## Installation
 
 - For installation instructions follow [**this document**](./INSTALL.md).
