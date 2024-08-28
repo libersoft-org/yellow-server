@@ -19,7 +19,7 @@ class Database {
 
  query(command, params = []) {
   return this.execute(db => {
-   if (command.trim().toUpperCase().startsWith('SELECT')) return db.query(command).all(params);
+   if (command.trim().toUpperCase().startsWith('SELECT') || command.trim().toUpperCase().startsWith('WITH')) return db.query(command).all(params);
    else return db.run(command, ...params);
   });
  }

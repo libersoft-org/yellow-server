@@ -235,12 +235,65 @@ class Data {
  }
 
  userListConversations(userID) {
-  const res = this.db.query('SELECT address, MAX(last_message_date) AS last_message_date FROM (SELECT address_to AS address, created AS last_message_date FROM messages WHERE id_users = ? UNION SELECT address_from AS address, created AS last_message_date FROM messages WHERE id_users = ?) GROUP BY address ORDER BY last_message_date DESC', [userID, userID]);
+  const res = this.db.query(
+   `
+SELECT 
+ CASE 
+  WHEN address_from = user_email AND address_to = user_email THEN address_to
+  ELSE 
+   CASE 
+    WHEN address_from = user_email THEN address_to 
+    ELSE address_from 
+   END
+ END AS address,
+ MAX(created) AS last_message_date
+FROM 
+ messages
+JOIN 
+ (SELECT u.username || '@' || d.name AS user_email
+  FROM users u
+  JOIN domains d ON u.id_domains = d.id
+  WHERE u.id = ?) AS user_info
+WHERE 
+ id_users = ?
+GROUP BY 
+ address
+ORDER BY 
+ last_message_date DESC;
+  `,
+   [userID, userID]
+  );
   return res.length > 0 ? res : false;
  }
 
  userListMessages(userID, address, count = 10, offset = 0) {
-  const res = this.db.query('SELECT id, address_from, address_to, message, created FROM messages WHERE id_users = ? AND (address_from = ? OR address_to = ?) ORDER BY id DESC LIMIT ? OFFSET ?', [userID, address, address, count, offset]);
+  const res = this.db.query(
+   `
+   WITH my_email AS (
+    SELECT u.username || '@' || d.name AS email
+    FROM users u
+    JOIN domains d ON u.id_domains = d.id
+    WHERE u.id = ?
+   )
+   SELECT id, address_from, address_to, message, created
+   FROM messages
+   WHERE id_users = ?
+   AND (
+    -- Messages to myself
+    (address_from = (SELECT email FROM my_email) AND address_to = (SELECT email FROM my_email))
+    -- Messages to others
+    OR
+    (address_from = (SELECT email FROM my_email) AND address_to = ?)
+    OR
+    (address_from = ? AND address_to = (SELECT email FROM my_email))
+   )
+   ORDER BY id DESC
+   LIMIT ? OFFSET ?
+  `,
+   [userID, userID, address, address, count, offset]
+  );
+
+  console.log(res);
   return res.length > 0 ? res : false;
  }
 
