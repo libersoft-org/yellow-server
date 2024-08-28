@@ -279,10 +279,6 @@ ORDER BY
    FROM messages
    WHERE id_users = ?
    AND (
-    -- Messages to myself
-    (address_from = (SELECT email FROM my_email) AND address_to = (SELECT email FROM my_email))
-    -- Messages to others
-    OR
     (address_from = (SELECT email FROM my_email) AND address_to = ?)
     OR
     (address_from = ? AND address_to = (SELECT email FROM my_email))
