@@ -292,8 +292,6 @@ ORDER BY
   `,
    [userID, userID, address, address, count, offset]
   );
-
-  console.log(res);
   return res.length > 0 ? res : false;
  }
 
