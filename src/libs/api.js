@@ -66,7 +66,9 @@ class API {
   if (req.sessionID) context.sessionID = req.sessionID;
   if (req.params) context.params = req.params;
   //console.log('SENDING CONTEXT:', context);
-  return await apiMethod.method.call(this, context);
+  let res = await apiMethod.method.call(this, context);
+  if (req.requestID) res = { requestID: req.requestID, ...res };
+  return res;
  }
 
  adminLogin(c) {
