@@ -237,31 +237,37 @@ class Data {
  userListConversations(userID) {
   const res = this.db.query(
    `
-SELECT 
- CASE 
-  WHEN address_from = user_email AND address_to = user_email THEN address_to
-  ELSE 
-   CASE 
-    WHEN address_from = user_email THEN address_to 
-    ELSE address_from 
-   END
- END AS address,
- MAX(created) AS last_message_date
-FROM 
- messages
-JOIN 
- (SELECT u.username || '@' || d.name AS user_email
-  FROM users u
-  JOIN domains d ON u.id_domains = d.id
-  WHERE u.id = ?) AS user_info
-WHERE 
- id_users = ?
-GROUP BY 
- address
-ORDER BY 
- last_message_date DESC;
-  `,
-   [userID, userID]
+   SELECT 
+    CASE 
+     WHEN m.address_from = user_email AND m.address_to = user_email THEN m.address_to
+     ELSE 
+     CASE 
+      WHEN m.address_from = user_email THEN m.address_to 
+      ELSE m.address_from 
+     END
+    END AS address,
+    MAX(m.created) AS last_message_date,
+    u.visible_name AS visible_name
+   FROM messages m
+   JOIN 
+    (SELECT u.username || '@' || d.name AS user_email, u.id AS user_id, u.id_domains
+     FROM users u
+     JOIN domains d ON u.id_domains = d.id
+     WHERE u.id = ?) AS user_info
+   ON m.id_users = user_info.user_id
+   JOIN users u ON (u.username || '@' || d.name = CASE 
+     WHEN m.address_from = user_email AND m.address_to = user_email THEN m.address_to
+     ELSE 
+     CASE 
+      WHEN m.address_from = user_email THEN m.address_to 
+      ELSE m.address_from 
+     END
+    END)
+   JOIN domains d ON u.id_domains = d.id
+   GROUP BY address, u.visible_name
+   ORDER BY last_message_date DESC;
+   `,
+   [userID]
   );
   return res.length > 0 ? res : false;
  }
