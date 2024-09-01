@@ -2,6 +2,7 @@
 
 # Features
 
+- Add more certificates per domain
 - Add new commands to API.js:
   - Admin - Edit admins
   - Admin - Edit domains
