@@ -322,7 +322,6 @@ class API {
  notifySubscriber(userID, event, data) {
   const clients = this.webServer.wsClients;
   for (const [ws, clientData] of clients) {
-   console.log(clientData);
    if (clientData.userID === userID && clientData.subscriptions.has(event)) {
     const res = JSON.stringify({ event, data });
     Common.addLog('WebSocket event to: ' + ws.remoteAddress + ', message: ' + res);
