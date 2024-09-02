@@ -285,7 +285,7 @@ class API {
   this.data.userSendMessage(c.userID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   if (userToID !== userFromInfo.id) this.data.userSendMessage(userToID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   this.notifySubscriber(userToID, 'new_message', {
-   from: userFromInfo.username + '@' + domainTo,
+   from: userFromInfo.username + '@' + userFromDomain,
    to: usernameTo + '@' + domainTo,
    message: c.params.message
   });
