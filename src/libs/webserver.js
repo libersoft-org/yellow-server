@@ -122,7 +122,8 @@ class WebServer {
   if (!matchedPath) return await this.getNotFound();
   if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
   const file = Bun.file(path.join(matchedPath, url.pathname.replace(matchedRoute, '')));
-  if (await file.exists()) return new Response(file);
+  console.log(file.type);
+  if (await file.exists()) return new Response(file, { headers: { 'Content-Type': file.type } });
   return await this.getNotFound();
  }
 
@@ -130,7 +131,7 @@ class WebServer {
   const rootPathObj = Common.settings.web.web_paths.find(path => path.route === '/');
   if (rootPathObj) {
    const notFoundFile = Bun.file(path.join(rootPathObj.path, 'notfound.html'));
-   if (await notFoundFile.exists()) return new Response(notFoundFile);
+   if (await notFoundFile.exists()) return new Response(notFoundFile, { headers: { 'Content-Type': 'text/html' } });
   }
   return new Response('<h1>404 Not Found</h1>', { status: 404, headers: { 'Content-Type': 'text/html' } });
  }
