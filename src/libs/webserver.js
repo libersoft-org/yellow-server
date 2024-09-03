@@ -122,7 +122,6 @@ class WebServer {
   if (!matchedPath) return await this.getNotFound();
   if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
   const file = Bun.file(path.join(matchedPath, url.pathname.replace(matchedRoute, '')));
-  console.log(file.type);
   if (await file.exists()) return new Response(file, { headers: { 'Content-Type': file.type } });
   return await this.getNotFound();
  }
