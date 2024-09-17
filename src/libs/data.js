@@ -103,7 +103,7 @@ class Data {
  }
 
  adminListDomains(count = 10, offset = 0) {
-  const res = this.db.query('SELECT id, name, created FROM domains LIMIT ? OFFSET ?', [count, offset]);
+  const res = this.db.query('SELECT d.id, d.name, COUNT(u.id) AS users_count, d.created FROM domains d LEFT JOIN users u ON u.id_domains = d.id GROUP BY d.id LIMIT ? OFFSET ?', [count, offset]);
   return res.length > 0 ? res : false;
  }
 
