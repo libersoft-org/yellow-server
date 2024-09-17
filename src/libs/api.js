@@ -200,24 +200,29 @@ class API {
    return days + ' days, ' + hours + ' hours, ' + minutes + ' minutes, ' + secs + ' seconds';
   }
   return {
-   app_name: Common.appName,
-   app_version: Common.appVersion,
-   os: {
-    name: os.type(),
-    version: os.release()
-   },
-   cpu: {
-    cpus: os.cpus().map(cpu => cpu.model),
-    arch: os.arch(),
-    load: Math.min(Math.floor((os.loadavg()[0] * 100) / os.cpus().length), 100)
-   },
-   ram: {
-    total: os.totalmem(),
-    free: os.freemem()
-   },
-   hostname: os.hostname(),
-   networks: os.networkInterfaces(),
-   uptime: getUptime(os.uptime())
+   error: 0,
+   data: {
+    app: {
+     name: Common.appName,
+     version: Common.appVersion
+    },
+    os: {
+     name: os.type(),
+     version: os.release()
+    },
+    cpu: {
+     cpus: os.cpus().map(cpu => cpu.model),
+     arch: os.arch(),
+     load: Math.min(Math.floor((os.loadavg()[0] * 100) / os.cpus().length), 100)
+    },
+    ram: {
+     total: os.totalmem(),
+     free: os.freemem()
+    },
+    hostname: os.hostname(),
+    networks: os.networkInterfaces(),
+    uptime: getUptime(os.uptime())
+   }
   };
  }
 
