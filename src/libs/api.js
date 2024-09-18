@@ -25,6 +25,7 @@ class API {
    admin_add_domain: { method: this.adminAddDomain, reqAdminSession: true },
    admin_edit_domain: { method: this.adminEditDomain, reqAdminSession: true },
    admin_del_domain: { method: this.adminDelDomain, reqAdminSession: true },
+   admin_info_domain: { method: this.adminInfoDomain, reqAdminSession: true },
    admin_list_users: { method: this.adminListUsers, reqAdminSession: true },
    admin_add_user: { method: this.adminAddUser, reqAdminSession: true },
    admin_edit_user: { method: this.adminEditUser, reqAdminSession: true },
@@ -154,6 +155,14 @@ class API {
   if (this.data.adminCountUsers(c.params.domainID) > 0) return { error: 4, message: 'Cannot delete this domain, as it still has some users' };
   this.data.adminDelDomain(c.params.domainID);
   return { error: 0, message: 'Domain was deleted successfully' };
+ }
+
+ adminInfoDomain(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
+  const res = this.data.getDomainInfoByID(c.params.domainID);
+  if (!res) return { error: 3, message: 'Wrong domain ID' };
+  return { error: 0, data: res };
  }
 
  adminListUsers(c) {

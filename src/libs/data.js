@@ -202,6 +202,11 @@ class Data {
   return res.length === 1 ? res[0].name : false;
  }
 
+ getDomainInfoByID(domainID) {
+  const res = this.db.query('SELECT name, created FROM domains WHERE id = ?', [domainID]);
+  return res.length === 1 ? res[0] : false;
+ }
+
  userDelSession(userID, sessionID) {
   this.db.query('DELETE FROM users_sessions WHERE id_users = ? AND session = ?', [userID, sessionID]);
  }
