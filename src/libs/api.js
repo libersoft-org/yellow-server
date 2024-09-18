@@ -86,9 +86,7 @@ class API {
  }
 
  adminListSessions(c) {
-  const res = this.data.adminListSessions(c.adminID, c.params?.count, c.params?.offset);
-  if (!res) return { error: 1, message: 'No sessions found for this user' };
-  return { error: 0, data: { sessions: res } };
+  return { error: 0, data: { sessions: this.data.adminListSessions(c.adminID, c.params?.count, c.params?.offset) } };
  }
 
  adminDelSession(c) {
@@ -100,9 +98,7 @@ class API {
  }
 
  adminListAdmins(c) {
-  const res = this.data.adminListAdmins(c.params?.count, c.params?.offset);
-  if (!res) return { error: 1, message: 'No admins found' };
-  return { error: 0, data: { admins: res } };
+  return { error: 0, data: { admins: this.data.adminListAdmins(c.params?.count, c.params?.offset) } };
  }
 
  adminAddAdmin(c) {
@@ -130,9 +126,7 @@ class API {
  }
 
  adminListDomains(c) {
-  const res = this.data.adminListDomains(c.params?.count, c.params?.offset);
-  if (!res) return { error: 1, message: 'No domains found' };
-  return { error: 0, data: { domains: res } };
+  return { error: 0, data: { domains: this.data.adminListDomains(c.params?.count, c.params?.offset) } };
  }
 
  adminAddDomain(c) {
@@ -173,9 +167,7 @@ class API {
  adminListUsers(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
-  const res = this.data.adminListUsers(c.params.domainID, c.params?.count, c.params?.offset);
-  if (!res) return { error: 1, message: 'No users found' };
-  return { error: 0, data: { users: res } };
+  return { error: 0, data: { users: this.data.adminListUsers(c.params.domainID, c.params?.count, c.params?.offset) } };
  }
 
  adminAddUser(c) {

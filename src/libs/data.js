@@ -51,8 +51,7 @@ class Data {
  }
 
  adminListSessions(adminID, count = 10, offset = 0) {
-  const res = this.db.query('SELECT session, last, created FROM admins_sessions WHERE id_admins = ? LIMIT ? OFFSET ?', [adminID, count, offset]);
-  return res.length > 0 ? res : false;
+  return this.db.query('SELECT session, last, created FROM admins_sessions WHERE id_admins = ? LIMIT ? OFFSET ?', [adminID, count, offset]);
  }
 
  adminDelSession(adminID, sessionID) {
@@ -74,8 +73,7 @@ class Data {
  }
 
  adminListAdmins(count = 10, offset = 0) {
-  const res = this.db.query('SELECT id, username, created FROM admins LIMIT ? OFFSET ?', [count, offset]);
-  return res.length > 0 ? res : false;
+  return this.db.query('SELECT id, username, created FROM admins LIMIT ? OFFSET ?', [count, offset]);
  }
 
  adminAddAdmin(username, password) {
@@ -103,8 +101,7 @@ class Data {
  }
 
  adminListDomains(count = 10, offset = 0) {
-  const res = this.db.query('SELECT d.id, d.name, COUNT(u.id) AS users_count, d.created FROM domains d LEFT JOIN users u ON u.id_domains = d.id GROUP BY d.id LIMIT ? OFFSET ?', [count, offset]);
-  return res.length > 0 ? res : false;
+  return this.db.query('SELECT d.id, d.name, COUNT(u.id) AS users_count, d.created FROM domains d LEFT JOIN users u ON u.id_domains = d.id GROUP BY d.id LIMIT ? OFFSET ?', [count, offset]);
  }
 
  adminAddDomain(name) {
@@ -130,8 +127,7 @@ class Data {
  }
 
  adminListUsers(domainID, count = 10, offset = 0) {
-  const res = this.db.query('SELECT id, username, id_domains, visible_name, created FROM users WHERE id_domains = ? LIMIT ? OFFSET ?', [domainID, count, offset]);
-  return res.length > 0 ? res : false;
+  return this.db.query('SELECT id, username, id_domains, visible_name, created FROM users WHERE id_domains = ? LIMIT ? OFFSET ?', [domainID, count, offset]);
  }
 
  adminCountUsers(domainID) {
