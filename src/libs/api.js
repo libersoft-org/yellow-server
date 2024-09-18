@@ -145,7 +145,12 @@ class API {
  }
 
  adminEditDomain(c) {
-  return { error: 950, message: 'Not yet implemented' };
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
+  if (!this.data.domainExistsByID(c.params.domainID)) return { error: 3, message: 'Wrong domain ID' };
+  if (!c.params.name) return { error: 4, message: 'Domain name is missing' };
+  this.data.adminEditDomain(c.params.domainID, c.params.name);
+  return { error: 0, message: 'Domain was edited successfully' };
  }
 
  adminDelDomain(c) {

@@ -122,7 +122,7 @@ class Data {
  }
 
  adminEditDomain(id, name) {
-  // TODO
+  this.db.query('UPDATE domains SET name = ? WHERE id = ?', [name, id]);
  }
 
  adminDelDomain(id) {
