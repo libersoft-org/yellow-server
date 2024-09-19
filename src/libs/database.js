@@ -19,7 +19,6 @@ class Database {
 
  query(command, params = []) {
   return this.execute(db => {
-   console.log(command, params);
    if (command.trim().toUpperCase().startsWith('SELECT') || command.trim().toUpperCase().startsWith('WITH')) return db.query(command).all(params);
    else return db.run(command, ...params);
   });
