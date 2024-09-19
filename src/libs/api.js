@@ -126,7 +126,8 @@ class API {
  }
 
  adminListDomains(c) {
-  return { error: 0, data: { domains: this.data.adminListDomains(c.params?.count, c.params?.lastID) } };
+  const res = c.params?.filterName ? this.data.adminListDomains(c.params?.count, c.params?.lastID, c.params.filterName) : this.data.adminListDomains(c.params?.count, c.params?.lastID);
+  return { error: 0, data: { domains: res } };
  }
 
  adminAddDomain(c) {
