@@ -86,7 +86,7 @@ class API {
  }
 
  adminListSessions(c) {
-  return { error: 0, data: { sessions: this.data.adminListSessions(c.adminID, c.params?.count, c.params?.offset) } };
+  return { error: 0, data: { sessions: this.data.adminListSessions(c.adminID, c.params?.count, c.params?.lastID) } };
  }
 
  adminDelSession(c) {
@@ -98,7 +98,7 @@ class API {
  }
 
  adminListAdmins(c) {
-  return { error: 0, data: { admins: this.data.adminListAdmins(c.params?.count, c.params?.offset) } };
+  return { error: 0, data: { admins: this.data.adminListAdmins(c.params?.count, c.params?.lastID) } };
  }
 
  adminAddAdmin(c) {
@@ -126,7 +126,7 @@ class API {
  }
 
  adminListDomains(c) {
-  return { error: 0, data: { domains: this.data.adminListDomains(c.params?.count, c.params?.offset) } };
+  return { error: 0, data: { domains: this.data.adminListDomains(c.params?.count, c.params?.lastID) } };
  }
 
  adminAddDomain(c) {
@@ -167,7 +167,7 @@ class API {
  adminListUsers(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
-  return { error: 0, data: { users: this.data.adminListUsers(c.params.domainID, c.params?.count, c.params?.offset) } };
+  return { error: 0, data: { users: this.data.adminListUsers(c.params.domainID, c.params?.count, c.params?.lastID) } };
  }
 
  adminAddUser(c) {
@@ -251,7 +251,7 @@ class API {
  }
 
  userListSessions(c) {
-  const res = this.data.userListSessions(c.userID, c.params?.count, c.params?.offset);
+  const res = this.data.userListSessions(c.userID, c.params?.count, c.params?.lastID);
   if (!res) return { error: 1, message: 'No sessions found for this user' };
   return { error: 0, data: { sessions: res } };
  }
@@ -312,7 +312,7 @@ class API {
  userListMessages(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.address) return { error: 2, message: 'Recipient address is missing' };
-  const messages = this.data.userListMessages(c.userID, c.params.address, c.params?.count, c.params?.offset);
+  const messages = this.data.userListMessages(c.userID, c.params.address, c.params?.count, c.params?.lastID);
   if (!messages) return { error: 3, message: 'No messages found' };
   return { error: 0, data: { messages } };
  }

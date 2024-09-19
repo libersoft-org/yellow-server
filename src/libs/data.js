@@ -50,8 +50,8 @@ class Data {
   return res.length === 1 ? res[0].id_admins : false;
  }
 
- adminListSessions(adminID, count = 10, offset = 0) {
-  return this.db.query('SELECT session, last, created FROM admins_sessions WHERE id_admins = ? LIMIT ? OFFSET ?', [adminID, count, offset]);
+ adminListSessions(adminID, count = 10, lastID = 0) {
+  return this.db.query('SELECT session, last, created FROM admins_sessions WHERE id_admins = ? AND id > ? LIMIT ?', [adminID, lastID, count]);
  }
 
  adminDelSession(adminID, sessionID) {
@@ -72,8 +72,8 @@ class Data {
   return this.db.query('UPDATE admins_sessions SET last = CURRENT_TIMESTAMP WHERE session = ?', [sessionID]);
  }
 
- adminListAdmins(count = 10, offset = 0) {
-  return this.db.query('SELECT id, username, created FROM admins LIMIT ? OFFSET ?', [count, offset]);
+ adminListAdmins(count = 10, lastID = 0) {
+  return this.db.query('SELECT id, username, created FROM admins WHERE id > ? LIMIT ?', [lastID, count]);
  }
 
  adminAddAdmin(username, password) {
@@ -100,8 +100,8 @@ class Data {
   this.db.query('DELETE FROM admins WHERE id = ?', [id]);
  }
 
- adminListDomains(count = 10, offset = 0) {
-  return this.db.query('SELECT d.id, d.name, COUNT(u.id) AS users_count, d.created FROM domains d LEFT JOIN users u ON u.id_domains = d.id GROUP BY d.id LIMIT ? OFFSET ?', [count, offset]);
+ adminListDomains(count = 10, lastID = 0) {
+  return this.db.query('SELECT d.id, d.name, COUNT(u.id) AS users_count, d.created FROM domains d LEFT JOIN users u ON u.id_domains = d.id WHERE d.id > ? GROUP BY d.id LIMIT ?', [lastID, count]);
  }
 
  adminAddDomain(name) {
@@ -126,8 +126,8 @@ class Data {
   this.db.query('DELETE FROM domains WHERE id = ?', [id]);
  }
 
- adminListUsers(domainID, count = 10, offset = 0) {
-  return this.db.query('SELECT id, username, id_domains, visible_name, created FROM users WHERE id_domains = ? LIMIT ? OFFSET ?', [domainID, count, offset]);
+ adminListUsers(domainID, count = 10, lastID = 0) {
+  return this.db.query('SELECT id, username, id_domains, visible_name, created FROM users WHERE id_domains = ? AND id > ? LIMIT ?', [domainID, lastID, count]);
  }
 
  adminCountUsers(domainID) {
@@ -183,8 +183,8 @@ class Data {
   return res.length === 1 ? res[0].id_users : false;
  }
 
- userListSessions(userID, count = 10, offset = 0) {
-  const res = this.db.query('SELECT session, last, created FROM users_sessions WHERE id_users = ? LIMIT ? OFFSET ?', [userID, count, offset]);
+ userListSessions(userID, count = 10, lastID = 0) {
+  const res = this.db.query('SELECT id, session, last, created FROM users_sessions WHERE id_users = ? AND id > ? LIMIT ?', [userID, lastID, count]);
   return res.length > 0 ? res : false;
  }
 
@@ -273,7 +273,7 @@ class Data {
   return res.length > 0 ? res : false;
  }
 
- userListMessages(userID, address, count = 10, offset = 0) {
+ userListMessages(userID, address, count = 10, lastID = 0) {
   const res = this.db.query(
    `
    WITH my_email AS (
@@ -290,10 +290,11 @@ class Data {
     OR
     (address_from = ? AND address_to = (SELECT email FROM my_email))
    )
+   AND id > ?
    ORDER BY id DESC
-   LIMIT ? OFFSET ?
+   LIMIT ?
   `,
-   [userID, userID, address, address, count, offset]
+   [userID, userID, address, address, lastID, count]
   );
   return res.length > 0 ? res : false;
  }
