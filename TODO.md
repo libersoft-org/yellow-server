@@ -1,4 +1,6 @@
 # Bugs
+- src/ should not contain scripts and settings
+- 
 
 # Features
 

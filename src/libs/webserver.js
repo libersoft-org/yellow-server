@@ -15,28 +15,36 @@ class WebServer {
  }
 
  async startServer() {
-  const certs = {
-   key: Bun.file(path.join(Common.settings.web.certificates_path, 'privkey.pem')),
-   cert: Bun.file(path.join(Common.settings.web.certificates_path, 'cert.pem'))
-  };
-  const certs_exist = (await certs.key.exists()) && (await certs.cert.exists());
-  if (!certs_exist) {
-   Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path, 2);
-   process.exit(1);
+  if (Common.settings.web.https_port) {
+   const certs = {
+    key: Bun.file(path.join(Common.settings.web.certificates_path, 'server.key')),
+    cert: Bun.file(path.join(Common.settings.web.certificates_path, 'server.crt'))
+   };
+   const certs_exist = (await certs.key.exists()) && (await certs.cert.exists());
+   if (!certs_exist) {
+    Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path, 2);
+    process.exit(1);
+   }
   }
   try {
    if (Common.settings.web.standalone) {
-    Bun.serve({
+    let http_config = {
      fetch: this.getFetch(),
      port: Common.settings.web.http_port
-    });
+    }
+    if (!Common.settings.web.https_port) {
+     http_config.websocket = this.getWebSocket();
+    }
+    Bun.serve(http_config);
     Common.addLog('HTTP server is running on port: ' + Common.settings.web.http_port);
-    Bun.serve({
-     fetch: this.getFetch(),
-     websocket: this.getWebSocket(),
-     port: Common.settings.web.https_port,
-     tls: certs
-    });
+    if (Common.settings.web.https_port) {
+     Bun.serve({
+      fetch: this.getFetch(),
+      websocket: this.getWebSocket(),
+      port: Common.settings.web.https_port,
+      tls: certs
+     });
+    }
     Common.addLog('HTTPS server is running on port: ' + Common.settings.web.https_port);
    } else {
     const socketPath = Common.settings.web.socket_path.startsWith('/') ? Common.settings.web.socket_path : path.join(Common.appPath, Common.settings.web.socket_path);
@@ -57,7 +65,16 @@ class WebServer {
 
  getFetch() {
   return async (req, server) => {
-   if (server.protocol === 'https' && server.upgrade(req)) return;
+   Common.addLog('Request from: ' + server.requestIP(req).address + ', URL: ' + req.url);
+   if (!Common.settings.web.https_port) {
+    Common.addLog('Upgrade request from: ' + server.requestIP(req).address + ', URL: ' + req.url);
+    if (server.upgrade(req)) {
+     Common.addLog('successful upgrade');
+     return;
+    }
+   }
+   else if (server.protocol === 'https' && server.upgrade(req)) return;
+   Common.addLog('Request from: ' + server.requestIP(req).address + ', URL: ' + req.url);
    let clientIP = server.requestIP(req).address;
    const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
    for (const header of forwardedHeaders) {
