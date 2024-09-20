@@ -126,8 +126,19 @@ class API {
  }
 
  adminListDomains(c) {
-  const res = c.params?.filterName ? this.data.adminListDomains(c.params?.count, c.params?.lastID, c.params.filterName) : this.data.adminListDomains(c.params?.count, c.params?.lastID);
-  return { error: 0, data: { domains: res } };
+  let orderBy = 'id';
+  if (c.params?.orderBy) {
+   const validOrderBy = ['id', 'name', 'created'];
+   orderBy = c.params.orderBy.toLowerCase();
+   if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
+  }
+  let direction = 'ASC';
+  if (c.params?.direction) {
+   const validDirection = ['ASC', 'DESC'];
+   direction = c.params.direction.toUpperCase();
+   if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
+  }
+  return { error: 0, data: { domains: this.data.adminListDomains(c.params?.count, c.params?.lastID, orderBy, direction, c.params?.filterName) } };
  }
 
  adminAddDomain(c) {

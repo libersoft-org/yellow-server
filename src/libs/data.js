@@ -100,14 +100,16 @@ class Data {
   this.db.query('DELETE FROM admins WHERE id = ?', [id]);
  }
 
- adminListDomains(count = 10, lastID = 0, filterName = null) {
+ adminListDomains(count = 10, lastID = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
   let query = 'SELECT d.id, d.name, COUNT(u.id) AS users_count, d.created FROM domains d LEFT JOIN users u ON u.id_domains = d.id WHERE d.id > ?';
   const params = [lastID];
   if (filterName !== null) {
    query += ' AND d.name LIKE ?';
-   params.push('%' + filterName + '%');
+   params.push(`%${filterName}%`);
   }
-  query += ' GROUP BY d.id LIMIT ?';
+  query += ' GROUP BY d.id';
+  query += ' ORDER BY d.' + orderBy + ' ' + direction;
+  query += ' LIMIT ?';
   params.push(count);
   console.log(query, params);
   return this.db.query(query, params);
