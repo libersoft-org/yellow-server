@@ -45,24 +45,23 @@ class API {
  async processAPI(ws, json) {
   if (!Common.isValidJSON(json)) return { error: 902, message: 'Invalid JSON command' };
   const req = JSON.parse(json);
-  let resp = {  }
-  if (req.requestID)
-    resp.requestID = req.requestID;
-  if (!req.command) return {...resp, error: 999, message: 'Command not set' };
+  let resp = {};
+  if (req.requestID) resp.requestID = req.requestID;
+  if (!req.command) return { ...resp, error: 999, message: 'Command not set' };
   const apiMethod = this.apiMethods[req.command];
-  if (!apiMethod) return {...resp, error: 903, message: 'Unknown command' };
+  if (!apiMethod) return { ...resp, error: 903, message: 'Unknown command' };
   const context = { ws };
   if (apiMethod.reqAdminSession) {
-   if (!req.sessionID) return {...resp, error: 995, message: 'Admin session is missing' };
-   if (!this.data.adminCheckSession(req.sessionID)) return {...resp, error: 997, message: 'Invalid admin session ID' };
-   if (this.data.adminSessionExpired(req.sessionID)) return {...resp, error: 994, message: 'Admin session is expired' };
+   if (!req.sessionID) return { ...resp, error: 995, message: 'Admin session is missing' };
+   if (!this.data.adminCheckSession(req.sessionID)) return { ...resp, error: 997, message: 'Invalid admin session ID' };
+   if (this.data.adminSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'Admin session is expired' };
    this.data.adminUpdateSessionTime(req.sessionID);
    const adminID = this.data.getAdminIDBySession(req.sessionID);
    if (adminID) context.adminID = adminID;
   } else if (apiMethod.reqUserSession) {
-   if (!req.sessionID) return {...resp, error: 996, message: 'User session is missing' };
-   if (!this.data.userCheckSession(req.sessionID)) return {...resp, error: 998, message: 'Invalid user session ID' };
-   if (this.data.userSessionExpired(req.sessionID)) return {...resp, error: 994, message: 'User session is expired' };
+   if (!req.sessionID) return { ...resp, error: 996, message: 'User session is missing' };
+   if (!this.data.userCheckSession(req.sessionID)) return { ...resp, error: 998, message: 'Invalid user session ID' };
+   if (this.data.userSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'User session is expired' };
    this.data.userUpdateSessionTime(req.sessionID);
    const userID = this.data.getUserIDBySession(req.sessionID);
    if (userID) context.userID = userID;
@@ -70,8 +69,8 @@ class API {
   if (req.sessionID) context.sessionID = req.sessionID;
   if (req.params) context.params = req.params;
   //console.log('SENDING CONTEXT:', context);
-  let method_result = await apiMethod.method.call(this, context)
-  return {...resp, ...method_result}
+  let method_result = await apiMethod.method.call(this, context);
+  return { ...resp, ...method_result };
  }
 
  adminLogin(c) {
@@ -88,7 +87,7 @@ class API {
  }
 
  adminListSessions(c) {
-  return { error: 0, data: { sessions: this.data.adminListSessions(c.adminID, c.params?.count, c.params?.lastID) } };
+  return { error: 0, data: { sessions: this.data.adminListSessions(c.adminID, c.params?.count, c.params?.offset) } };
  }
 
  adminDelSession(c) {
@@ -100,7 +99,7 @@ class API {
  }
 
  adminListAdmins(c) {
-  return { error: 0, data: { admins: this.data.adminListAdmins(c.params?.count, c.params?.lastID) } };
+  return { error: 0, data: { admins: this.data.adminListAdmins(c.params?.count, c.params?.offset) } };
  }
 
  adminAddAdmin(c) {
@@ -140,7 +139,7 @@ class API {
    direction = c.params.direction.toUpperCase();
    if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
   }
-  return { error: 0, data: { domains: this.data.adminListDomains(c.params?.count, c.params?.lastID, orderBy, direction, c.params?.filterName) } };
+  return { error: 0, data: { domains: this.data.adminListDomains(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
  }
 
  adminAddDomain(c) {
@@ -181,7 +180,7 @@ class API {
  adminListUsers(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
-  return { error: 0, data: { users: this.data.adminListUsers(c.params.domainID, c.params?.count, c.params?.lastID) } };
+  return { error: 0, data: { users: this.data.adminListUsers(c.params.domainID, c.params?.count, c.params?.offset) } };
  }
 
  adminAddUser(c) {
@@ -265,7 +264,7 @@ class API {
  }
 
  userListSessions(c) {
-  const res = this.data.userListSessions(c.userID, c.params?.count, c.params?.lastID);
+  const res = this.data.userListSessions(c.userID, c.params?.count, c.params?.offset);
   if (!res) return { error: 1, message: 'No sessions found for this user' };
   return { error: 0, data: { sessions: res } };
  }
