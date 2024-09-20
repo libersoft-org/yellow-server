@@ -45,21 +45,24 @@ class API {
  async processAPI(ws, json) {
   if (!Common.isValidJSON(json)) return { error: 902, message: 'Invalid JSON command' };
   const req = JSON.parse(json);
-  if (!req.command) return { error: 999, message: 'Command not set' };
+  let resp = {  }
+  if (req.requestID)
+    resp.requestID = req.requestID;
+  if (!req.command) return {...resp, error: 999, message: 'Command not set' };
   const apiMethod = this.apiMethods[req.command];
-  if (!apiMethod) return { error: 903, message: 'Unknown command' };
+  if (!apiMethod) return {...resp, error: 903, message: 'Unknown command' };
   const context = { ws };
   if (apiMethod.reqAdminSession) {
-   if (!req.sessionID) return { error: 995, message: 'Admin session is missing' };
-   if (!this.data.adminCheckSession(req.sessionID)) return { error: 997, message: 'Invalid admin session ID' };
-   if (this.data.adminSessionExpired(req.sessionID)) return { error: 994, message: 'Admin session is expired' };
+   if (!req.sessionID) return {...resp, error: 995, message: 'Admin session is missing' };
+   if (!this.data.adminCheckSession(req.sessionID)) return {...resp, error: 997, message: 'Invalid admin session ID' };
+   if (this.data.adminSessionExpired(req.sessionID)) return {...resp, error: 994, message: 'Admin session is expired' };
    this.data.adminUpdateSessionTime(req.sessionID);
    const adminID = this.data.getAdminIDBySession(req.sessionID);
    if (adminID) context.adminID = adminID;
   } else if (apiMethod.reqUserSession) {
-   if (!req.sessionID) return { error: 996, message: 'User session is missing' };
-   if (!this.data.userCheckSession(req.sessionID)) return { error: 998, message: 'Invalid user session ID' };
-   if (this.data.userSessionExpired(req.sessionID)) return { error: 994, message: 'User session is expired' };
+   if (!req.sessionID) return {...resp, error: 996, message: 'User session is missing' };
+   if (!this.data.userCheckSession(req.sessionID)) return {...resp, error: 998, message: 'Invalid user session ID' };
+   if (this.data.userSessionExpired(req.sessionID)) return {...resp, error: 994, message: 'User session is expired' };
    this.data.userUpdateSessionTime(req.sessionID);
    const userID = this.data.getUserIDBySession(req.sessionID);
    if (userID) context.userID = userID;
@@ -67,9 +70,8 @@ class API {
   if (req.sessionID) context.sessionID = req.sessionID;
   if (req.params) context.params = req.params;
   //console.log('SENDING CONTEXT:', context);
-  let res = await apiMethod.method.call(this, context);
-  if (req.requestID) res = { requestID: req.requestID, ...res };
-  return res;
+  let method_result = await apiMethod.method.call(this, context)
+  return {...resp, ...method_result}
  }
 
  adminLogin(c) {
