@@ -244,7 +244,7 @@ class Data {
  }
 
  userSendMessage(userID, address_from, address_to, message) {
-  this.db.query('INSERT INTO messages (id_users, address_from, address_to, message) VALUES (?, ?, ?, ?)', [userID, address_from, address_to, message]);
+  return this.db.query('INSERT INTO messages (id_users, address_from, address_to, message) VALUES (?, ?, ?, ?)', [userID, address_from, address_to, message]);
  }
 
  userGetMessageSeen(userID, messageID) {

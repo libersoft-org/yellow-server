@@ -307,9 +307,10 @@ class API {
   const userFromInfo = this.data.userGetUserInfo(c.userID);
   const userFromDomain = this.data.getDomainNameByID(userFromInfo.id_domains);
   if (!c.params.message) return { error: 7, message: 'Message is missing' };
-  this.data.userSendMessage(c.userID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
+  const res = this.data.userSendMessage(c.userID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   if (userToID !== userFromInfo.id) this.data.userSendMessage(userToID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   this.notifySubscriber(userToID, 'new_message', {
+   id: res.lastInsertRowid,
    from: userFromInfo.username + '@' + userFromDomain,
    to: usernameTo + '@' + domainTo,
    message: c.params.message
@@ -324,6 +325,9 @@ class API {
   if (!res) return { error: 3, message: 'Wrong message ID' };
   if (res.seen !== null) return { error: 4, message: 'Seen flag was already set' };
   this.data.userMessageSeen(c.params.messageID);
+  this.notifySubscriber(c.userID, 'seen_message', {
+   messageID: c.params.messageID
+  });
   return { error: 0, message: 'Seen flag set successfully' };
  }
 
@@ -344,7 +348,7 @@ class API {
  userSubscribe(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.event) return { error: 2, message: 'Event parameter is missing' };
-  const allowedEvents = ['new_message'];
+  const allowedEvents = ['new_message', 'seen_message'];
   if (!allowedEvents.includes(c.params.event)) return { error: 3, message: 'Unsupported event name' };
   const clientData = this.webServer.wsClients.get(c.ws);
   if (!clientData) return { error: 4, message: 'Client not found' };
