@@ -307,7 +307,8 @@ class API {
   const userFromInfo = this.data.userGetUserInfo(c.userID);
   const userFromDomain = this.data.getDomainNameByID(userFromInfo.id_domains);
   if (!c.params.message) return { error: 7, message: 'Message is missing' };
-  const uid = this.getUUID();
+  if (!c.params.uid) return { error: 8, message: 'Message UID is missing' };
+  const uid = c.params.uid;
   const res = this.data.userSendMessage(c.userID, uid, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   if (userToID !== userFromInfo.id) this.data.userSendMessage(userToID, uid, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   this.notifySubscriber(userToID, 'new_message', {
@@ -317,7 +318,7 @@ class API {
    address_to: usernameTo + '@' + domainTo,
    message: c.params.message
   });
-  return { error: 0, message: 'Message sent' };
+  return { error: 0, message: 'Message sent', uid };
  }
 
  userMessageSeen(c) {
