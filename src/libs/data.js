@@ -19,7 +19,7 @@ class Data {
    this.db.query('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(64) NOT NULL, id_domains INTEGER, visible_name VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domains) REFERENCES domains(id), UNIQUE (username, id_domains))');
    this.db.query('CREATE TABLE IF NOT EXISTS users_logins (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, session VARCHAR(128) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    this.db.query('CREATE TABLE IF NOT EXISTS users_sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
-   this.db.query('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, address_from VARCHAR(255) NOT NULL, address_to VARCHAR(255) NOT NULL, message TEXT NOT NULL, seen TIMESTAMP DEFAULT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
+   this.db.query('CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, id_users INTEGER, uid VARCHAR(255) NOT NULL, address_from VARCHAR(255) NOT NULL, address_to VARCHAR(255) NOT NULL, message TEXT NOT NULL, seen TIMESTAMP DEFAULT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
   } catch (ex) {
    Common.addLog(ex);
    process.exit(1);
@@ -248,17 +248,17 @@ class Data {
   return res.length === 1 ? res[0] : false;
  }
 
- userSendMessage(userID, address_from, address_to, message) {
-  return this.db.query('INSERT INTO messages (id_users, address_from, address_to, message) VALUES (?, ?, ?, ?)', [userID, address_from, address_to, message]);
+ userSendMessage(userID, uid, address_from, address_to, message) {
+  return this.db.query('INSERT INTO messages (id_users, uid, address_from, address_to, message) VALUES (?, ?, ?, ?, ?)', [userID, uid, address_from, address_to, message]);
  }
 
- userGetMessage(userID, messageID) {
-  const res = this.db.query('SELECT id, id_users, address_from, address_to, message, seen, created FROM messages WHERE id = ? and id_users = ?', [messageID, userID]);
+ userGetMessage(userID, uid) {
+  const res = this.db.query('SELECT id, id_users, uid, address_from, address_to, message, seen, created FROM messages WHERE uid = ? and id_users = ?', [uid, userID]);
   return res.length === 1 ? res[0] : false;
  }
 
- userMessageSeen(messageID) {
-  this.db.query('UPDATE messages SET seen = CURRENT_TIMESTAMP WHERE id = ?', [messageID]);
+ userMessageSeen(uid) {
+  this.db.query('UPDATE messages SET seen = CURRENT_TIMESTAMP WHERE uid = ?', [uid]);
  }
 
  userListConversations(userID) {
@@ -308,7 +308,7 @@ class Data {
     JOIN domains d ON u.id_domains = d.id
     WHERE u.id = ?
    )
-   SELECT id, address_from, address_to, message, created
+   SELECT id, uid, address_from, address_to, message, seen, created
    FROM messages
    WHERE id_users = ?
    AND (

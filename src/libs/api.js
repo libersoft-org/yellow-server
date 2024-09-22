@@ -82,7 +82,7 @@ class API {
   const adminCredentials = this.data.getAdminCredentials(c.params.username);
   if (!adminCredentials) return { error: 4, message: 'Wrong username' };
   if (!this.data.verifyHash(adminCredentials.password, c.params.password)) return { error: 5, message: 'Wrong password' };
-  const sessionID = this.getNewSessionID();
+  const sessionID = this.getUUID();
   this.data.adminSetLogin(adminCredentials.id, sessionID);
   return { error: 0, data: { sessionID } };
  }
@@ -259,7 +259,7 @@ class API {
   const userCredentials = this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 6, message: 'Wrong user address' };
   if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 7, message: 'Wrong password' };
-  const sessionID = this.getNewSessionID();
+  const sessionID = this.getUUID();
   this.data.userSetLogin(userCredentials.id, sessionID);
   return { error: 0, data: { sessionID } };
  }
@@ -307,10 +307,12 @@ class API {
   const userFromInfo = this.data.userGetUserInfo(c.userID);
   const userFromDomain = this.data.getDomainNameByID(userFromInfo.id_domains);
   if (!c.params.message) return { error: 7, message: 'Message is missing' };
-  const res = this.data.userSendMessage(c.userID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
-  if (userToID !== userFromInfo.id) this.data.userSendMessage(userToID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
+  const uid = this.getUUID();
+  const res = this.data.userSendMessage(c.userID, uid, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
+  if (userToID !== userFromInfo.id) this.data.userSendMessage(userToID, uid, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   this.notifySubscriber(userToID, 'new_message', {
    id: res.lastInsertRowid,
+   uid,
    address_from: userFromInfo.username + '@' + userFromDomain,
    address_to: usernameTo + '@' + domainTo,
    message: c.params.message
@@ -320,12 +322,12 @@ class API {
 
  userMessageSeen(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.messageID) return { error: 2, message: 'Message ID is missing' };
-  const res = this.data.userGetMessage(c.userID, c.params.messageID);
+  if (!c.params.uid) return { error: 2, message: 'Message UID is missing' };
+  const res = this.data.userGetMessage(c.userID, c.params.uid);
   if (!res) return { error: 3, message: 'Wrong message ID' };
-  if (res.seen !== null) return { error: 4, message: 'Seen flag was already set' };
-  this.data.userMessageSeen(c.params.messageID);
-  const res2 = this.data.userGetMessage(c.userID, c.params.messageID);
+  if (res.seen) return { error: 4, message: 'Seen flag was already set' };
+  this.data.userMessageSeen(c.params.uid);
+  const res2 = this.data.userGetMessage(c.userID, c.params.uid);
   const [username, domain] = res2.address_from.split('@');
   const userFromID = this.data.getUserIDByUsernameAndDomain(username, domain);
   this.notifySubscriber(userFromID, 'seen_message', {
@@ -373,7 +375,7 @@ class API {
   }
  }
 
- getNewSessionID() {
+ getUUID() {
   return crypto.randomUUID();
  }
 }
