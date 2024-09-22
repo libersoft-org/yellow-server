@@ -321,7 +321,6 @@ class API {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.messageID) return { error: 2, message: 'Message ID is missing' };
   const res = this.data.userGetMessageSeen(c.userID, c.params.messageID);
-  console.log(res);
   if (!res) return { error: 3, message: 'Wrong message ID' };
   if (res.seen !== null) return { error: 4, message: 'Seen flag was already set' };
   this.data.userMessageSeen(c.params.messageID);
