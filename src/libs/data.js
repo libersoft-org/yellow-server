@@ -247,6 +247,15 @@ class Data {
   this.db.query('INSERT INTO messages (id_users, address_from, address_to, message) VALUES (?, ?, ?, ?)', [userID, address_from, address_to, message]);
  }
 
+ userGetMessageSeen(userID, messageID) {
+  const res = this.db.query('SELECT seen FROM messages WHERE id = ? and id_users = ?', [messageID, userID]);
+  return res.length === 1 ? res[0] : false;
+ }
+
+ userMessageSeen(messageID) {
+  this.db.query('UPDATE messages SET seen = CURRENT_TIMESTAMP WHERE id = ?', [messageID]);
+ }
+
  userListConversations(userID) {
   const res = this.db.query(
    `

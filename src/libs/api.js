@@ -36,6 +36,7 @@ class API {
    user_del_session: { method: this.userDelSession, reqUserSession: true },
    user_get_userinfo: { method: this.userGetUserInfo, reqUserSession: true },
    user_send_message: { method: this.userSendMessage, reqUserSession: true },
+   user_message_seen: { method: this.userMessageSeen, reqUserSession: true },
    user_list_conversations: { method: this.userListConversations, reqUserSession: true },
    user_list_messages: { method: this.userListMessages, reqUserSession: true },
    user_subscribe: { method: this.userSubscribe, reqUserSession: true }
@@ -314,6 +315,17 @@ class API {
    message: c.params.message
   });
   return { error: 0, message: 'Message sent' };
+ }
+
+ userMessageSeen(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.messageID) return { error: 2, message: 'Message ID is missing' };
+  const res = this.data.userGetMessageSeen(c.userID, c.params.messageID);
+  console.log(res);
+  if (!res) return { error: 3, message: 'Wrong message ID' };
+  if (res.seen !== null) return { error: 4, message: 'Seen flag was already set' };
+  this.data.userMessageSeen(c.params.messageID);
+  return { error: 0, message: 'Seen flag set successfully' };
  }
 
  userListConversations(c) {
