@@ -332,6 +332,7 @@ class API {
   const [username, domain] = res2.address_from.split('@');
   const userFromID = this.data.getUserIDByUsernameAndDomain(username, domain);
   console.log('notifySubscriber(', userFromID);
+  console.log('notifySubscriber(', userFromID);
   this.notifySubscriber(userFromID, 'seen_message', {
    uid: c.params.uid,
    seen: res2.seen
