@@ -311,8 +311,8 @@ class API {
   if (userToID !== userFromInfo.id) this.data.userSendMessage(userToID, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   this.notifySubscriber(userToID, 'new_message', {
    id: res.lastInsertRowid,
-   from: userFromInfo.username + '@' + userFromDomain,
-   to: usernameTo + '@' + domainTo,
+   address_from: userFromInfo.username + '@' + userFromDomain,
+   address_to: usernameTo + '@' + domainTo,
    message: c.params.message
   });
   return { error: 0, message: 'Message sent' };
@@ -321,12 +321,16 @@ class API {
  userMessageSeen(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.messageID) return { error: 2, message: 'Message ID is missing' };
-  const res = this.data.userGetMessageSeen(c.userID, c.params.messageID);
+  const res = this.data.userGetMessage(c.userID, c.params.messageID);
   if (!res) return { error: 3, message: 'Wrong message ID' };
   if (res.seen !== null) return { error: 4, message: 'Seen flag was already set' };
   this.data.userMessageSeen(c.params.messageID);
-  this.notifySubscriber(c.userID, 'seen_message', {
-   messageID: c.params.messageID
+  const res2 = this.data.userGetMessage(c.userID, c.params.messageID);
+  const [username, domain] = res2.address_from.split('@');
+  const userFromID = this.data.getUserIDByUsernameAndDomain(username, domain);
+  this.notifySubscriber(userFromID, 'seen_message', {
+   messageID: c.params.messageID,
+   seen: res2.seen
   });
   return { error: 0, message: 'Seen flag set successfully' };
  }

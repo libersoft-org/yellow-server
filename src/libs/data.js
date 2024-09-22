@@ -238,6 +238,11 @@ class Data {
   return res.length === 1 ? res[0].id : false;
  }
 
+ getUserIDByUsernameAndDomain(username, domain) {
+  const res = this.db.query('SELECT u.id FROM users u JOIN domains d ON u.id_domains = d.id WHERE u.username = ? AND d.name = ?', [username, domain]);
+  return res.length === 1 ? res[0].id : false;
+ }
+
  userGetUserInfo(userID) {
   const res = this.db.query('SELECT id, username, id_domains, visible_name FROM users WHERE id = ?', [userID]);
   return res.length === 1 ? res[0] : false;
@@ -247,8 +252,8 @@ class Data {
   return this.db.query('INSERT INTO messages (id_users, address_from, address_to, message) VALUES (?, ?, ?, ?)', [userID, address_from, address_to, message]);
  }
 
- userGetMessageSeen(userID, messageID) {
-  const res = this.db.query('SELECT seen FROM messages WHERE id = ? and id_users = ?', [messageID, userID]);
+ userGetMessage(userID, messageID) {
+  const res = this.db.query('SELECT id, id_users, address_from, address_to, message, seen, created FROM messages WHERE id = ? and id_users = ?', [messageID, userID]);
   return res.length === 1 ? res[0] : false;
  }
 
