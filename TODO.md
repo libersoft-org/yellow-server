@@ -2,6 +2,7 @@
 
 # Features
 
+- Add seen timestamp in messages table (null = not seen);
 - Add more certificates per domain
 - Add new commands to API.js:
   - Admin - Edit admins

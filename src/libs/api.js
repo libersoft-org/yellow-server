@@ -129,7 +129,7 @@ class API {
  adminListDomains(c) {
   let orderBy = 'id';
   if (c.params?.orderBy) {
-   const validOrderBy = ['id', 'name', 'created'];
+   const validOrderBy = ['id', 'name', 'users_count', 'created'];
    orderBy = c.params.orderBy.toLowerCase();
    if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
   }
