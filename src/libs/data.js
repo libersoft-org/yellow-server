@@ -331,6 +331,7 @@ LEFT JOIN unread_counts uc ON uc.address = cp.address
 LEFT JOIN last_messages lm ON lm.address = cp.address
 JOIN partner_info pi ON pi.address = cp.address
 ORDER BY cp.last_message_date DESC;
+
   `,
    [userID]
   );

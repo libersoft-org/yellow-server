@@ -471,6 +471,81 @@ class Data {
   await this.Message.update({ seen: sequelize.fn('CURRENT_TIMESTAMP') }, { where: { uid } });
  }
 
+ // V třídě Data
+
+ async userListConversations(userID) {
+  // Získáme informace o uživateli a jeho e-mailu
+  const user = await this.User.findOne({
+   where: { id: userID },
+   include: [{ model: this.Domain }]
+  });
+
+  if (!user) return false;
+
+  const userEmail = `${user.username}@${user.Domain.name}`;
+
+  // Najdeme všechny zprávy související s uživatelem
+  const messages = await this.Message.findAll({
+   where: {
+    [Op.or]: [{ address_from: userEmail }, { address_to: userEmail }]
+   },
+   attributes: ['address_from', 'address_to', 'message', 'created', 'seen'],
+   order: [['created', 'DESC']]
+  });
+
+  if (messages.length === 0) return false;
+
+  // Vytvoříme mapu konverzací
+  const conversationsMap = new Map();
+
+  for (const msg of messages) {
+   const partnerEmail = msg.address_from === userEmail ? msg.address_to : msg.address_from;
+
+   if (!conversationsMap.has(partnerEmail)) {
+    conversationsMap.set(partnerEmail, {
+     address: partnerEmail,
+     last_message_date: msg.created,
+     last_message_text: msg.message,
+     unread_count: 0,
+     visible_name: null // Toto doplníme později
+    });
+   }
+
+   // Pokud je zpráva nepřečtená a byla poslána partnerem, zvýšíme počet nepřečtených zpráv
+   if (!msg.seen && msg.address_from === partnerEmail && msg.address_to === userEmail) {
+    conversationsMap.get(partnerEmail).unread_count += 1;
+   }
+  }
+
+  // Získáme visible_name pro každého partnera
+  const partnerEmails = Array.from(conversationsMap.keys());
+
+  const partners = await this.User.findAll({
+   include: [{ model: this.Domain }],
+   where: {
+    [Op.or]: partnerEmails.map(email => {
+     const [username, domainName] = email.split('@');
+     return {
+      [Op.and]: [{ username }, { '$Domain.name$': domainName }]
+     };
+    })
+   }
+  });
+
+  // Přidáme visible_name do konverzací
+  for (const partner of partners) {
+   const email = `${partner.username}@${partner.Domain.name}`;
+   if (conversationsMap.has(email)) {
+    conversationsMap.get(email).visible_name = partner.visible_name;
+   }
+  }
+
+  // Převést mapu na pole a seřadit podle poslední zprávy
+  const conversations = Array.from(conversationsMap.values()).sort((a, b) => b.last_message_date - a.last_message_date);
+
+  return conversations;
+ }
+
  async userListMessages(userID, address, count = 10, lastID = 0) {
   const myUser = await this.User.findOne({
    where: { id: userID },
