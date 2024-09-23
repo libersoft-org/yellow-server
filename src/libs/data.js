@@ -263,61 +263,63 @@ class Data {
 
  userListConversations(userID) {
   const res = this.db.query(
-   `WITH user_info AS (
+   `
+   WITH user_info AS (
     SELECT 
-        u.id AS user_id,
-        u.username || '@' || d.name AS address
+     u.id AS user_id,
+     u.username || '@' || d.name AS address
     FROM users u
     JOIN domains d ON u.id_domains = d.id
-    WHERE u.id = ?
-),
-user_messages AS (
+    WHERE u.id = :userID
+   ),
+   user_messages AS (
     SELECT
-        m.*,
-        CASE
-            WHEN m.address_from = (SELECT address FROM user_info) THEN m.address_to
-            ELSE m.address_from
-        END AS other_address
+     m.*,
+     CASE
+      WHEN m.address_from = (SELECT address FROM user_info) THEN m.address_to
+      ELSE m.address_from
+     END AS other_address
     FROM messages m
     WHERE m.address_from = (SELECT address FROM user_info)
        OR m.address_to = (SELECT address FROM user_info)
-),
-last_messages AS (
+   ),
+   last_messages AS (
     SELECT
-        um.other_address,
-        um.message AS last_message_text,
-        um.created AS last_message_date,
-        ROW_NUMBER() OVER (PARTITION BY um.other_address ORDER BY um.created DESC) AS rn
+     um.other_address,
+     um.message AS last_message_text,
+     um.created AS last_message_date,
+     ROW_NUMBER() OVER (PARTITION BY um.other_address ORDER BY um.created DESC) AS rn
     FROM user_messages um
     WHERE um.id_users != (SELECT user_id FROM user_info) OR um.address_to = (SELECT address FROM user_info)
-),
-unread_counts AS (
+   ),
+   unread_counts AS (
     SELECT
-        m.address_from AS other_address,
-        COUNT(*) AS unread_count
+     m.address_from AS other_address,
+     COUNT(*) AS unread_count
     FROM messages m
     WHERE m.address_to = (SELECT address FROM user_info)
-      AND m.seen IS NULL
+     AND m.seen IS NULL
+     AND m.id_users = :userID
     GROUP BY m.address_from
-),
-user_addresses AS (
+   ),
+   user_addresses AS (
     SELECT
-        u.username || '@' || d.name AS address,
-        u.visible_name
+     u.username || '@' || d.name AS address,
+     u.visible_name
     FROM users u
     JOIN domains d ON u.id_domains = d.id
-)
-SELECT
+   )
+   SELECT
     lm.other_address AS address,
     ua.visible_name,
     lm.last_message_text,
     lm.last_message_date,
     COALESCE(uc.unread_count, 0) AS unread_count
-FROM last_messages lm
-LEFT JOIN user_addresses ua ON ua.address = lm.other_address
-LEFT JOIN unread_counts uc ON uc.other_address = lm.other_address
-WHERE lm.rn = 1
-ORDER BY lm.last_message_date DESC;
+   FROM last_messages lm
+   LEFT JOIN user_addresses ua ON ua.address = lm.other_address
+   LEFT JOIN unread_counts uc ON uc.other_address = lm.other_address
+   WHERE lm.rn = 1
+   ORDER BY lm.last_message_date DESC;
   `,
    [userID]
   );
