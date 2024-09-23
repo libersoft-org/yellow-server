@@ -280,8 +280,9 @@ class Data {
       ELSE m.address_from
      END AS other_address
     FROM messages m
-    WHERE m.address_from = (SELECT address FROM user_info)
-       OR m.address_to = (SELECT address FROM user_info)
+    WHERE m.id_users = :userID
+    AND (m.address_from = (SELECT address FROM user_info)
+        OR m.address_to = (SELECT address FROM user_info))
    ),
    last_messages AS (
     SELECT
@@ -290,14 +291,14 @@ class Data {
      um.created AS last_message_date,
      ROW_NUMBER() OVER (PARTITION BY um.other_address ORDER BY um.created DESC) AS rn
     FROM user_messages um
-    WHERE um.id_users != (SELECT user_id FROM user_info) OR um.address_to = (SELECT address FROM user_info)
    ),
    unread_counts AS (
     SELECT
      m.address_from AS other_address,
      COUNT(*) AS unread_count
     FROM messages m
-    WHERE m.address_to = (SELECT address FROM user_info)
+    WHERE
+     m.address_to = (SELECT address FROM user_info)
      AND m.seen IS NULL
      AND m.id_users = :userID
     GROUP BY m.address_from
