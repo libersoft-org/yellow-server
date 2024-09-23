@@ -8,6 +8,7 @@ class API {
   this.webServer = webServer;
   this.data = new Data();
   //this.dns = new DNS();
+  this.allowedEvents = ['new_message', 'seen_message'];
   setInterval(() => {
    const resAdmin = this.data.adminDelOldSessions();
    const resUser = this.data.userDelOldSessions();
@@ -39,7 +40,8 @@ class API {
    user_message_seen: { method: this.userMessageSeen, reqUserSession: true },
    user_list_conversations: { method: this.userListConversations, reqUserSession: true },
    user_list_messages: { method: this.userListMessages, reqUserSession: true },
-   user_subscribe: { method: this.userSubscribe, reqUserSession: true }
+   user_subscribe: { method: this.userSubscribe, reqUserSession: true },
+   user_unsubscribe: { method: this.userUnsubscribe, reqUserSession: true }
   };
  }
 
@@ -357,8 +359,7 @@ class API {
  userSubscribe(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.event) return { error: 2, message: 'Event parameter is missing' };
-  const allowedEvents = ['new_message', 'seen_message'];
-  if (!allowedEvents.includes(c.params.event)) return { error: 3, message: 'Unsupported event name' };
+  if (!this.allowedEvents.includes(c.params.event)) return { error: 3, message: 'Unsupported event name' };
   const clientData = this.webServer.wsClients.get(c.ws);
   if (!clientData) return { error: 4, message: 'Client not found' };
   clientData.userID = c.userID;
@@ -376,6 +377,17 @@ class API {
     ws.send(res);
    }
   }
+ }
+
+ userUnsubscribe(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.event) return { error: 2, message: 'Event parameter is missing' };
+  if (!this.allowedEvents.includes(c.params.event)) return { error: 3, message: 'Unsupported event name' };
+  const clientData = this.webServer.wsClients.get(c.ws);
+  if (!clientData) return { error: 4, message: 'Client not found' };
+  if (!clientData.subscriptions?.has(c.params.event)) return { error: 5, message: 'Client is not subscribed to this event' };
+  clientData.subscriptions?.delete(c.params.event);
+  return { error: 0, message: 'Event unsubscribed' };
  }
 
  getUUID() {
