@@ -263,75 +263,61 @@ class Data {
 
  userListConversations(userID) {
   const res = this.db.query(
-   `
-   WITH user_info AS (
-    SELECT u.username || '@' || d.name AS user_email, u.id AS user_id
+   `WITH user_info AS (
+    SELECT 
+        u.id AS user_id,
+        u.username || '@' || d.name AS address
     FROM users u
     JOIN domains d ON u.id_domains = d.id
     WHERE u.id = ?
 ),
-conversation_partners AS (
-    SELECT 
+user_messages AS (
+    SELECT
+        m.*,
         CASE
-            WHEN m.address_from = ui.user_email THEN m.address_to
+            WHEN m.address_from = (SELECT address FROM user_info) THEN m.address_to
             ELSE m.address_from
-        END AS address,
-        MAX(m.created) AS last_message_date
+        END AS other_address
     FROM messages m
-    JOIN user_info ui ON m.address_from = ui.user_email OR m.address_to = ui.user_email
-    GROUP BY address
-),
-unread_counts AS (
-    SELECT 
-        CASE
-            WHEN m.address_from = ui.user_email THEN m.address_to
-            ELSE m.address_from
-        END AS address,
-        COUNT(*) AS unread_count
-    FROM messages m
-    JOIN user_info ui ON m.address_from = ui.user_email OR m.address_to = ui.user_email
-    WHERE m.seen IS NULL AND m.address_to = ui.user_email
-    GROUP BY address
+    WHERE m.address_from = (SELECT address FROM user_info)
+       OR m.address_to = (SELECT address FROM user_info)
 ),
 last_messages AS (
-    SELECT address, message, created
-    FROM (
-        SELECT 
-            CASE 
-                WHEN m.address_from = ui.user_email THEN m.address_to
-                ELSE m.address_from
-            END AS address,
-            m.message, m.created,
-            ROW_NUMBER() OVER (
-                PARTITION BY 
-                    CASE 
-                        WHEN m.address_from = ui.user_email THEN m.address_to
-                        ELSE m.address_from
-                    END 
-                ORDER BY m.created DESC
-            ) as rn
-        FROM messages m
-        JOIN user_info ui ON m.address_from = ui.user_email OR m.address_to = ui.user_email
-    ) sub
-    WHERE rn = 1
+    SELECT
+        um.other_address,
+        um.message AS last_message_text,
+        um.created AS last_message_date,
+        ROW_NUMBER() OVER (PARTITION BY um.other_address ORDER BY um.created DESC) AS rn
+    FROM user_messages um
+    WHERE um.id_users != (SELECT user_id FROM user_info) OR um.address_to = (SELECT address FROM user_info)
 ),
-partner_info AS (
-    SELECT u.username || '@' || d.name AS address, u.visible_name
+unread_counts AS (
+    SELECT
+        m.address_from AS other_address,
+        COUNT(*) AS unread_count
+    FROM messages m
+    WHERE m.address_to = (SELECT address FROM user_info)
+      AND m.seen IS NULL
+    GROUP BY m.address_from
+),
+user_addresses AS (
+    SELECT
+        u.username || '@' || d.name AS address,
+        u.visible_name
     FROM users u
     JOIN domains d ON u.id_domains = d.id
 )
-SELECT 
-    cp.address,
-    cp.last_message_date,
-    pi.visible_name,
-    COALESCE(uc.unread_count, 0) AS unread_count,
-    lm.message AS last_message_text
-FROM conversation_partners cp
-LEFT JOIN unread_counts uc ON uc.address = cp.address
-LEFT JOIN last_messages lm ON lm.address = cp.address
-JOIN partner_info pi ON pi.address = cp.address
-ORDER BY cp.last_message_date DESC;
-
+SELECT
+    lm.other_address AS address,
+    ua.visible_name,
+    lm.last_message_text,
+    lm.last_message_date,
+    COALESCE(uc.unread_count, 0) AS unread_count
+FROM last_messages lm
+LEFT JOIN user_addresses ua ON ua.address = lm.other_address
+LEFT JOIN unread_counts uc ON uc.other_address = lm.other_address
+WHERE lm.rn = 1
+ORDER BY lm.last_message_date DESC;
   `,
    [userID]
   );
