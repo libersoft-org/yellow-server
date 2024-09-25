@@ -50,8 +50,18 @@ class Data {
   return res.length === 1 ? res[0].id_admins : false;
  }
 
- adminListSessions(adminID, count = 10, offset = 0) {
-  return this.db.query('SELECT session, last, created FROM admins_sessions WHERE id_admins = ? LIMIT ? OFFSET ?', [adminID, count, offset]);
+ adminListSessions(adminID, count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
+  let query = 'SELECT id, session, last, created FROM admins_sessions WHERE id_admins = ?';
+  const params = [adminID];
+  if (filterName !== null) {
+   query += ' AND session LIKE ?';
+   params.push(`%${filterName}%`);
+  }
+  query += ' ORDER BY ' + orderBy + ' ' + direction;
+  query += ' LIMIT ? OFFSET ?';
+  params.push(count);
+  params.push(offset);
+  return this.db.query(query, params);
  }
 
  adminDelSession(adminID, sessionID) {

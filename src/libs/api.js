@@ -91,7 +91,19 @@ class API {
  }
 
  adminListSessions(c) {
-  return { error: 0, data: { sessions: this.data.adminListSessions(c.adminID, c.params?.count, c.params?.offset) } };
+  let orderBy = 'id';
+  if (c.params?.orderBy) {
+   const validOrderBy = ['id', 'session', 'last', 'created'];
+   orderBy = c.params.orderBy.toLowerCase();
+   if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
+  }
+  let direction = 'ASC';
+  if (c.params?.direction) {
+   const validDirection = ['ASC', 'DESC'];
+   direction = c.params.direction.toUpperCase();
+   if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
+  }
+  return { error: 0, data: { sessions: this.data.adminListSessions(c.adminID, c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
  }
 
  adminDelSession(c) {
