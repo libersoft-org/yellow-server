@@ -101,14 +101,14 @@ class Data {
  }
 
  adminEditAdmin(id, username = null, password = null) {
-  let query = 'UPDATE domains SET ';
+  let query = 'UPDATE admins SET';
   let params = [];
   if (username) {
-   query = 'username = ?';
+   query += ' username = ?,';
    params.push(username);
   }
   if (password) {
-   query = 'password = ?';
+   query += ' password = ?';
    params.push(password);
   }
   query += ' WHERE id = ?';
