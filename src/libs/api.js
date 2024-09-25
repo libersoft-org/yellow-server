@@ -131,7 +131,12 @@ class API {
  }
 
  adminEditAdmin(c) {
-  return { error: 950, message: 'Not yet implemented' };
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.adminID) return { error: 2, message: 'Admin ID is missing' };
+  if (!this.data.adminExistsByID(c.params.adminID)) return { error: 3, message: 'Wrong admin ID' };
+  if (!c.params.username && !c.params.password) return { error: 4, message: 'Admin username or admin password has to be in parameters' };
+  this.data.adminEditAdmin(c.params.adminID, c.params.username, c.params.password);
+  return { error: 0, message: 'Admin was edited successfully' };
  }
 
  adminDelAdmin(c) {

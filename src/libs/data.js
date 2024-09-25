@@ -100,8 +100,20 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
- adminEditAdmin(id, username, password) {
-  // TODO
+ adminEditAdmin(id, username = null, password = null) {
+  let query = 'UPDATE domains SET ';
+  let params = [];
+  if (username) {
+   query = 'username = ?';
+   params.push(username);
+  }
+  if (password) {
+   query = 'password = ?';
+   params.push(password);
+  }
+  query += ' WHERE id = ?';
+  params.push(id);
+  this.db.query(query, params);
  }
 
  adminDelAdmin(id) {
