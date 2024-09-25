@@ -72,8 +72,18 @@ class Data {
   return this.db.query('UPDATE admins_sessions SET last = CURRENT_TIMESTAMP WHERE session = ?', [sessionID]);
  }
 
- adminListAdmins(count = 10, offset = 0) {
-  return this.db.query('SELECT id, username, created FROM admins WHERE LIMIT ? OFFSET ?', [count, offset]);
+ adminListAdmins(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
+  let query = 'SELECT id, username, created FROM admins';
+  const params = [];
+  if (filterName !== null) {
+   query += ' WHERE username LIKE ?';
+   params.push(`%${filterName}%`);
+  }
+  query += ' ORDER BY ' + orderBy + ' ' + direction;
+  query += ' LIMIT ? OFFSET ?';
+  params.push(count);
+  params.push(offset);
+  return this.db.query(query, params);
  }
 
  adminAddAdmin(username, password) {
