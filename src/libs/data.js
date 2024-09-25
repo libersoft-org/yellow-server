@@ -55,7 +55,7 @@ class Data {
   const params = [adminID];
   if (filterName !== null) {
    query += ' AND session LIKE ?';
-   params.push(`%${filterName}%`);
+   params.push('%' + filterName + '%');
   }
   query += ' ORDER BY ' + orderBy + ' ' + direction;
   query += ' LIMIT ? OFFSET ?';
@@ -87,7 +87,7 @@ class Data {
   const params = [];
   if (filterName !== null) {
    query += ' WHERE username LIKE ?';
-   params.push(`%${filterName}%`);
+   params.push('%' + filterName + '%');
   }
   query += ' ORDER BY ' + orderBy + ' ' + direction;
   query += ' LIMIT ? OFFSET ?';
@@ -134,7 +134,6 @@ class Data {
  }
 
  getAdminInfoByID(adminID) {
-  console.log(adminID);
   const res = this.db.query('SELECT username, created FROM admins WHERE id = ?', [adminID]);
   return res.length === 1 ? res[0] : false;
  }
@@ -144,14 +143,13 @@ class Data {
   const params = [];
   if (filterName !== null) {
    query += ' WHERE d.name LIKE ?';
-   params.push(`%${filterName}%`);
+   params.push('%' + filterName + '%');
   }
   query += ' GROUP BY d.id';
   query += ' ORDER BY ' + (orderBy === 'users_count' ? orderBy : 'd.' + orderBy) + ' ' + direction;
   query += ' LIMIT ? OFFSET ?';
   params.push(count);
   params.push(offset);
-  console.log(query, params);
   return this.db.query(query, params);
  }
 
@@ -177,8 +175,29 @@ class Data {
   this.db.query('DELETE FROM domains WHERE id = ?', [id]);
  }
 
- adminListUsers(domainID, count = 10, offset = 0) {
-  return this.db.query('SELECT id, username, id_domains, visible_name, created FROM users WHERE id_domains = ? LIMIT ? OFFSET ?', [domainID, count, offset]);
+ adminListUsers(domainID = null, count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
+  console.log('PARAMETERS IN DATA:', domainID, count, offset, orderBy, direction, filterName);
+  let query = "SELECT u.id, u.username || '@' || d.name AS address, u.visible_name, u.created FROM users u JOIN domains d ON u.id_domains = d.id";
+  const params = [];
+  const conditions = [];
+  if (domainID !== null) {
+   conditions.push('u.id_domains = ?');
+   params.push(domainID);
+  }
+  if (filterName !== null) {
+   conditions.push("(u.username || '@' || d.name) LIKE ?");
+   params.push('%' + filterName + '%');
+  }
+  if (conditions.length > 0) query += ' WHERE ' + conditions.join(' AND ');
+  direction = direction.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+  query += ' ORDER BY ' + (orderBy === 'address' ? orderBy : 'u.' + orderBy) + ' ' + direction;
+  query += ' LIMIT ? OFFSET ?';
+  params.push(count, offset);
+  console.log('---------');
+  console.log(query);
+  console.log(params);
+  console.log('---------');
+  return this.db.query(query, params);
  }
 
  adminCountUsers(domainID) {
@@ -363,7 +382,7 @@ class Data {
   `,
    [userID]
   );
-  console.log(res);
+  //console.log(res);
   return res.length > 0 ? res : false;
  }
 

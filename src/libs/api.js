@@ -219,9 +219,20 @@ class API {
  }
 
  adminListUsers(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
-  return { error: 0, data: { users: this.data.adminListUsers(c.params.domainID, c.params?.count, c.params?.offset) } };
+  let orderBy = 'id';
+  if (c.params?.orderBy) {
+   const validOrderBy = ['id', 'address', 'visible_name', 'created'];
+   orderBy = c.params.orderBy.toLowerCase();
+   if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
+  }
+  let direction = 'ASC';
+  if (c.params?.direction) {
+   const validDirection = ['ASC', 'DESC'];
+   direction = c.params.direction.toUpperCase();
+   if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
+  }
+  console.log('PARAMETERS IN API:', c.params);
+  return { error: 0, data: { users: this.data.adminListUsers(c.params?.domainID, c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
  }
 
  adminAddUser(c) {
