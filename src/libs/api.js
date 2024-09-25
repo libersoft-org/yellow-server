@@ -22,6 +22,7 @@ class API {
    admin_add_admin: { method: this.adminAddAdmin, reqAdminSession: true },
    admin_edit_admin: { method: this.adminEditAdmin, reqAdminSession: true },
    admin_del_admin: { method: this.adminDelAdmin, reqAdminSession: true },
+   admin_info_admin: { method: this.adminInfoAdmin, reqAdminSession: true },
    admin_list_domains: { method: this.adminListDomains, reqAdminSession: true },
    admin_add_domain: { method: this.adminAddDomain, reqAdminSession: true },
    admin_edit_domain: { method: this.adminEditDomain, reqAdminSession: true },
@@ -139,6 +140,14 @@ class API {
   if (!this.data.adminExistsByID(c.params.adminID)) return { error: 3, message: 'Wrong admin ID' };
   this.data.adminDelAdmin(c.params.adminID);
   return { error: 0, message: 'Admin was deleted successfully' };
+ }
+
+ adminInfoAdmin(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.adminID) return { error: 2, message: 'Admin ID is missing' };
+  const res = this.data.getAdminInfoByID(c.params.adminID);
+  if (!res) return { error: 3, message: 'Wrong admin ID' };
+  return { error: 0, data: res };
  }
 
  adminListDomains(c) {

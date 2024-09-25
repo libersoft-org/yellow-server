@@ -110,6 +110,12 @@ class Data {
   this.db.query('DELETE FROM admins WHERE id = ?', [id]);
  }
 
+ getAdminInfoByID(adminID) {
+  console.log(adminID);
+  const res = this.db.query('SELECT username, created FROM admins WHERE id = ?', [adminID]);
+  return res.length === 1 ? res[0] : false;
+ }
+
  adminListDomains(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
   let query = 'SELECT d.id, d.name, COUNT(u.id) AS users_count, d.created FROM domains d LEFT JOIN users u ON u.id_domains = d.id';
   const params = [];
