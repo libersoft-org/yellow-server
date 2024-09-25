@@ -32,6 +32,7 @@ class API {
    admin_add_user: { method: this.adminAddUser, reqAdminSession: true },
    admin_edit_user: { method: this.adminEditUser, reqAdminSession: true },
    admin_del_user: { method: this.adminDelUser, reqAdminSession: true },
+   admin_info_user: { method: this.adminInfoUser, reqAdminSession: true },
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
    user_login: { method: this.userLogin },
    user_list_sessions: { method: this.userListSessions, reqUserSession: true },
@@ -259,6 +260,14 @@ class API {
   if (!this.data.userExistsByID(c.params.userID)) return { error: 3, message: 'Wrong user ID' };
   this.data.adminDelUser(c.params.userID);
   return { error: 0, message: 'User was deleted successfully' };
+ }
+
+ adminInfoUser(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
+  const res = this.data.getUserInfoByID(c.params.userID);
+  if (!res) return { error: 3, message: 'Wrong user ID' };
+  return { error: 0, data: res };
  }
 
  adminSysInfo() {

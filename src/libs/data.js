@@ -176,11 +176,9 @@ class Data {
  }
 
  adminListUsers(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterUsername = null, filterDomainID = null) {
-  console.log('PARAMETERS IN DATA:', count, offset, orderBy, direction, filterUsername, filterDomainID);
   let query = "SELECT u.id, u.username || '@' || d.name AS address, u.visible_name, u.created FROM users u JOIN domains d ON u.id_domains = d.id";
   const params = [];
   const conditions = [];
-
   if (filterUsername !== null) {
    conditions.push('u.username LIKE ?');
    params.push('%' + filterUsername + '%');
@@ -189,7 +187,6 @@ class Data {
    conditions.push('u.id_domains = ?');
    params.push(filterDomainID);
   }
-
   if (conditions.length > 0) query += ' WHERE ' + conditions.join(' AND ');
   direction = direction.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
   query += ' ORDER BY ' + (orderBy === 'address' ? orderBy : 'u.' + orderBy) + ' ' + direction;
@@ -229,6 +226,11 @@ class Data {
   this.db.query('DELETE FROM users_sessions WHERE id_users = ?', [id]);
   this.db.query('DELETE FROM users_logins WHERE id_users = ?', [id]);
   this.db.query('DELETE FROM users WHERE id = ?', [id]);
+ }
+
+ getUserInfoByID(userID) {
+  const res = this.db.query('SELECT username, id_domains, visible_name, created FROM users WHERE id = ?', [userID]);
+  return res.length === 1 ? res[0] : false;
  }
 
  getUserCredentials(username, domainID) {
