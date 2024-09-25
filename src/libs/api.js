@@ -232,7 +232,7 @@ class API {
    if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
   }
   console.log('PARAMETERS IN API:', c.params);
-  return { error: 0, data: { users: this.data.adminListUsers(c.params?.domainID, c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
+  return { error: 0, data: { users: this.data.adminListUsers(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterUserame, c.params?.filterDomainID) } };
  }
 
  adminAddUser(c) {
