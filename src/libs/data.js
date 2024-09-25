@@ -176,7 +176,7 @@ class Data {
  }
 
  adminListUsers(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterUsername = null, filterDomainID = null ) {
-  console.log('PARAMETERS IN DATA:', domainID, count, offset, orderBy, direction, filtersUsername);
+  console.log('PARAMETERS IN DATA:', count, offset, orderBy, direction, filtersUsername, filterDomainID);
   let query = "SELECT u.id, u.username || '@' || d.name AS address, u.visible_name, u.created FROM users u JOIN domains d ON u.id_domains = d.id";
   const params = [];
   const conditions = [];
