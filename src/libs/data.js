@@ -111,6 +111,7 @@ class Data {
    query += ' password = ?';
    params.push(password);
   }
+  if (query.endsWith(',')) query = query.slice(0, -1);
   query += ' WHERE id = ?';
   params.push(id);
   this.db.query(query, params);
