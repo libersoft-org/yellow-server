@@ -175,18 +175,18 @@ class Data {
   this.db.query('DELETE FROM domains WHERE id = ?', [id]);
  }
 
- adminListUsers(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterUsername = null, filterDomainID = null ) {
+ adminListUsers(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterUsername = null, filterDomainID = null) {
   console.log('PARAMETERS IN DATA:', count, offset, orderBy, direction, filterUsername, filterDomainID);
   let query = "SELECT u.id, u.username || '@' || d.name AS address, u.visible_name, u.created FROM users u JOIN domains d ON u.id_domains = d.id";
   const params = [];
   const conditions = [];
 
   if (filterUsername !== null) {
-   conditions.push("u.username LIKE ?");
+   conditions.push('u.username LIKE ?');
    params.push('%' + filterUsername + '%');
   }
   if (filterDomainID !== null) {
-   conditions.push("u.id_domains = ?");
+   conditions.push('u.id_domains = ?');
    params.push(filterDomainID);
   }
 
