@@ -175,19 +175,21 @@ class Data {
   this.db.query('DELETE FROM domains WHERE id = ?', [id]);
  }
 
- adminListUsers(domainID = null, count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
-  console.log('PARAMETERS IN DATA:', domainID, count, offset, orderBy, direction, filterName);
+ adminListUsers(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterUsername = null, filterDomainID = null ) {
+  console.log('PARAMETERS IN DATA:', domainID, count, offset, orderBy, direction, filtersUsername);
   let query = "SELECT u.id, u.username || '@' || d.name AS address, u.visible_name, u.created FROM users u JOIN domains d ON u.id_domains = d.id";
   const params = [];
   const conditions = [];
-  if (domainID !== null) {
-   conditions.push('u.id_domains = ?');
-   params.push(domainID);
+
+  if (filterUsername !== null) {
+   conditions.push("u.username LIKE ?");
+   params.push('%' + filterUsername + '%');
   }
-  if (filterName !== null) {
-   conditions.push("(u.username || '@' || d.name) LIKE ?");
-   params.push('%' + filterName + '%');
+  if (filterDomainID !== null) {
+   conditions.push("u.id_domains = ?");
+   params.push(filterDomainID);
   }
+
   if (conditions.length > 0) query += ' WHERE ' + conditions.join(' AND ');
   direction = direction.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
   query += ' ORDER BY ' + (orderBy === 'address' ? orderBy : 'u.' + orderBy) + ' ' + direction;
@@ -323,7 +325,7 @@ class Data {
   const res = this.db.query(
    `
    WITH user_info AS (
-    SELECT 
+    SELECT
      u.id AS user_id,
      u.username || '@' || d.name AS address
     FROM users u
