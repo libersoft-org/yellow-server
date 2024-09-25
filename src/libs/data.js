@@ -195,10 +195,6 @@ class Data {
   query += ' ORDER BY ' + (orderBy === 'address' ? orderBy : 'u.' + orderBy) + ' ' + direction;
   query += ' LIMIT ? OFFSET ?';
   params.push(count, offset);
-  console.log('---------');
-  console.log(query);
-  console.log(params);
-  console.log('---------');
   return this.db.query(query, params);
  }
 
