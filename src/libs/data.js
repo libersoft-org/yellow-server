@@ -213,8 +213,14 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
- userExistsByUserNameAndDomain(username, domainID) {
-  const res = this.db.query('SELECT id FROM users WHERE username = ? AND id_domains = ?', [username, domainID]);
+ userExistsByUserNameAndDomain(username, domainID, excludeID) {
+  let query = 'SELECT id FROM users WHERE username = ? AND id_domains = ?';
+  let params = [username, domainID];
+  if (excludeID !== undefined) {
+   query += " AND id != ?";
+   params.push(excludeID);
+  }
+  const res = this.db.query(query, params);
   return res.length === 1 ? true : false;
  }
 

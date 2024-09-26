@@ -245,31 +245,43 @@ class API {
   if (!c.params.password) return { error: 5, message: 'Password is missing' };
   c.params.username = c.params.username.toLowerCase();
   if (c.params.username.length < 1 || c.params.username.length > 64 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username)) return { error: 6, message: 'Invalid username. Username must be 1-64 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
+
+  // TRANSACTION BEGIN
+
   if (!this.data.domainExistsByID(c.params.domainID)) return { error: 6, message: 'Wrong domain ID' };
   if (this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID)) return { error: 7, message: 'User already exists' };
   if (c.params.password.length < 8) return { error: 7, message: 'Password has to be 8 or more characters long' };
   this.data.adminAddUser(c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
+
+  // TRANSACTION END
+
   return { error: 0, message: 'User was added successfully' };
  }
 
  adminEditUser(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
-  if (!this.data.userExistsByID(c.params.userID)) return { error: 3, message: 'Wrong user ID' };
   if (!c.params.username && !c.params.domainID && !c.params.visible_name && !c.params.password) return { error: 4, message: 'Username, domain ID, visible_name or password has to be in parameters' };
   c.params.username = c.params.username.toLowerCase();
   if (c.params.username) {
    if (c.params.username.length < 1 || c.params.username.length > 64 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username)) return { error: 5, message: 'Invalid username. Username must be 1-64 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
   }
+
+  // TRANSACTION BEGIN
+
+  if (!this.data.userExistsByID(c.params.userID)) return { error: 3, message: 'Wrong user ID' };
+
   if (c.params.domainID) {
    if (!this.data.domainExistsByID(c.params.domainID)) return { error: 6, message: 'Wrong domain ID' };
   }
-  // TODO: check if another user with the same username and domainID, but with a different user ID already exists, the following doesn't count with different user ID:
-  //if (this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID)) return { error: 7, message: 'User already exists' };
+  if (this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID, c.params.userID)) return { error: 7, message: 'User already exists' };
   if (c.params.password) {
    if (c.params.password.length < 8) return { error: 8, message: 'Password has to be 8 or more characters long' };
   }
   this.data.adminEditUser(c.params.userID, c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
+
+  // TRANSACTION END
+
   return { error: 0, message: 'User was edited successfully' };
  }
 
