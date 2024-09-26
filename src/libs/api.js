@@ -251,7 +251,12 @@ class API {
  }
 
  adminEditUser(c) {
-  return { error: 950, message: 'Not yet implemented' };
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
+  if (!this.data.userExistsByID(c.params.userID)) return { error: 3, message: 'Wrong user ID' };
+  if (!c.params.username && !c.params.domainID && !c.params.visible_name && !c.params.password) return { error: 4, message: 'Username, domain ID, visible_name or password has to be in parameters' };
+  this.data.adminEditUser(c.params.userID, c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
+  return { error: 0, message: 'User was edited successfully' };
  }
 
  adminDelUser(c) {
@@ -317,6 +322,7 @@ class API {
   if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
   const userCredentials = this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 6, message: 'Wrong user address' };
+  console.log(userCredentials.password, c.params.password);
   if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 7, message: 'Wrong password' };
   const sessionID = this.getUUID();
   this.data.userSetLogin(userCredentials.id, sessionID);

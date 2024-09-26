@@ -119,7 +119,7 @@ class Data {
   }
   if (password) {
    query += ' password = ?';
-   params.push(password);
+   params.push(this.getHash(password));
   }
   if (query.endsWith(',')) query = query.slice(0, -1);
   query += ' WHERE id = ?';
@@ -219,7 +219,28 @@ class Data {
  }
 
  adminEditUser(id, username, domainID, visible_name, password) {
-  // TODO
+  let query = 'UPDATE users SET';
+  let params = [];
+  if (username) {
+   query += ' username = ?,';
+   params.push(username);
+  }
+  if (domainID) {
+   query += ' id_domains = ?,';
+   params.push(domainID);
+  }
+  if (visible_name) {
+   query += ' visible_name = ?,';
+   params.push(visible_name);
+  }
+  if (password) {
+   query += ' password = ?';
+   params.push(this.getHash(password));
+  }
+  if (query.endsWith(',')) query = query.slice(0, -1);
+  query += ' WHERE id = ?';
+  params.push(id);
+  this.db.query(query, params);
  }
 
  adminDelUser(id) {
