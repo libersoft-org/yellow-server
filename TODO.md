@@ -1,5 +1,6 @@
 # Bugs
 
+- API: adminEditAdmin and adminEditAdmin - when empty password is provided, it should not change the password to empty one
 - API: adminEditAdmin and adminEditAdmin - check if the same user with a different user ID already exists
 
 # Features

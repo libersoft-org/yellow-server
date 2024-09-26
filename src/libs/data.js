@@ -217,7 +217,7 @@ class Data {
   let query = 'SELECT id FROM users WHERE username = ? AND id_domains = ?';
   let params = [username, domainID];
   if (excludeID !== undefined) {
-   query += " AND id != ?";
+   query += ' AND id != ?';
    params.push(excludeID);
   }
   const res = this.db.query(query, params);
