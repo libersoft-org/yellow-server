@@ -148,6 +148,8 @@ class API {
   if (!c.params.adminID) return { error: 2, message: 'Admin ID is missing' };
   if (!this.data.adminExistsByID(c.params.adminID)) return { error: 3, message: 'Wrong admin ID' };
   if (!c.params.username && !c.params.password) return { error: 4, message: 'Admin username or admin password has to be in parameters' };
+  // TODO: check if another admin with the same username, but with a different user ID already exists, the following doesn't count with different user ID:
+  //if (this.data.adminExistsByUsername(c.params.username)) return { error: 5, message: 'This admin already exists' };
   this.data.adminEditAdmin(c.params.adminID, c.params.username, c.params.password);
   return { error: 0, message: 'Admin was edited successfully' };
  }
@@ -255,6 +257,18 @@ class API {
   if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
   if (!this.data.userExistsByID(c.params.userID)) return { error: 3, message: 'Wrong user ID' };
   if (!c.params.username && !c.params.domainID && !c.params.visible_name && !c.params.password) return { error: 4, message: 'Username, domain ID, visible_name or password has to be in parameters' };
+  c.params.username = c.params.username.toLowerCase();
+  if (c.params.username) {
+   if (c.params.username.length < 1 || c.params.username.length > 64 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username)) return { error: 5, message: 'Invalid username. Username must be 1-64 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
+  }
+  if (c.params.domainID) {
+   if (!this.data.domainExistsByID(c.params.domainID)) return { error: 6, message: 'Wrong domain ID' };
+  }
+  // TODO: check if another user with the same username and domainID, but with a different user ID already exists, the following doesn't count with different user ID:
+  //if (this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID)) return { error: 7, message: 'User already exists' };
+  if (c.params.password) {
+   if (c.params.password.length < 8) return { error: 8, message: 'Password has to be 8 or more characters long' };
+  }
   this.data.adminEditUser(c.params.userID, c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
   return { error: 0, message: 'User was edited successfully' };
  }

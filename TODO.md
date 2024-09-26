@@ -1,5 +1,7 @@
 # Bugs
 
+- API: adminEditAdmin and adminEditAdmin - check if the same user with a different user ID already exists
+
 # Features
 
 - Send hashed passwords directly from client apps (client, admin), don't hash them on server
