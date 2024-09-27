@@ -341,7 +341,7 @@ class API {
   if (!c.params.address) return { error: 2, message: 'Address is missing' };
   if (!c.params.password) return { error: 3, message: 'Password is missing' };
   let [username, domain] = c.params.address.split('@');
-  if (!username || !domain) return { error: 4, message: 'Invalid username format' };
+  if (!username || !domain) return { error: 4, message: 'Invalid address format' };
   username = username.toLowerCase();
   domain = domain.toLowerCase();
   const domainID = this.data.getDomainIDByName(domain);
