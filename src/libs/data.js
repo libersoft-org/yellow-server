@@ -414,6 +414,10 @@ class Data {
  }
 
  userListMessages(userID, address, count = 10, lastID = 0) {
+  if (lastId === "unseen") {
+
+
+
   const res = this.db.query(
    `
    WITH my_email AS (
