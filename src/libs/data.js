@@ -434,7 +434,7 @@ class Data {
    let first_unseen_ID = res.length > 0 ? res[0].id : null;
    if (first_unseen_ID === null) {
     // nothing unseen, use the last message ID
-    const res = this.db.query(
+    res = this.db.query(
      `
       WITH my_email AS (SELECT u.username || '@' || d.name AS email
                         FROM users u
@@ -456,7 +456,7 @@ class Data {
 
    // go three messages back for instant context
 
-   const res = this.db.query(
+   res = this.db.query(
     `
      WITH my_email AS (SELECT u.username || '@' || d.name AS email
                        FROM users u
