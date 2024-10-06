@@ -415,8 +415,63 @@ class Data {
 
  userListMessages(userID, address, count = 10, lastID = 0) {
   if (lastId === "unseen") {
+   // find the first unseen message ID:
+   const res = this.db.query(
+    `
+     WITH my_email AS (SELECT u.username || '@' || d.name AS email
+                       FROM users u
+                             JOIN domains d ON u.id_domains = d.id
+                       WHERE u.id = ?)
+     SELECT id
+     FROM messages
+     WHERE id_users = ?
+       AND address_to = (SELECT email FROM my_email)
+       AND seen IS NULL
+     ORDER BY id ASC LIMIT 1
+    `,
+    [userID, userID]
+   );
+   let first_unseen_ID = res.length > 0 ? res[0].id : null;
+   if (first_unseen_ID === null) {
+    // nothing unseen, use the last message ID
+    const res = this.db.query(
+     `
+      WITH my_email AS (SELECT u.username || '@' || d.name AS email
+                        FROM users u
+                              JOIN domains d ON u.id_domains = d.id
+                        WHERE u.id = ?)
+      SELECT id
+      FROM messages
+      WHERE id_users = ?
+        AND address_to = (SELECT email FROM my_email)
+      ORDER BY id DESC LIMIT 1
+     `,
+     [userID, userID]
+    );
+    first_unseen_ID = res.length > 0 ? res[0].id : 0;
+   }
+   if (first_unseen_ID === null) {
+    return []
+   }
 
+   // go three messages back for instant context
 
+   const res = this.db.query(
+    `
+     WITH my_email AS (SELECT u.username || '@' || d.name AS email
+                       FROM users u
+                             JOIN domains d ON u.id_domains = d.id
+                       WHERE u.id = ?)
+     SELECT id, uid, address_from, address_to, message, seen, created
+     FROM messages
+     WHERE id_users = ?
+       AND address_to = ?
+       AND id < ?
+     ORDER BY id DESC LIMIT 3
+    `,
+    [userID, userID, address, first_unseen_ID]);
+   lastID = res.length > 0 ? res.at(-1).id : first_unseen_ID;
+  }
 
   const res = this.db.query(
    `
