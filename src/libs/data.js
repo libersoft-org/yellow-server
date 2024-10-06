@@ -414,7 +414,7 @@ class Data {
  }
 
  userListMessages(userID, address, count = 10, lastID = 0) {
-  if (lastId === "unseen") {
+  if (lastID === "unseen") {
    // find the first unseen message ID:
    const res1 = this.db.query(
     `
@@ -453,9 +453,7 @@ class Data {
    if (first_unseen_ID === null) {
     return []
    }
-
    // go three messages back for instant context
-
    const res3 = this.db.query(
     `
      WITH my_email AS (SELECT u.username || '@' || d.name AS email
@@ -472,7 +470,6 @@ class Data {
     [userID, userID, address, first_unseen_ID]);
    lastID = res3.length > 0 ? res3.at(-1).id : first_unseen_ID;
   }
-
   const res4 = this.db.query(
    `
    WITH my_email AS (
