@@ -402,13 +402,15 @@ class API {
   const uid = c.params.uid;
   const res = this.data.userSendMessage(c.userID, uid, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
   if (userToID !== userFromInfo.id) this.data.userSendMessage(userToID, uid, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
-  this.notifySubscriber(userToID, 'new_message', {
+  const msg = {
    id: res.lastInsertRowid,
    uid,
    address_from: userFromInfo.username + '@' + userFromDomain,
    address_to: usernameTo + '@' + domainTo,
    message: c.params.message
-  });
+  };
+  this.notifySubscriber(userToID, 'new_message', msg);
+  this.notifySubscriber(c.userID, 'new_message', msg);
   return { error: 0, message: 'Message sent', uid };
  }
 
