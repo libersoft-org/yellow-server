@@ -493,7 +493,7 @@ class Data {
   `,
    [userID, userID, address, address, lastID, count]
   );
-  return res4.map((i) => {return addSeenFlagToSelfMessages(i, userID)});
+  return res4.map((i) => {return this.addSeenFlagToSelfMessages(i, userID)});
  }
 
  addSeenFlagToSelfMessages(i, userID) {
