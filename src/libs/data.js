@@ -385,6 +385,7 @@ class Data {
     WHERE
      m.address_to = (SELECT address FROM user_info)
      AND m.seen IS NULL
+     AND m.address_from != (SELECT address FROM user_info)
      AND m.id_users = :userID
     GROUP BY m.address_from
    ),
@@ -492,7 +493,7 @@ class Data {
   `,
    [userID, userID, address, address, lastID, count]
   );
-  return res4.map((i) => {addSeenFlagToSelfMessages(i, userID)});
+  return res4.map((i) => {return addSeenFlagToSelfMessages(i, userID)});
  }
 
  addSeenFlagToSelfMessages(i, userID) {
