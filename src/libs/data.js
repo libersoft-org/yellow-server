@@ -492,7 +492,14 @@ class Data {
   `,
    [userID, userID, address, address, lastID, count]
   );
-  return res4.length > 0 ? res4 : false;
+  return res4.map((i) => addSeenFlagToSelfMessages(i, userID));
+ }
+
+ function addSeenFlagToSelfMessages(i, userID) {
+  if (i.address_from === i.address_to) {
+   i.seen = true;
+  }
+  return i;
  }
 
  getHash(password, memoryCost = 65536, hashLength = 64, timeCost = 20, parallelism = 1) {

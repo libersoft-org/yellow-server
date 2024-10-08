@@ -441,7 +441,6 @@ class API {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.address) return { error: 2, message: 'Recipient address is missing' };
   const messages = this.data.userListMessages(c.userID, c.params.address, c.params?.count, c.params?.lastID);
-  if (!messages) return { error: 3, message: 'No messages found' };
   return { error: 0, data: { messages } };
  }
 
