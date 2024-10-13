@@ -353,7 +353,7 @@ class Data {
     SELECT u.id AS user_id, CONCAT(u.username, '@', d.name) AS address
     FROM users u
     JOIN domains d ON u.id_domains = d.id
-    WHERE u.id = :userID
+    WHERE u.id = ?
    ),
    user_messages AS (
     SELECT
@@ -363,7 +363,7 @@ class Data {
       ELSE m.address_from
      END AS other_address
     FROM messages m
-    WHERE m.id_users = :userID
+    WHERE m.id_users = ?
     AND (m.address_from = (SELECT address FROM user_info)
         OR m.address_to = (SELECT address FROM user_info))
    ),
@@ -384,7 +384,7 @@ class Data {
      m.address_to = (SELECT address FROM user_info)
      AND m.seen IS NULL
      AND m.address_from != (SELECT address FROM user_info)
-     AND m.id_users = :userID
+     AND m.id_users = ?
     GROUP BY m.address_from
    ),
    user_addresses AS (
@@ -404,9 +404,8 @@ class Data {
    WHERE lm.rn = 1
    ORDER BY lm.last_message_date DESC;
   `,
-   [userID]
+   [userID, userID, userID]
   );
-  //console.log(res);
   return res.length > 0 ? res : false;
  }
 
