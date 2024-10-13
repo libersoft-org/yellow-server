@@ -1,37 +1,82 @@
-import path from 'path';
-import { Database as SQLiteDatabase } from 'bun:sqlite';
+import mariaDB from 'mariadb';
 import { Common } from './common.js';
 
 class Database {
  constructor() {
-  this.dbFile = Common.settings.other.db_file.startsWith('/') ? Common.settings.other.db_file : path.join(Common.appPath, Common.settings.other.db_file);
+  this.connectionConfig = {
+   host: Common.settings.database.host,
+   port: Common.settings.database.port,
+   user: Common.settings.database.user,
+   password: Common.settings.database.password,
+   database: Common.settings.database.name
+  };
+  this.conn = null;
+  this.connecting = false;
+  this.connect();
  }
 
- execute(callback) {
+ async connect() {
+  if (this.connecting) return;
+  this.connecting = true;
   try {
-   using db = new SQLiteDatabase(this.dbFile);
-   return callback(db);
+   this.conn = await mariaDB.createConnection(this.connectionConfig);
+   this.connecting = false;
+   Common.addLog('Connected to the database');
+  } catch (ex) {
+   this.connecting = false;
+   Common.addLog('Error while connecting to database: ' + ex.message, 2);
+   setTimeout(() => this.connect(), 2000);
+  }
+ }
+
+ async reconnect() {
+  if (this.conn) {
+   try {
+    await this.conn.end();
+   } catch (ex) {
+    Common.addLog('Error while disconnecting: ' + ex.message, 2);
+   }
+  }
+  this.conn = null;
+  await this.connect();
+ }
+
+ async execute(callback) {
+  try {
+   if (!this.conn) await this.connect();
+   else {
+    try {
+     await this.conn.ping();
+    } catch (err) {
+     Common.addLog('Connection lost: ' + err.message, 2);
+     await this.reconnect();
+    }
+   }
+   return await callback(this.conn);
   } catch (ex) {
    Common.addLog(ex.message, 2);
    return null;
   }
  }
 
- query(command, params = []) {
-  return this.execute(db => {
-   if (command.trim().toUpperCase().startsWith('SELECT') || command.trim().toUpperCase().startsWith('WITH')) return db.query(command).all(params);
-   else return db.run(command, ...params);
+ async query(command, params = []) {
+  return await this.execute(async conn => {
+   const result = await conn.query(command, params);
+   return result;
   });
  }
 
  async databaseExists() {
-  return await Bun.file(this.dbFile).exists();
+  return await this.execute(async conn => {
+   const rows = await conn.query('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?', [Common.settings.database.name]);
+   return rows.length > 0;
+  });
  }
 
- tableExists(name) {
-  return this.execute(db => {
-   const result = db.query('SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type = "table" AND name = ?').all([name]);
-   return result[0].cnt === 1;
+ async tableExists(name) {
+  return await this.execute(async conn => {
+   const rows = await conn.query('SELECT COUNT(*) AS cnt FROM information_schema.tables WHERE table_schema = ? AND table_name = ?', [Common.settings.database.name, name]);
+   return rows[0].cnt === 1;
   });
  }
 }

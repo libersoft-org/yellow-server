@@ -43,7 +43,7 @@ class App {
   Common.addLog('');
   Common.addLog('--help - to see this help');
   Common.addLog('--create-settings - to create a default settings file named "' + Common.settingsFile + '"');
-  Common.addLog('--create-database - to create a database defined in the settings file');
+  Common.addLog('--create-database - to create a tables in database defined in the settings file');
   Common.addLog('--create-admin - to create an admin account');
  }
 
@@ -82,6 +82,13 @@ class App {
       }
      ]
     },
+    database: {
+     host: '127.0.0.1',
+     port: 3306,
+     user: 'your_username',
+     password: 'your_password',
+     name: 'yellow'
+    },
     other: {
      session_admin: 600, // 10 minutes
      session_user: 2592000, // 30 days
@@ -108,7 +115,8 @@ class App {
   await this.loadSettings();
   const data = new Data();
   await data.createDB();
-  Common.addLog('Database was created sucessfully.');
+  Common.addLog('Database creation completed.');
+  //process.exit(1);
  }
 
  async createAdmin() {

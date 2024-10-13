@@ -76,21 +76,39 @@ cd yellow-server/src/
 
 ## 3. Configuration
 
+### Create MariaDB user and database:
+
+Log in to MariaDB client as root:
+
+```sh
+mariadb -u root
+```
+
+... and create a new user
+
+```sql
+CREATE USER 'user_name'@'localhost' IDENTIFIED BY 'password';
+CREATE DATABASE yellow;
+GRANT ALL ON yellow.* TO 'user_name'@'localhost';
+```
+
 ### Create a new server settings file using:
 
-```console
+```sh
 ./start.sh --create-settings
 ```
 
-### Create a new database file using:
+... and edit it to set up the database credentials
 
-```console
+### Create database tables using:
+
+```sh
 ./start.sh --create-database
 ```
 
 ### Create a new admin account:
 
-```console
+```sh
 ./start.sh --create-admin
 ```
 
@@ -98,7 +116,7 @@ cd yellow-server/src/
 
 ### Get your HTTPS certificate:
 
-```console
+```sh
 ./cert.sh
 ```
 
@@ -106,13 +124,13 @@ cd yellow-server/src/
 
 Edit crontab using:
 
-```console
+```sh
 crontab -e
 ```
 
 ... and add this line at the end:
 
-```console
+```sh
 0 12 * * * /usr/bin/certbot renew --quiet
 ```
 
@@ -125,11 +143,16 @@ crontab -e
   - **certificates_path** - path to your HTTPS certificates
   - **socket_path** - path to a Unix socket file (ignored if you're running standalone server)
   - **web_paths** - array with web server routes and disk paths
+- **database** section:
+  - **host** - database host name
+  - **port** - database network port
+  - **user** - database user name
+  - **password** - database password
+  - **name** - database name
 - **other** section:
   - **session_admin** - how many seconds we store admins' sessions - for example: 600 = 10 minutes
   - **session_user** - how many seconds we store users' sessions - for example: 2592000 = 30 days
   - **session_cleaner** - after how many seconds should we check for old sessions - for example: 600 = every 10 minutes
-  - **db_file** - your server database file path
   - **log_file** - the path to your log file (ignored if log_to_file is false)
   - **log_to_file** - if you'd like to log to console and log file (true) or to console only (false)
 
