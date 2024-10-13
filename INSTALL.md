@@ -55,6 +55,8 @@ apt -y upgrade
 apt -y install curl unzip git screen certbot
 curl -fsSL https://bun.sh/install | bash
 source /root/.bashrc
+curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | bash
+apt -y install mariadb-server mariadb-client
 git clone https://github.com/libersoft-org/yellow-server.git
 cd yellow-server/src/
 ```
@@ -66,6 +68,8 @@ dnf -y update
 dnf -y install curl unzip git screen certbot
 curl -fsSL https://bun.sh/install | bash
 source /root/.bashrc
+curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
+dnf -y install mariadb-server mariadb-client
 git clone https://github.com/libersoft-org/yellow-server.git
 cd yellow-server/src/
 ```

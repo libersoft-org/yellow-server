@@ -415,7 +415,7 @@ class Data {
  }
 
  userListMessages(userID, address, count = 10, lastID = 0) {
-  if (lastID === "unseen") {
+  if (lastID === 'unseen') {
    // find the first unseen message ID:
    const res1 = this.db.query(
     `
@@ -452,7 +452,7 @@ class Data {
     first_unseen_ID = res2.length > 0 ? res2[0].id : 0;
    }
    if (first_unseen_ID === null) {
-    return []
+    return [];
    }
    // go three messages back for instant context
    const res3 = this.db.query(
@@ -468,7 +468,8 @@ class Data {
        AND id < ?
      ORDER BY id DESC LIMIT 3
     `,
-    [userID, userID, address, first_unseen_ID]);
+    [userID, userID, address, first_unseen_ID]
+   );
    lastID = res3.length > 0 ? res3.at(-1).id : first_unseen_ID;
   }
   const res4 = this.db.query(
@@ -493,7 +494,9 @@ class Data {
   `,
    [userID, userID, address, address, lastID, count]
   );
-  return res4.map((i) => {return this.addSeenFlagToSelfMessages(i, userID)});
+  return res4.map(i => {
+   return this.addSeenFlagToSelfMessages(i, userID);
+  });
  }
 
  addSeenFlagToSelfMessages(i, userID) {
