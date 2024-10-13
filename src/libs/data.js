@@ -32,7 +32,7 @@ class Data {
  }
 
  async adminDelOldSessions() {
-  return await this.db.query('DELETE FROM admins_sessions WHERE last <= DATETIME("now", ?)', [`-${Common.settings.other.session_admin} SECONDS`]);
+  return await this.db.query('DELETE FROM admins_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Common.settings.other.session_admin]);
  }
 
  async adminSetLogin(adminID, sessionID) {
@@ -74,7 +74,7 @@ class Data {
  }
 
  async adminSessionExpired(sessionID) {
-  const res = await this.db.query('SELECT (strftime("%s", "now") - strftime("%s", last)) > ? AS expired FROM admins_sessions WHERE session = ?', [Common.settings.other.session_admin, sessionID]);
+  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM admins_sessions WHERE session = ?', [Common.settings.other.session_admin, sessionID]);
   return res[0].expired === 1 ? true : false;
  }
 
@@ -176,7 +176,7 @@ class Data {
  }
 
  async adminListUsers(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterUsername = null, filterDomainID = null) {
-  let query = "SELECT u.id, u.username || '@' || d.name AS address, u.visible_name, u.created FROM users u JOIN domains d ON u.id_domains = d.id";
+  let query = "SELECT u.id, CONCAT(u.username, '@', d.name) AS address, u.visible_name, u.created FROM users u JOIN domains d ON u.id_domains = d.id";
   const params = [];
   const conditions = [];
   if (filterUsername !== null) {
@@ -205,7 +205,7 @@ class Data {
  }
 
  async userDelOldSessions() {
-  return await this.db.query('DELETE FROM users_sessions WHERE last <= DATETIME("now", ?)', [`-${Common.settings.other.session_user} SECONDS`]);
+  return await this.db.query('DELETE FROM users_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Common.settings.other.session_user]);
  }
 
  async userExistsByID(userID) {
@@ -310,7 +310,7 @@ class Data {
  }
 
  async userSessionExpired(sessionID) {
-  const res = await this.db.query('SELECT (strftime("%s", "now") - strftime("%s", last)) > ? AS expired FROM users_sessions WHERE session = ?', [Common.settings.other.session_user, sessionID]);
+  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM users_sessions WHERE session = ?', [Common.settings.other.session_user, sessionID]);
   return res[0].expired === 1 ? true : false;
  }
 
@@ -350,9 +350,7 @@ class Data {
   const res = await this.db.query(
    `
    WITH user_info AS (
-    SELECT
-     u.id AS user_id,
-     u.username || '@' || d.name AS address
+    SELECT u.id AS user_id, CONCAT(u.username, '@', d.name) AS address
     FROM users u
     JOIN domains d ON u.id_domains = d.id
     WHERE u.id = :userID
@@ -390,9 +388,7 @@ class Data {
     GROUP BY m.address_from
    ),
    user_addresses AS (
-    SELECT
-     u.username || '@' || d.name AS address,
-     u.visible_name
+    SELECT CONCAT(u.username, '@', d.name) AS address, u.visible_name
     FROM users u
     JOIN domains d ON u.id_domains = d.id
    )
@@ -419,10 +415,12 @@ class Data {
    // find the first unseen message ID:
    const res1 = await this.db.query(
     `
-     WITH my_email AS (SELECT u.username || '@' || d.name AS email
-                       FROM users u
-                             JOIN domains d ON u.id_domains = d.id
-                       WHERE u.id = ?)
+    WITH my_email AS (
+     SELECT CONCAT(u.username, '@', d.name) AS email
+      FROM users u
+      JOIN domains d ON u.id_domains = d.id
+      WHERE u.id = ?
+     )
      SELECT id
      FROM messages
      WHERE id_users = ?
@@ -437,15 +435,17 @@ class Data {
     // nothing unseen, use the last message ID
     const res2 = await this.db.query(
      `
-      WITH my_email AS (SELECT u.username || '@' || d.name AS email
-                        FROM users u
-                              JOIN domains d ON u.id_domains = d.id
-                        WHERE u.id = ?)
-      SELECT id
-      FROM messages
-      WHERE id_users = ?
-        AND address_to = (SELECT email FROM my_email)
-      ORDER BY id DESC LIMIT 1
+     WITH my_email AS (
+      SELECT CONCAT(u.username, '@', d.name) AS email
+      FROM users u
+      JOIN domains d ON u.id_domains = d.id
+      WHERE u.id = ?
+     )
+     SELECT id
+     FROM messages
+     WHERE id_users = ?
+     AND address_to = (SELECT email FROM my_email)
+     ORDER BY id DESC LIMIT 1
      `,
      [userID, userID]
     );
@@ -457,40 +457,46 @@ class Data {
    // go three messages back for instant context
    const res3 = await this.db.query(
     `
-     WITH my_email AS (SELECT u.username || '@' || d.name AS email
-                       FROM users u
-                             JOIN domains d ON u.id_domains = d.id
-                       WHERE u.id = ?)
-     SELECT id, uid, address_from, address_to, message, seen, created
-     FROM messages
-     WHERE id_users = ?
-       AND address_to = ?
-       AND id < ?
-     ORDER BY id DESC LIMIT 3
+     WITH my_email AS (
+    SELECT CONCAT(u.username, '@', d.name) AS email
+    FROM users u
+    JOIN domains d ON u.id_domains = d.id
+    WHERE u.id = ?
+  )
+  SELECT id, uid, address_from, address_to, message, seen, created
+  FROM messages
+  WHERE id_users = ?
+    AND (
+      (address_from = ? AND address_to = (SELECT email FROM my_email))
+      OR
+      (address_from = (SELECT email FROM my_email) AND address_to = ?)
+    )
+    AND id < ?
+  ORDER BY id DESC LIMIT 3
     `,
-    [userID, userID, address, first_unseen_ID]
+    [userID, userID, address, address, first_unseen_ID]
    );
    lastID = res3.length > 0 ? res3.at(-1).id : first_unseen_ID;
   }
   const res4 = await this.db.query(
    `
-   WITH my_email AS (
-    SELECT u.username || '@' || d.name AS email
+ WITH my_email AS (
+    SELECT CONCAT(u.username, '@', d.name) AS email
     FROM users u
     JOIN domains d ON u.id_domains = d.id
     WHERE u.id = ?
-   )
-   SELECT id, uid, address_from, address_to, message, seen, created
-   FROM messages
-   WHERE id_users = ?
-   AND (
+  )
+  SELECT id, uid, address_from, address_to, message, seen, created
+  FROM messages
+  WHERE id_users = ?
+  AND (
     (address_from = (SELECT email FROM my_email) AND address_to = ?)
     OR
     (address_from = ? AND address_to = (SELECT email FROM my_email))
-   )
-   AND id > ?
-   ORDER BY id DESC
-   LIMIT ?
+  )
+  AND id > ?
+  ORDER BY id DESC
+  LIMIT ?
   `,
    [userID, userID, address, address, lastID, count]
   );
