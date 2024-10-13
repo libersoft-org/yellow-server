@@ -12,7 +12,6 @@ class Database {
   };
   this.conn = null;
   this.connecting = false;
-  this.connect();
  }
 
  async connect() {

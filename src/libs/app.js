@@ -116,7 +116,7 @@ class App {
   const data = new Data();
   await data.createDB();
   Common.addLog('Database creation completed.');
-  //process.exit(1);
+  process.exit(1);
  }
 
  async createAdmin() {
