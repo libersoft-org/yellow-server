@@ -14,34 +14,34 @@ class API {
    const resUser = await this.data.userDelOldSessions();
    Common.addLog('Expired sessions cleaner: ' + resAdmin.changes + ' admin sessions and ' + resUser.changes + ' user sessions deleted.');
   }, Common.settings.other.session_cleaner * 1000);
-  this.apiMethods = {
+  this.commands = {
    admin_login: { method: this.adminLogin },
-   admin_list_sessions: { method: this.adminListSessions, reqAdminSession: true },
-   admin_del_session: { method: this.adminDelSession, reqAdminSession: true },
-   admin_list_admins: { method: this.adminListAdmins, reqAdminSession: true },
-   admin_add_admin: { method: this.adminAddAdmin, reqAdminSession: true },
-   admin_edit_admin: { method: this.adminEditAdmin, reqAdminSession: true },
-   admin_del_admin: { method: this.adminDelAdmin, reqAdminSession: true },
-   admin_info_admin: { method: this.adminInfoAdmin, reqAdminSession: true },
-   admin_list_domains: { method: this.adminListDomains, reqAdminSession: true },
-   admin_add_domain: { method: this.adminAddDomain, reqAdminSession: true },
-   admin_edit_domain: { method: this.adminEditDomain, reqAdminSession: true },
-   admin_del_domain: { method: this.adminDelDomain, reqAdminSession: true },
-   admin_info_domain: { method: this.adminInfoDomain, reqAdminSession: true },
-   admin_list_users: { method: this.adminListUsers, reqAdminSession: true },
-   admin_add_user: { method: this.adminAddUser, reqAdminSession: true },
-   admin_edit_user: { method: this.adminEditUser, reqAdminSession: true },
-   admin_del_user: { method: this.adminDelUser, reqAdminSession: true },
-   admin_info_user: { method: this.adminInfoUser, reqAdminSession: true },
+   admin_sessions_list: { method: this.adminSessionsList, reqAdminSession: true },
+   admin_sessions_del: { method: this.adminSessionsDel, reqAdminSession: true },
+   admin_admins_list: { method: this.adminAdminsList, reqAdminSession: true },
+   admin_admins_add: { method: this.adminAdminsAdd, reqAdminSession: true },
+   admin_admins_edit: { method: this.adminAdminsEdit, reqAdminSession: true },
+   admin_admins_del: { method: this.adminAdminsDel, reqAdminSession: true },
+   admin_admins_info: { method: this.adminAdminsInfo, reqAdminSession: true },
+   admin_domains_list: { method: this.adminDomainsList, reqAdminSession: true },
+   admin_domains_add: { method: this.adminDomainsAdd, reqAdminSession: true },
+   admin_domains_edit: { method: this.adminDomainsEdit, reqAdminSession: true },
+   admin_domains_del: { method: this.adminDomainsDel, reqAdminSession: true },
+   admin_domains_info: { method: this.adminDomainsInfo, reqAdminSession: true },
+   admin_users_list: { method: this.adminUsersList, reqAdminSession: true },
+   admin_users_add: { method: this.adminUsersAdd, reqAdminSession: true },
+   admin_users_edit: { method: this.adminUsersEdit, reqAdminSession: true },
+   admin_users_del: { method: this.adminUsersDel, reqAdminSession: true },
+   admin_users_info: { method: this.adminUsersInfo, reqAdminSession: true },
+   admin_modules_list: { method: this.adminModulesList, reqAdminSession: true },
+   admin_modules_add: { method: this.adminModulesAdd, reqAdminSession: true },
+   admin_modules_edit: { method: this.adminModulesEdit, reqAdminSession: true },
+   admin_modules_del: { method: this.adminModulesDel, reqAdminSession: true },
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
    user_login: { method: this.userLogin },
    user_list_sessions: { method: this.userListSessions, reqUserSession: true },
    user_del_session: { method: this.userDelSession, reqUserSession: true },
    user_get_userinfo: { method: this.userGetUserInfo, reqUserSession: true },
-   user_send_message: { method: this.userSendMessage, reqUserSession: true },
-   user_message_seen: { method: this.userMessageSeen, reqUserSession: true },
-   user_list_conversations: { method: this.userListConversations, reqUserSession: true },
-   user_list_messages: { method: this.userListMessages, reqUserSession: true },
    user_subscribe: { method: this.userSubscribe, reqUserSession: true },
    user_unsubscribe: { method: this.userUnsubscribe, reqUserSession: true }
   };
@@ -52,24 +52,29 @@ class API {
   const req = JSON.parse(json);
   let resp = {};
   if (req.requestID) resp.requestID = req.requestID;
-  if (!req.command) return { ...resp, error: 999, message: 'Command not set' };
-  const apiMethod = this.apiMethods[req.command];
-  if (!apiMethod) return { ...resp, error: 903, message: 'Unknown command' };
-  const context = { ws };
-  if (apiMethod.reqAdminSession) {
-   if (!req.sessionID) return { ...resp, error: 995, message: 'Admin session is missing' };
-   if (!(await this.data.adminCheckSession(req.sessionID))) return { ...resp, error: 997, message: 'Invalid admin session ID' };
-   if (await this.data.adminSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'Admin session is expired' };
-   await this.data.adminUpdateSessionTime(req.sessionID);
-   const adminID = await this.data.getAdminIDBySession(req.sessionID);
-   if (adminID) context.adminID = adminID;
-  } else if (apiMethod.reqUserSession) {
-   if (!req.sessionID) return { ...resp, error: 996, message: 'User session is missing' };
-   if (!(await this.data.userCheckSession(req.sessionID))) return { ...resp, error: 998, message: 'Invalid user session ID' };
-   if (await this.data.userSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'User session is expired' };
-   await this.data.userUpdateSessionTime(req.sessionID);
-   const userID = await this.data.getUserIDBySession(req.sessionID);
-   if (userID) context.userID = userID;
+  if (!req.command || !req.module) return { ...resp, error: 999, message: 'Command or module not set' };
+  if (req.command) {
+   const command = this.commands[req.command];
+   if (!command) return { ...resp, error: 903, message: 'Unknown command' };
+   const context = { ws };
+   if (command.reqAdminSession) {
+    if (!req.sessionID) return { ...resp, error: 995, message: 'Admin session is missing' };
+    if (!(await this.data.adminSessionCheck(req.sessionID))) return { ...resp, error: 997, message: 'Invalid admin session ID' };
+    if (await this.data.adminSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'Admin session is expired' };
+    await this.data.adminUpdateSessionTime(req.sessionID);
+    const adminID = await this.data.getAdminIDBySession(req.sessionID);
+    if (adminID) context.adminID = adminID;
+   } else if (command.reqUserSession) {
+    if (!req.sessionID) return { ...resp, error: 996, message: 'User session is missing' };
+    if (!(await this.data.userCheckSession(req.sessionID))) return { ...resp, error: 998, message: 'Invalid user session ID' };
+    if (await this.data.userSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'User session is expired' };
+    await this.data.userUpdateSessionTime(req.sessionID);
+    const userID = await this.data.getUserIDBySession(req.sessionID);
+    if (userID) context.userID = userID;
+   }
+  }
+  if (req.module) {
+   // TODO
   }
   if (req.sessionID) context.sessionID = req.sessionID;
   if (req.params) context.params = req.params;
@@ -91,7 +96,7 @@ class API {
   return { error: 0, data: { sessionID } };
  }
 
- async adminListSessions(c) {
+ async adminSessionsList(c) {
   let orderBy = 'id';
   if (c.params?.orderBy) {
    const validOrderBy = ['id', 'session', 'last', 'created'];
@@ -104,18 +109,18 @@ class API {
    direction = c.params.direction.toUpperCase();
    if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
   }
-  return { error: 0, data: { sessions: await this.data.adminListSessions(c.adminID, c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
+  return { error: 0, data: { sessions: await this.data.adminSessionsList(c.adminID, c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
  }
 
- async adminDelSession(c) {
+ async adminSessionsDel(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.sessionID) return { error: 2, message: 'Session ID to be deleted not set' };
   if (!(await this.data.adminSessionExists(c.adminID, c.params.sessionID))) return { error: 3, message: 'Session ID to be deleted not found for this admin' };
-  await this.data.adminDelSession(c.adminID, c.params.sessionID);
+  await this.data.adminSessionsDel(c.adminID, c.params.sessionID);
   return { error: 0, message: 'Session was deleted' };
  }
 
- async adminListAdmins(c) {
+ async adminAdminsList(c) {
   let orderBy = 'id';
   if (c.params?.orderBy) {
    const validOrderBy = ['id', 'username', 'created'];
@@ -128,10 +133,10 @@ class API {
    direction = c.params.direction.toUpperCase();
    if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
   }
-  return { error: 0, data: { admins: await this.data.adminListAdmins(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
+  return { error: 0, data: { admins: await this.data.adminAdminsList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
  }
 
- async adminAddAdmin(c) {
+ async adminAdminsAdd(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.username) return { error: 2, message: 'Username is missing' };
   if (!c.params.password) return { error: 3, message: 'Password is missing' };
@@ -139,30 +144,30 @@ class API {
   if (await this.data.adminExistsByUsername(c.params.username)) return { error: 4, message: 'This admin already exists' };
   if (c.params.username.length < 3 || c.params.username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username)) return { error: 5, message: 'Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
   if (c.params.password.length < 8) return { error: 6, message: 'Password has to be 8 or more characters long' };
-  await this.data.adminAddAdmin(c.params.username, c.params.password);
+  await this.data.adminAdminsAdd(c.params.username, c.params.password);
   return { error: 0, data: { message: 'Admin was created successfully' } };
  }
 
- async adminEditAdmin(c) {
+ async adminAdminsEdit(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.adminID) return { error: 2, message: 'Admin ID is missing' };
   if (!(await this.data.adminExistsByID(c.params.adminID))) return { error: 3, message: 'Wrong admin ID' };
   if (!c.params.username && !c.params.password) return { error: 4, message: 'Admin username or admin password has to be in parameters' };
   // TODO: check if another admin with the same username, but with a different user ID already exists, the following doesn't count with different user ID:
   //if (await this.data.adminExistsByUsername(c.params.username)) return { error: 5, message: 'This admin already exists' };
-  await this.data.adminEditAdmin(c.params.adminID, c.params.username, c.params.password);
+  await this.data.adminAdminsEdit(c.params.adminID, c.params.username, c.params.password);
   return { error: 0, message: 'Admin was edited successfully' };
  }
 
- async adminDelAdmin(c) {
+ async adminAdminsDel(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.adminID) return { error: 2, message: 'Admin ID is missing' };
   if (!(await this.data.adminExistsByID(c.params.adminID))) return { error: 3, message: 'Wrong admin ID' };
-  await this.data.adminDelAdmin(c.params.adminID);
+  await this.data.adminAdminsDel(c.params.adminID);
   return { error: 0, message: 'Admin was deleted successfully' };
  }
 
- async adminInfoAdmin(c) {
+ async adminAdminsInfo(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.adminID) return { error: 2, message: 'Admin ID is missing' };
   const res = await this.data.getAdminInfoByID(c.params.adminID);
@@ -170,7 +175,7 @@ class API {
   return { error: 0, data: res };
  }
 
- async adminListDomains(c) {
+ async adminDomainsList(c) {
   let orderBy = 'id';
   if (c.params?.orderBy) {
    const validOrderBy = ['id', 'name', 'users_count', 'created'];
@@ -183,37 +188,37 @@ class API {
    direction = c.params.direction.toUpperCase();
    if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
   }
-  return { error: 0, data: { domains: await this.data.adminListDomains(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
+  return { error: 0, data: { domains: await this.data.adminDomainsList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
  }
 
- async adminAddDomain(c) {
+ async adminDomainsAdd(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.name) return { error: 2, message: 'Domain name is missing' };
   c.params.name = c.params.name.toLowerCase();
   if (await this.data.domainExistsByName(c.params.name)) return { error: 3, message: 'This domain already exists' };
-  await this.data.adminAddDomain(c.params.name);
+  await this.data.adminDomainsAdd(c.params.name);
   return { error: 0, data: { message: 'Domain was created successfully' } };
  }
 
- async adminEditDomain(c) {
+ async adminDomainsEdit(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
   if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 3, message: 'Wrong domain ID' };
   if (!c.params.name) return { error: 4, message: 'Domain name is missing' };
-  await this.data.adminEditDomain(c.params.domainID, c.params.name);
+  await this.data.adminDomainsEdit(c.params.domainID, c.params.name);
   return { error: 0, message: 'Domain was edited successfully' };
  }
 
- async adminDelDomain(c) {
+ async adminDomainsDel(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
   if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 3, message: 'Wrong domain ID' };
-  if ((await this.data.adminCountUsers(c.params.domainID)) > 0) return { error: 4, message: 'Cannot delete this domain, as it still has some users' };
-  await this.data.adminDelDomain(c.params.domainID);
+  if ((await this.data.adminUsersCount(c.params.domainID)) > 0) return { error: 4, message: 'Cannot delete this domain, as it still has some users' };
+  await this.data.adminDomainsDel(c.params.domainID);
   return { error: 0, message: 'Domain was deleted successfully' };
  }
 
- async adminInfoDomain(c) {
+ async adminDomainsInfo(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
   const res = await this.data.getDomainInfoByID(c.params.domainID);
@@ -221,7 +226,7 @@ class API {
   return { error: 0, data: res };
  }
 
- async adminListUsers(c) {
+ async adminUsersList(c) {
   let orderBy = 'id';
   if (c.params?.orderBy) {
    const validOrderBy = ['id', 'address', 'visible_name', 'created'];
@@ -234,10 +239,10 @@ class API {
    direction = c.params.direction.toUpperCase();
    if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
   }
-  return { error: 0, data: { users: await this.data.adminListUsers(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterUsername, c.params?.filterDomainID) } };
+  return { error: 0, data: { users: await this.data.adminUsersList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterUsername, c.params?.filterDomainID) } };
  }
 
- async adminAddUser(c) {
+ async adminUsersAdd(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.username) return { error: 2, message: 'Username is missing' };
   if (!c.params.domainID) return { error: 3, message: 'Domain ID is missing' };
@@ -251,14 +256,14 @@ class API {
   if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 6, message: 'Wrong domain ID' };
   if (await this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID)) return { error: 7, message: 'User already exists' };
   if (c.params.password.length < 8) return { error: 7, message: 'Password has to be 8 or more characters long' };
-  await this.data.adminAddUser(c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
+  await this.data.adminUsersAdd(c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
 
   // TRANSACTION END
 
   return { error: 0, message: 'User was added successfully' };
  }
 
- async adminEditUser(c) {
+ async adminUsersEdit(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
   if (!c.params.username && !c.params.domainID && !c.params.visible_name && !c.params.password) return { error: 4, message: 'Username, domain ID, visible_name or password has to be in parameters' };
@@ -278,27 +283,43 @@ class API {
   if (c.params.password) {
    if (c.params.password.length < 8) return { error: 8, message: 'Password has to be 8 or more characters long' };
   }
-  await this.data.adminEditUser(c.params.userID, c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
+  await this.data.adminUsersEdit(c.params.userID, c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
 
   // TRANSACTION END
 
   return { error: 0, message: 'User was edited successfully' };
  }
 
- async adminDelUser(c) {
+ async adminUsersDel(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
   if (!(await this.data.userExistsByID(c.params.userID))) return { error: 3, message: 'Wrong user ID' };
-  await this.data.adminDelUser(c.params.userID);
+  await this.data.adminUsersDel(c.params.userID);
   return { error: 0, message: 'User was deleted successfully' };
  }
 
- async adminInfoUser(c) {
+ async adminUsersInfo(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
   const res = await this.data.getUserInfoByID(c.params.userID);
   if (!res) return { error: 3, message: 'Wrong user ID' };
   return { error: 0, data: res };
+ }
+
+ async adminModulesList(c) {
+  // TODO
+ }
+
+ async adminModulesAdd(c) {
+  // TODO
+ }
+
+ async adminModulesEdit(c) {
+  // TODO
+ }
+
+ async adminModulesDel(c) {
+  // TODO
  }
 
  adminSysInfo() {
@@ -356,7 +377,7 @@ class API {
  }
 
  async userListSessions(c) {
-  const res = await this.data.userListSessions(c.userID, c.params?.count, c.params?.offset);
+  const res = await this.data.userSessionsList(c.userID, c.params?.count, c.params?.offset);
   if (!res) return { error: 1, message: 'No sessions found for this user' };
   return { error: 0, data: { sessions: res } };
  }
@@ -365,7 +386,7 @@ class API {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.sessionID) return { error: 2, message: 'Session ID to be deleted not set' };
   if (!(await this.data.userSessionExists(c.userID, c.params.sessionID))) return { error: 3, message: 'Session ID to be deleted not found for this user' };
-  await this.data.userDelSession(c.userID, c.sessionID);
+  await this.data.userSessionsDel(c.userID, c.sessionID);
   return { error: 0, message: 'Session was deleted' };
  }
 
@@ -382,66 +403,6 @@ class API {
   if (!userID) return { error: 6, message: 'User name not found on this server' };
   const userInfo = await this.data.userGetUserInfo(userID);
   return { error: 0, data: userInfo };
- }
-
- async userSendMessage(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.address) return { error: 2, message: 'Recipient address is missing' };
-  let [usernameTo, domainTo] = c.params.address.split('@');
-  if (!usernameTo || !domainTo) return { error: 4, message: 'Invalid username format' };
-  usernameTo = usernameTo.toLowerCase();
-  domainTo = domainTo.toLowerCase();
-  const domainToID = await this.data.getDomainIDByName(domainTo);
-  if (!domainToID) return { error: 5, message: 'Domain name not found on this server' };
-  const userToID = await this.data.getUserIDByUsernameAndDomainID(usernameTo, domainToID);
-  if (!userToID) return { error: 6, message: 'User name not found on this server' };
-  const userFromInfo = await this.data.userGetUserInfo(c.userID);
-  const userFromDomain = await this.data.getDomainNameByID(userFromInfo.id_domains);
-  if (!c.params.message) return { error: 7, message: 'Message is missing' };
-  if (!c.params.uid) return { error: 8, message: 'Message UID is missing' };
-  const uid = c.params.uid;
-  const res = await this.data.userSendMessage(c.userID, uid, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
-  if (userToID !== userFromInfo.id) await this.data.userSendMessage(userToID, uid, userFromInfo.username + '@' + userFromDomain, usernameTo + '@' + domainTo, c.params.message);
-  const msg = {
-   id: res.lastInsertRowid,
-   uid,
-   address_from: userFromInfo.username + '@' + userFromDomain,
-   address_to: usernameTo + '@' + domainTo,
-   message: c.params.message
-  };
-  this.notifySubscriber(userToID, 'new_message', msg);
-  this.notifySubscriber(c.userID, 'new_message', msg);
-  return { error: 0, message: 'Message sent', uid };
- }
-
- async userMessageSeen(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.uid) return { error: 2, message: 'Message UID is missing' };
-  const res = await this.data.userGetMessage(c.userID, c.params.uid);
-  if (!res) return { error: 3, message: 'Wrong message ID' };
-  if (res.seen) return { error: 4, message: 'Seen flag was already set' };
-  await this.data.userMessageSeen(c.params.uid);
-  const res2 = await this.data.userGetMessage(c.userID, c.params.uid);
-  const [username, domain] = res2.address_from.split('@');
-  const userFromID = await this.data.getUserIDByUsernameAndDomain(username, domain);
-  this.notifySubscriber(userFromID, 'seen_message', {
-   uid: c.params.uid,
-   seen: res2.seen
-  });
-  return { error: 0, message: 'Seen flag set successfully' };
- }
-
- async userListConversations(c) {
-  const conversations = await this.data.userListConversations(c.userID);
-  if (!conversations) return { error: 1, message: 'No conversations found' };
-  return { error: 0, data: { conversations } };
- }
-
- async userListMessages(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.address) return { error: 2, message: 'Recipient address is missing' };
-  const messages = await this.data.userListMessages(c.userID, c.params.address, c.params?.count, c.params?.lastID);
-  return { error: 0, data: { messages } };
  }
 
  userSubscribe(c) {

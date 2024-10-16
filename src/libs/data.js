@@ -19,7 +19,6 @@ class Data {
    await this.db.query('CREATE TABLE IF NOT EXISTS users (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(64) NOT NULL, id_domains INT, visible_name VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domains) REFERENCES domains(id), UNIQUE (username, id_domains))');
    await this.db.query('CREATE TABLE IF NOT EXISTS users_logins (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(128) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.query('CREATE TABLE IF NOT EXISTS users_sessions (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
-   await this.db.query('CREATE TABLE IF NOT EXISTS messages (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, uid VARCHAR(255) NOT NULL, address_from VARCHAR(255) NOT NULL, address_to VARCHAR(255) NOT NULL, message TEXT NOT NULL, seen TIMESTAMP DEFAULT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
   } catch (ex) {
    Common.addLog(ex);
    process.exit(1);
@@ -40,7 +39,7 @@ class Data {
   await this.db.query('INSERT INTO admins_sessions (id_admins, session) VALUES (?, ?)', [adminID, sessionID]);
  }
 
- async adminCheckSession(sessionID) {
+ async adminSessionCheck(sessionID) {
   const res = await this.db.query('SELECT id FROM admins_sessions WHERE session = ?', [sessionID]);
   return res.length === 1 ? true : false;
  }
@@ -50,7 +49,7 @@ class Data {
   return res.length === 1 ? res[0].id_admins : false;
  }
 
- async adminListSessions(adminID, count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
+ async adminSessionsList(adminID, count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
   let query = 'SELECT id, session, last, created FROM admins_sessions WHERE id_admins = ?';
   const params = [adminID];
   if (filterName !== null) {
@@ -64,7 +63,7 @@ class Data {
   return await this.db.query(query, params);
  }
 
- async adminDelSession(adminID, sessionID) {
+ async adminSessionsDel(adminID, sessionID) {
   await this.db.query('DELETE FROM admins_sessions WHERE id_admins = ? AND session = ?', [adminID, sessionID]);
  }
 
@@ -82,7 +81,7 @@ class Data {
   return await this.db.query('UPDATE admins_sessions SET last = CURRENT_TIMESTAMP WHERE session = ?', [sessionID]);
  }
 
- async adminListAdmins(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
+ async adminAdminsList(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
   let query = 'SELECT id, username, created FROM admins';
   const params = [];
   if (filterName !== null) {
@@ -96,7 +95,7 @@ class Data {
   return await this.db.query(query, params);
  }
 
- async adminAddAdmin(username, password) {
+ async adminAdminsAdd(username, password) {
   await this.db.query('INSERT INTO admins (username, password) VALUES (?, ?)', [username, this.getHash(password)]);
  }
 
@@ -110,7 +109,7 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
- async adminEditAdmin(id, username = null, password = null) {
+ async adminAdminsEdit(id, username = null, password = null) {
   let query = 'UPDATE admins SET';
   let params = [];
   if (username) {
@@ -127,7 +126,7 @@ class Data {
   await this.db.query(query, params);
  }
 
- async adminDelAdmin(id) {
+ async adminAdminsDel(id) {
   await this.db.query('DELETE FROM admins_logins WHERE id_admins = ?', [id]);
   await this.db.query('DELETE FROM admins_sessions WHERE id_admins = ?', [id]);
   await this.db.query('DELETE FROM admins WHERE id = ?', [id]);
@@ -138,7 +137,7 @@ class Data {
   return res.length === 1 ? res[0] : false;
  }
 
- async adminListDomains(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
+ async adminDomainsList(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
   let query = 'SELECT d.id, d.name, COUNT(u.id) AS users_count, d.created FROM domains d LEFT JOIN users u ON u.id_domains = d.id';
   const params = [];
   if (filterName !== null) {
@@ -153,7 +152,7 @@ class Data {
   return await this.db.query(query, params);
  }
 
- async adminAddDomain(name) {
+ async adminDomainsAdd(name) {
   await this.db.query('INSERT INTO domains (name) VALUES (?)', [name]);
  }
 
@@ -167,15 +166,15 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
- async adminEditDomain(id, name) {
+ async adminDomainsEdit(id, name) {
   await this.db.query('UPDATE domains SET name = ? WHERE id = ?', [name, id]);
  }
 
- async adminDelDomain(id) {
+ async adminDomainsDel(id) {
   await this.db.query('DELETE FROM domains WHERE id = ?', [id]);
  }
 
- async adminListUsers(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterUsername = null, filterDomainID = null) {
+ async adminUsersList(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterUsername = null, filterDomainID = null) {
   let query = "SELECT u.id, CONCAT(u.username, '@', d.name) AS address, u.visible_name, u.created FROM users u JOIN domains d ON u.id_domains = d.id";
   const params = [];
   const conditions = [];
@@ -195,12 +194,12 @@ class Data {
   return await this.db.query(query, params);
  }
 
- async adminCountUsers(domainID) {
+ async adminUsersCount(domainID) {
   const res = await this.db.query('SELECT id FROM users WHERE id_domains = ?', [domainID]);
   return res.length;
  }
 
- async adminAddUser(username, domainID, visible_name, password) {
+ async adminUsersAdd(username, domainID, visible_name, password) {
   await this.db.query('INSERT INTO users (username, id_domains, visible_name, password) VALUES (?, ?, ?, ?)', [username, domainID, visible_name, this.getHash(password)]);
  }
 
@@ -224,7 +223,7 @@ class Data {
   return res.length === 1 ? true : false;
  }
 
- async adminEditUser(id, username, domainID, visible_name, password) {
+ async adminUsersEdit(id, username, domainID, visible_name, password) {
   let query = 'UPDATE users SET';
   let params = [];
   if (username) {
@@ -249,7 +248,7 @@ class Data {
   await this.db.query(query, params);
  }
 
- async adminDelUser(id) {
+ async adminUsersDel(id) {
   await this.db.query('DELETE FROM users_sessions WHERE id_users = ?', [id]);
   await this.db.query('DELETE FROM users_logins WHERE id_users = ?', [id]);
   await this.db.query('DELETE FROM users WHERE id = ?', [id]);
@@ -280,7 +279,7 @@ class Data {
   return res.length === 1 ? res[0].id_users : false;
  }
 
- async userListSessions(userID, count = 10, offset = 0) {
+ async userSessionsList(userID, count = 10, offset = 0) {
   const res = await this.db.query('SELECT id, session, last, created FROM users_sessions WHERE id_users = ? LIMIT ? OFFSET ?', [userID, count, offset]);
   return res.length > 0 ? res : false;
  }
@@ -300,7 +299,7 @@ class Data {
   return res.length === 1 ? res[0] : false;
  }
 
- async userDelSession(userID, sessionID) {
+ async userSessionsDel(userID, sessionID) {
   await this.db.query('DELETE FROM users_sessions WHERE id_users = ? AND session = ?', [userID, sessionID]);
  }
 
@@ -331,184 +330,6 @@ class Data {
  async userGetUserInfo(userID) {
   const res = await this.db.query('SELECT id, username, id_domains, visible_name FROM users WHERE id = ?', [userID]);
   return res.length === 1 ? res[0] : false;
- }
-
- async userSendMessage(userID, uid, address_from, address_to, message) {
-  return await this.db.query('INSERT INTO messages (id_users, uid, address_from, address_to, message) VALUES (?, ?, ?, ?, ?)', [userID, uid, address_from, address_to, message]);
- }
-
- async userGetMessage(userID, uid) {
-  const res = await this.db.query('SELECT id, id_users, uid, address_from, address_to, message, seen, created FROM messages WHERE uid = ? and id_users = ?', [uid, userID]);
-  return res.length === 1 ? res[0] : false;
- }
-
- async userMessageSeen(uid) {
-  await this.db.query('UPDATE messages SET seen = CURRENT_TIMESTAMP WHERE uid = ?', [uid]);
- }
-
- async userListConversations(userID) {
-  const res = await this.db.query(
-   `
-   WITH user_info AS (
-    SELECT u.id AS user_id, CONCAT(u.username, '@', d.name) AS address
-    FROM users u
-    JOIN domains d ON u.id_domains = d.id
-    WHERE u.id = ?
-   ),
-   user_messages AS (
-    SELECT
-     m.*,
-     CASE
-      WHEN m.address_from = (SELECT address FROM user_info) THEN m.address_to
-      ELSE m.address_from
-     END AS other_address
-    FROM messages m
-    WHERE m.id_users = ?
-    AND (m.address_from = (SELECT address FROM user_info)
-        OR m.address_to = (SELECT address FROM user_info))
-   ),
-   last_messages AS (
-    SELECT
-     um.other_address,
-     um.message AS last_message_text,
-     um.created AS last_message_date,
-     ROW_NUMBER() OVER (PARTITION BY um.other_address ORDER BY um.created DESC) AS rn
-    FROM user_messages um
-   ),
-   unread_counts AS (
-    SELECT
-     m.address_from AS other_address,
-     COUNT(*) AS unread_count
-    FROM messages m
-    WHERE
-     m.address_to = (SELECT address FROM user_info)
-     AND m.seen IS NULL
-     AND m.address_from != (SELECT address FROM user_info)
-     AND m.id_users = ?
-    GROUP BY m.address_from
-   ),
-   user_addresses AS (
-    SELECT CONCAT(u.username, '@', d.name) AS address, u.visible_name
-    FROM users u
-    JOIN domains d ON u.id_domains = d.id
-   )
-   SELECT
-    lm.other_address AS address,
-    ua.visible_name,
-    lm.last_message_text,
-    lm.last_message_date,
-    COALESCE(uc.unread_count, 0) AS unread_count
-   FROM last_messages lm
-   LEFT JOIN user_addresses ua ON ua.address = lm.other_address
-   LEFT JOIN unread_counts uc ON uc.other_address = lm.other_address
-   WHERE lm.rn = 1
-   ORDER BY lm.last_message_date DESC;
-  `,
-   [userID, userID, userID]
-  );
-  return res.length > 0 ? res : false;
- }
-
- async userListMessages(userID, address, count = 10, lastID = 0) {
-  if (lastID === 'unseen') {
-   // find the first unseen message ID:
-   const res1 = await this.db.query(
-    `
-    WITH my_email AS (
-     SELECT CONCAT(u.username, '@', d.name) AS email
-      FROM users u
-      JOIN domains d ON u.id_domains = d.id
-      WHERE u.id = ?
-     )
-     SELECT id
-     FROM messages
-     WHERE id_users = ?
-       AND address_to = (SELECT email FROM my_email)
-       AND seen IS NULL
-     ORDER BY id ASC LIMIT 1
-    `,
-    [userID, userID]
-   );
-   let first_unseen_ID = res1.length > 0 ? res1[0].id : null;
-   if (first_unseen_ID === null) {
-    // nothing unseen, use the last message ID
-    const res2 = await this.db.query(
-     `
-     WITH my_email AS (
-      SELECT CONCAT(u.username, '@', d.name) AS email
-      FROM users u
-      JOIN domains d ON u.id_domains = d.id
-      WHERE u.id = ?
-     )
-     SELECT id
-     FROM messages
-     WHERE id_users = ?
-     AND address_to = (SELECT email FROM my_email)
-     ORDER BY id DESC LIMIT 1
-     `,
-     [userID, userID]
-    );
-    first_unseen_ID = res2.length > 0 ? res2[0].id : 0;
-   }
-   if (first_unseen_ID === null) {
-    return [];
-   }
-   // go three messages back for instant context
-   const res3 = await this.db.query(
-    `
-     WITH my_email AS (
-    SELECT CONCAT(u.username, '@', d.name) AS email
-    FROM users u
-    JOIN domains d ON u.id_domains = d.id
-    WHERE u.id = ?
-  )
-  SELECT id, uid, address_from, address_to, message, seen, created
-  FROM messages
-  WHERE id_users = ?
-    AND (
-      (address_from = ? AND address_to = (SELECT email FROM my_email))
-      OR
-      (address_from = (SELECT email FROM my_email) AND address_to = ?)
-    )
-    AND id < ?
-  ORDER BY id DESC LIMIT 3
-    `,
-    [userID, userID, address, address, first_unseen_ID]
-   );
-   lastID = res3.length > 0 ? res3.at(-1).id : first_unseen_ID;
-  }
-  const res4 = await this.db.query(
-   `
- WITH my_email AS (
-    SELECT CONCAT(u.username, '@', d.name) AS email
-    FROM users u
-    JOIN domains d ON u.id_domains = d.id
-    WHERE u.id = ?
-  )
-  SELECT id, uid, address_from, address_to, message, seen, created
-  FROM messages
-  WHERE id_users = ?
-  AND (
-    (address_from = (SELECT email FROM my_email) AND address_to = ?)
-    OR
-    (address_from = ? AND address_to = (SELECT email FROM my_email))
-  )
-  AND id > ?
-  ORDER BY id DESC
-  LIMIT ?
-  `,
-   [userID, userID, address, address, lastID, count]
-  );
-  return res4.map(i => {
-   return this.addSeenFlagToSelfMessages(i, userID);
-  });
- }
-
- addSeenFlagToSelfMessages(i, userID) {
-  if (i.address_from === i.address_to) {
-   i.seen = true;
-  }
-  return i;
  }
 
  getHash(password, memoryCost = 65536, hashLength = 64, timeCost = 20, parallelism = 1) {

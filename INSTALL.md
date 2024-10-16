@@ -52,11 +52,20 @@ Log in as "root" on your server and run the following commands to download the n
 ```sh
 apt update
 apt -y upgrade
-apt -y install curl unzip git screen certbot
-curl -fsSL https://bun.sh/install | bash
-source /root/.bashrc
-curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | bash
-apt -y install mariadb-server mariadb-client
+packages=("curl" "unzip" "git" "screen" "certbot")
+for package in "${packages[@]}"; do
+ if ! dpkg -s "$package" >/dev/null 2>&1; then
+  apt -y install "$package"
+ fi
+done
+if ! command -v bun >/dev/null 2>&1; then
+ curl -fsSL https://bun.sh/install | bash
+ source /root/.bashrc
+fi
+if ! dpkg -s mariadb-server mariadb-client >/dev/null 2>&1; then
+ curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | bash
+ apt -y install mariadb-server mariadb-client
+fi
 git clone https://github.com/libersoft-org/yellow-server.git
 cd yellow-server/src/
 ```
@@ -65,11 +74,20 @@ cd yellow-server/src/
 
 ```sh
 dnf -y update
-dnf -y install curl unzip git screen certbot
-curl -fsSL https://bun.sh/install | bash
-source /root/.bashrc
-curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
-dnf -y install mariadb-server mariadb-client
+packages=("curl" "unzip" "git" "screen" "certbot")
+for package in "${packages[@]}"; do
+ if ! rpm -q "$package" >/dev/null 2>&1; then
+  dnf -y install "$package"
+ fi
+done
+if ! command -v bun >/dev/null 2>&1; then
+ curl -fsSL https://bun.sh/install | bash
+ source /root/.bashrc
+fi
+if ! rpm -q mariadb-server mariadb-client >/dev/null 2>&1; then
+ curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash
+ dnf -y install mariadb-server mariadb-client
+fi
 git clone https://github.com/libersoft-org/yellow-server.git
 cd yellow-server/src/
 ```
