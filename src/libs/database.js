@@ -8,7 +8,8 @@ class Database {
    port: Common.settings.database.port,
    user: Common.settings.database.user,
    password: Common.settings.database.password,
-   database: Common.settings.database.name
+   database: Common.settings.database.name,
+   bigIntAsNumber: true
   };
   this.conn = null;
   this.connecting = false;
@@ -61,6 +62,7 @@ class Database {
  async query(command, params = []) {
   return await this.execute(async conn => {
    const result = await conn.query(command, params);
+   console.log(result);
    return result;
   });
  }

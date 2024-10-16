@@ -80,6 +80,7 @@ class API {
   }
   if (req.module) {
    // TODO
+   return {};
   }
  }
 

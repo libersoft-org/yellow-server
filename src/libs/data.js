@@ -149,7 +149,10 @@ class Data {
   query += ' LIMIT ? OFFSET ?';
   params.push(count);
   params.push(offset);
-  return await this.db.query(query, params);
+  console.log('QUERY:', query, params);
+  const res = await this.db.query(query, params);
+  //console.log(res);
+  return res;
  }
 
  async adminDomainsAdd(name) {
