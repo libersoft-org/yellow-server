@@ -62,7 +62,7 @@ class Database {
  async query(command, params = []) {
   return await this.execute(async conn => {
    const result = await conn.query(command, params);
-   console.log(result);
+   //console.log(result);
    return result;
   });
  }
