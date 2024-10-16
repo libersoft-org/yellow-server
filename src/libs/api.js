@@ -52,11 +52,11 @@ class API {
   const req = JSON.parse(json);
   let resp = {};
   if (req.requestID) resp.requestID = req.requestID;
-  if (!req.command || !req.module) return { ...resp, error: 999, message: 'Command or module not set' };
+  if (!req.command && !req.module) return { ...resp, error: 999, message: 'Command or module not set' };
+  const context = { ws };
   if (req.command) {
    const command = this.commands[req.command];
    if (!command) return { ...resp, error: 903, message: 'Unknown command' };
-   const context = { ws };
    if (command.reqAdminSession) {
     if (!req.sessionID) return { ...resp, error: 995, message: 'Admin session is missing' };
     if (!(await this.data.adminSessionCheck(req.sessionID))) return { ...resp, error: 997, message: 'Invalid admin session ID' };
@@ -72,15 +72,15 @@ class API {
     const userID = await this.data.getUserIDBySession(req.sessionID);
     if (userID) context.userID = userID;
    }
+   if (req.sessionID) context.sessionID = req.sessionID;
+   if (req.params) context.params = req.params;
+   //console.log('SENDING CONTEXT:', context);
+   let method_result = await command.method.call(this, context);
+   return { ...resp, ...method_result };
   }
   if (req.module) {
    // TODO
   }
-  if (req.sessionID) context.sessionID = req.sessionID;
-  if (req.params) context.params = req.params;
-  //console.log('SENDING CONTEXT:', context);
-  let method_result = await apiMethod.method.call(this, context);
-  return { ...resp, ...method_result };
  }
 
  async adminLogin(c) {
