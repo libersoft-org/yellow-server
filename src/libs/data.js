@@ -289,6 +289,7 @@ class Data {
  }
 
  async adminModulesEdit(id, name, server, port) {
+  console.log(id, name, server, port);
   await this.db.query('UPDATE modules SET name = ?, server = ?, port = ? WHERE id = ?', [name, server, port, id]);
  }
 
@@ -304,6 +305,11 @@ class Data {
 
  async adminModulesDel(id) {
   await this.db.query('DELETE FROM modules WHERE id = ?', [id]);
+ }
+
+ async getModuleInfoByID(moduleID) {
+  const res = await this.db.query('SELECT name, server, port, created FROM modules WHERE id = ?', [moduleID]);
+  return res.length === 1 ? res[0] : false;
  }
 
  async userSetLogin(userID, sessionID) {

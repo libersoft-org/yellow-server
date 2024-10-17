@@ -37,6 +37,7 @@ class API {
    admin_modules_add: { method: this.adminModulesAdd, reqAdminSession: true },
    admin_modules_edit: { method: this.adminModulesEdit, reqAdminSession: true },
    admin_modules_del: { method: this.adminModulesDel, reqAdminSession: true },
+   admin_modules_info: { method: this.adminModulesInfo, reqAdminSession: true },
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
    user_login: { method: this.userLogin },
    user_list_sessions: { method: this.userListSessions, reqUserSession: true },
@@ -342,7 +343,7 @@ class API {
   if (!c.params.name) return { error: 4, message: 'Module name is missing' };
   if (!c.params.server) return { error: 5, message: 'Server address is missing' };
   if (!c.params.port) return { error: 6, message: 'Server port is missing' };
-  await this.data.adminModulesEdit(c.params.domainID, c.params.name, c.params.server, c.params.port);
+  await this.data.adminModulesEdit(c.params.moduleID, c.params.name, c.params.server, c.params.port);
   return { error: 0, message: 'Module was edited successfully' };
  }
 
@@ -352,6 +353,14 @@ class API {
   if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 3, message: 'Wrong module ID' };
   await this.data.adminModulesDel(c.params.moduleID);
   return { error: 0, message: 'Module was deleted successfully' };
+ }
+
+ async adminModulesInfo(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.moduleID) return { error: 2, message: 'Module ID is missing' };
+  const res = await this.data.getModuleInfoByID(c.params.moduleID);
+  if (!res) return { error: 3, message: 'Wrong module ID' };
+  return { error: 0, data: res };
  }
 
  adminSysInfo() {
