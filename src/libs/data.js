@@ -19,6 +19,7 @@ class Data {
    await this.db.query('CREATE TABLE IF NOT EXISTS users (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(64) NOT NULL, id_domains INT, visible_name VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domains) REFERENCES domains(id), UNIQUE (username, id_domains))');
    await this.db.query('CREATE TABLE IF NOT EXISTS users_logins (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(128) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.query('CREATE TABLE IF NOT EXISTS users_sessions (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
+   await this.db.query('CREATE TABLE IF NOT EXISTS modules (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL UNIQUE, server VARCHAR(255) NOT NULL, port INT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
   } catch (ex) {
    Common.addLog(ex);
    process.exit(1);
@@ -149,7 +150,6 @@ class Data {
   query += ' LIMIT ? OFFSET ?';
   params.push(count);
   params.push(offset);
-  console.log('QUERY:', query, params);
   const res = await this.db.query(query, params);
   //console.log(res);
   return res;
@@ -265,6 +265,45 @@ class Data {
  async getUserCredentials(username, domainID) {
   const res = await this.db.query('SELECT id, username, password FROM users WHERE username = ? AND id_domains = ?', [username, domainID]);
   return res.length === 1 ? res[0] : false;
+ }
+
+ async adminModulesList(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
+  let query = 'SELECT id, name, server, port, created FROM modules';
+  const params = [];
+  if (filterName !== null) {
+   query += ' WHERE name LIKE ?';
+   params.push('%' + filterName + '%');
+  }
+  query += ' GROUP BY id';
+  query += ' ORDER BY ' + orderBy + ' ' + direction;
+  query += ' LIMIT ? OFFSET ?';
+  params.push(count);
+  params.push(offset);
+  const res = await this.db.query(query, params);
+  //console.log(res);
+  return res;
+ }
+
+ async adminModulesAdd(name, server, port) {
+  await this.db.query('INSERT INTO modules (name, server, port) VALUES (?, ?, ?)', [name, server, port]);
+ }
+
+ async adminModulesEdit(id, name, server, port) {
+  await this.db.query('UPDATE modules SET name = ?, server = ?, port = ? WHERE id = ?', [name, server, port, id]);
+ }
+
+ async moduleExistsByID(moduleID) {
+  const res = await this.db.query('SELECT id FROM modules WHERE id = ?', [moduleID]);
+  return res.length === 1 ? true : false;
+ }
+
+ async moduleExistsByName(name) {
+  const res = await this.db.query('SELECT id FROM modules WHERE name = ?', [name]);
+  return res.length === 1 ? true : false;
+ }
+
+ async adminModulesDel(id) {
+  await this.db.query('DELETE FROM modules WHERE id = ?', [id]);
  }
 
  async userSetLogin(userID, sessionID) {

@@ -308,19 +308,50 @@ class API {
  }
 
  async adminModulesList(c) {
-  // TODO
+  let orderBy = 'id';
+  if (c.params?.orderBy) {
+   const validOrderBy = ['id', 'name', 'server', 'port', 'created'];
+   orderBy = c.params.orderBy.toLowerCase();
+   if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
+  }
+  let direction = 'ASC';
+  if (c.params?.direction) {
+   const validDirection = ['ASC', 'DESC'];
+   direction = c.params.direction.toUpperCase();
+   if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
+  }
+  return { error: 0, data: { modules: await this.data.adminModulesList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
  }
 
  async adminModulesAdd(c) {
-  // TODO
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.name) return { error: 2, message: 'Module name is missing' };
+  c.params.name = c.params.name.toLowerCase();
+  if (await this.data.moduleExistsByName(c.params.name)) return { error: 3, message: 'This module already exists' };
+  if (!c.params.server) return { error: 4, message: 'Module server address is missing' };
+  c.params.server = c.params.server.toLowerCase();
+  if (!c.params.port) return { error: 5, message: 'Module server port is missing' };
+  await this.data.adminModulesAdd(c.params.name, c.params.server, c.params.port);
+  return { error: 0, data: { message: 'Module was created successfully' } };
  }
 
  async adminModulesEdit(c) {
-  // TODO
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.moduleID) return { error: 2, message: 'Module ID is missing' };
+  if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 3, message: 'Wrong module ID' };
+  if (!c.params.name) return { error: 4, message: 'Module name is missing' };
+  if (!c.params.server) return { error: 5, message: 'Server address is missing' };
+  if (!c.params.port) return { error: 6, message: 'Server port is missing' };
+  await this.data.adminModulesEdit(c.params.domainID, c.params.name, c.params.server, c.params.port);
+  return { error: 0, message: 'Module was edited successfully' };
  }
 
  async adminModulesDel(c) {
-  // TODO
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.moduleID) return { error: 2, message: 'Module ID is missing' };
+  if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 3, message: 'Wrong module ID' };
+  await this.data.adminModulesDel(c.params.moduleID);
+  return { error: 0, message: 'Module was deleted successfully' };
  }
 
  adminSysInfo() {
