@@ -15,14 +15,17 @@ class WebServer {
  }
 
  async startServer() {
-  const certs = {
-   key: Bun.file(path.join(Common.settings.web.certificates_path, 'privkey.pem')),
-   cert: Bun.file(path.join(Common.settings.web.certificates_path, 'cert.pem'))
-  };
-  const certs_exist = (await certs.key.exists()) && (await certs.cert.exists());
-  if (!certs_exist) {
-   Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path, 2);
-   process.exit(1);
+  let certs = null;
+  if (await Bun.file(Common.settings.web.certificates_path).exists()) {
+   certs = {
+    key: Bun.file(path.join(Common.settings.web.certificates_path, 'privkey.pem')),
+    cert: Bun.file(path.join(Common.settings.web.certificates_path, 'cert.pem'))
+   };
+   const certs_exist = (await certs.key.exists()) && (await certs.cert.exists());
+   if (!certs_exist) {
+    Common.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Common.settings.https_cert_path, 2);
+    process.exit(1);
+   }
   }
   try {
    if (Common.settings.web.standalone) {
