@@ -45,7 +45,8 @@ class API {
    user_session_del: { method: this.userDelSession, reqUserSession: true },
    user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true },
    user_subscribe: { method: this.userSubscribe, reqUserSession: true },
-   user_unsubscribe: { method: this.userUnsubscribe, reqUserSession: true }
+   user_unsubscribe: { method: this.userUnsubscribe, reqUserSession: true },
+   user_heartbeat: { method: this.userHeartbeat, reqUserSession: true },
   };
  }
 
@@ -482,6 +483,11 @@ class API {
   if (!clientData.subscriptions?.has(c.params.event)) return { error: 5, message: 'Client is not subscribed to this event' };
   clientData.subscriptions?.delete(c.params.event);
   return { error: 0, message: 'Event unsubscribed' };
+ }
+
+ userHeartbeat(c) {
+  Common.addLog('Heartbeat from: ' + c.ws.remoteAddress);
+  return { error: 0, message: 'Heartbeat received' };
  }
 
  getUUID() {
