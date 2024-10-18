@@ -40,7 +40,7 @@ class API {
    admin_modules_info: { method: this.adminModulesInfo, reqAdminSession: true },
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
    user_login: { method: this.userLogin },
-   
+
    user_sessions_list: { method: this.userListSessions, reqUserSession: true },
    user_session_del: { method: this.userDelSession, reqUserSession: true },
    user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true },

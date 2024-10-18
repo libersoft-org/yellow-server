@@ -16,7 +16,7 @@ class WebServer {
 
  async startServer() {
   let certs = null;
-  if (await Bun.file(Common.settings.web.certificates_path).exists()) {
+  if (Common.settings.https_enabled) {
    certs = {
     key: Bun.file(path.join(Common.settings.web.certificates_path, 'privkey.pem')),
     cert: Bun.file(path.join(Common.settings.web.certificates_path, 'cert.pem'))
@@ -29,18 +29,29 @@ class WebServer {
   }
   try {
    if (Common.settings.web.standalone) {
-    Bun.serve({
-     fetch: this.getFetch(),
-     port: Common.settings.web.http_port
-    });
-    Common.addLog('HTTP server is running on port: ' + Common.settings.web.http_port);
-    Bun.serve({
-     fetch: this.getFetch(),
-     websocket: this.getWebSocket(),
-     port: Common.settings.web.https_port,
-     tls: certs
-    });
-    Common.addLog('HTTPS server is running on port: ' + Common.settings.web.https_port);
+    if (Common.settings.https_enabled) {
+     Bun.serve({
+      fetch: this.getFetch(),
+      port: Common.settings.web.http_port,
+     });
+     Common.addLog('HTTP server is running on port: ' + Common.settings.web.http_port);
+     Bun.serve({
+      fetch: this.getFetch(),
+      websocket: this.getWebSocket(),
+      port: Common.settings.web.https_port,
+      tls: certs
+     });
+     Common.addLog('HTTPS server is running on port: ' + Common.settings.web.https_port);
+    }
+    else
+    {
+     Bun.serve({
+      fetch: this.getFetch(),
+      websocket: this.getWebSocket(),
+      port: Common.settings.web.http_port,
+     });
+     Common.addLog('HTTP server is running on port: ' + Common.settings.web.http_port);
+    }
    } else {
     const socketPath = Common.settings.web.socket_path.startsWith('/') ? Common.settings.web.socket_path : path.join(Common.appPath, Common.settings.web.socket_path);
     Bun.serve({
@@ -60,7 +71,7 @@ class WebServer {
 
  getFetch() {
   return async (req, server) => {
-   if (server.protocol === 'https' && server.upgrade(req)) return;
+   if ((server.protocol === 'https' || !this.https_enabled) && server.upgrade(req)) return;
    let clientIP = server.requestIP(req).address;
    const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
    for (const header of forwardedHeaders) {
@@ -72,13 +83,21 @@ class WebServer {
    Common.addLog(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
    try {
     const url = new URL(req.url);
-    if (url.protocol == 'http:') {
+    if (url.protocol == 'http:' && this.https_enabled) {
      url.protocol = 'https:';
-     if (Common.settings.web.https_port !== 443) url.port = Common.settings.web.https_port;
-     else url.port = '';
+     if (Common.settings.web.https_port !== 443)
+     {
+      url.port = Common.settings.web.https_port;
+     }
+     else
+     {
+      url.port = '';
+     }
      return new Response(null, { status: 301, headers: { Location: url.toString() } });
     }
-    return this.getFile(req);
+    else {
+     return this.getFile(req);
+    }
    } catch (ex) {
     Common.addLog('Invalid URL: ' + req.url, 2);
     return await this.getNotFound();

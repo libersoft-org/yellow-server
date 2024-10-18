@@ -105,9 +105,9 @@ mariadb -u root
 ... and create a new user
 
 ```sql
-CREATE USER 'user_name'@'localhost' IDENTIFIED BY 'password';
+CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
 CREATE DATABASE yellow;
-GRANT ALL ON yellow.* TO 'user_name'@'localhost';
+GRANT ALL ON yellow.* TO 'username'@'localhost';
 ```
 
 ### Create a new server settings file using:
