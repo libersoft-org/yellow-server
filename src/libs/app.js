@@ -32,7 +32,7 @@ class App {
    Common.addLog('');
    await this.checkDatabase();
    this.webServer = new WebServer();
-   await this.webServer.run();
+   await this.webServer.start();
    Common.addLog('Server is running: ' + (Common.settings.web.standalone ? 'http://localhost:' + Common.settings.web.http_port : 'socket'));
   } catch (ex) {
    Common.addLog(ex);

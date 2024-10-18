@@ -3,7 +3,7 @@ import API from './api.js';
 import { Common } from './common.js';
 
 class WebServer {
- async run() {
+ async start() {
   try {
    this.wsClients = new Map();
    this.api = new API(this);
