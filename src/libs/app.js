@@ -1,5 +1,6 @@
 import WebServer from './webserver.js';
 import Data from './data.js';
+import Modules from './modules.js';
 import { Common } from './common.js';
 
 class App {
@@ -33,6 +34,7 @@ class App {
    await this.checkDatabase();
    this.webServer = new WebServer();
    await this.webServer.start();
+   this.modules = new Modules();
    Common.addLog('Server is running: ' + (Common.settings.web.standalone ? 'http://localhost:' + Common.settings.web.http_port : 'socket'));
   } catch (ex) {
    Common.addLog(ex);

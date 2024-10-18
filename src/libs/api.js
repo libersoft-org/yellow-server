@@ -12,7 +12,8 @@ class API {
   setInterval(async () => {
    const resAdmin = await this.data.adminDelOldSessions();
    const resUser = await this.data.userDelOldSessions();
-   Common.addLog('Expired sessions cleaner: ' + resAdmin.changes + ' admin sessions and ' + resUser.changes + ' user sessions deleted.');
+   if (resAdmin.changes || resUser.changes)
+    Common.addLog('Expired sessions cleaner: ' + (resAdmin.changes||0) + ' admin sessions and ' + (resUser.changes||0) + ' user sessions deleted.');
   }, Common.settings.other.session_cleaner * 1000);
   this.commands = {
    admin_login: { method: this.adminLogin },

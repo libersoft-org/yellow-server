@@ -276,8 +276,11 @@ class Data {
   }
   query += ' GROUP BY id';
   query += ' ORDER BY ' + orderBy + ' ' + direction;
-  query += ' LIMIT ? OFFSET ?';
-  params.push(count);
+  if (count !== null)
+   query += ' LIMIT ?'
+  query += ' OFFSET ? ROWS';
+  if (count !== null)
+   params.push(count);
   params.push(offset);
   const res = await this.db.query(query, params);
   //console.log(res);
