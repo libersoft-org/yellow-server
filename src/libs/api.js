@@ -40,10 +40,10 @@ class API {
    admin_modules_info: { method: this.adminModulesInfo, reqAdminSession: true },
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
    user_login: { method: this.userLogin },
-   // rename
-   user_list_sessions: { method: this.userListSessions, reqUserSession: true },
-   user_del_session: { method: this.userDelSession, reqUserSession: true },
-   user_get_userinfo: { method: this.userGetUserInfo, reqUserSession: true },
+   
+   user_sessions_list: { method: this.userListSessions, reqUserSession: true },
+   user_session_del: { method: this.userDelSession, reqUserSession: true },
+   user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true },
    user_subscribe: { method: this.userSubscribe, reqUserSession: true },
    user_unsubscribe: { method: this.userUnsubscribe, reqUserSession: true }
   };
