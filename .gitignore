@@ -1,7 +1,7 @@
 .git/
 src/node_modules/
 src/package-lock.json
-src/bun.lockb
+
 src/settings.json
 src/*.sock
 src/*.db

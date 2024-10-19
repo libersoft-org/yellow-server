@@ -282,7 +282,7 @@ class Data {
   params.push(offset);
   Log.info('this.db:' + JSON.stringify(this.db));
   const res = await this.db.query(query, params);
-  Log.info('res:' + JSON.stringify(res));
+
   return res;
  }
 
