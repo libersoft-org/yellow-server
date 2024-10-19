@@ -4,7 +4,6 @@ import Modules from './modules.js';
 import { Info } from './info.js';
 import { Log } from 'yellow-server-common';
 
-
 class App {
  async run() {
   const args = process.argv.slice(2);
@@ -135,11 +134,9 @@ class App {
   while (true) {
    username = await this.getInput('Enter the admin username', false, 'admin');
    username = username.toLowerCase();
-   if (username.length < 3 || username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username))
-   {
+   if (username.length < 3 || username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username)) {
     Log.error('Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row.');
-   }
-   else break;
+   } else break;
   }
   while (true) {
    password = await this.getInput('Enter the admin password', true);
@@ -156,7 +153,7 @@ class App {
   await this.loadSettings();
   const data = new Data();
 
-  data.adminModulesAdd('messages', 'ws://localhost:7311/', 0)
+  data.adminModulesAdd('messages', 'ws://localhost:7311/', 0);
   console.log('Added messages');
   let res = await data.adminModulesList(null);
   console.log(res);

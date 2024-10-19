@@ -6,7 +6,6 @@ class Info {
  static appPath = path.dirname(import.meta.dir) + '/';
  static settingsFile = path.join(path.dirname(import.meta.dir), 'settings.json');
  static settings;
-
 }
 
 export { Info };

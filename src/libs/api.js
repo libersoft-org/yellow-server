@@ -4,7 +4,6 @@ import Data from './data.js';
 import { Info } from './info.js';
 import { Log } from 'yellow-server-common';
 
-
 class API {
  constructor(webServer) {
   this.webServer = webServer;
@@ -14,8 +13,7 @@ class API {
   setInterval(async () => {
    const resAdmin = await this.data.adminDelOldSessions();
    const resUser = await this.data.userDelOldSessions();
-   if (resAdmin.changes || resUser.changes)
-    Log.info('Expired sessions cleaner: ' + (resAdmin.changes||0) + ' admin sessions and ' + (resUser.changes||0) + ' user sessions deleted.');
+   if (resAdmin.changes || resUser.changes) Log.info('Expired sessions cleaner: ' + (resAdmin.changes || 0) + ' admin sessions and ' + (resUser.changes || 0) + ' user sessions deleted.');
   }, Info.settings.other.session_cleaner * 1000);
   this.commands = {
    admin_login: { method: this.adminLogin },
@@ -49,7 +47,7 @@ class API {
    user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true },
    user_subscribe: { method: this.userSubscribe, reqUserSession: true },
    user_unsubscribe: { method: this.userUnsubscribe, reqUserSession: true },
-   user_heartbeat: { method: this.userHeartbeat, reqUserSession: true },
+   user_heartbeat: { method: this.userHeartbeat, reqUserSession: true }
   };
  }
 
@@ -88,7 +86,7 @@ class API {
    let msg = {
     auth: {},
     data: {}
-   }
+   };
    return {};
   }
  }
@@ -505,8 +503,6 @@ class API {
    return false;
   }
  }
-
-
 }
 
 export default API;

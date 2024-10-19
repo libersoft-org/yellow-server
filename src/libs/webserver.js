@@ -33,7 +33,7 @@ class WebServer {
     if (!Info.settings.web.https_disabled) {
      Bun.serve({
       fetch: this.getFetch(),
-      port: Info.settings.web.http_port,
+      port: Info.settings.web.http_port
      });
      Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
      Bun.serve({
@@ -43,13 +43,11 @@ class WebServer {
       tls: certs
      });
      Log.info('HTTPS server is running on port: ' + Info.settings.web.https_port);
-    }
-    else
-    {
+    } else {
      Bun.serve({
       fetch: this.getFetch(),
       websocket: this.getWebSocket(),
-      port: Info.settings.web.http_port,
+      port: Info.settings.web.http_port
      });
      Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
     }
@@ -86,17 +84,13 @@ class WebServer {
     const url = new URL(req.url);
     if (url.protocol == 'http:' && !Info.settings.web.https_disabled) {
      url.protocol = 'https:';
-     if (Info.settings.web.https_port !== 443)
-     {
+     if (Info.settings.web.https_port !== 443) {
       url.port = Info.settings.web.https_port;
-     }
-     else
-     {
+     } else {
       url.port = '';
      }
      return new Response(null, { status: 301, headers: { Location: url.toString() } });
-    }
-    else {
+    } else {
      return this.getFile(req);
     }
    } catch (ex) {
