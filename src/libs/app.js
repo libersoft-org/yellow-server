@@ -37,6 +37,7 @@ class App {
    this.webServer = new WebServer();
    await this.webServer.start();
    this.modules = new Modules();
+   await this.modules.init();
    Log.info('Server is running: ' + (Info.settings.web.standalone ? 'http://localhost:' + Info.settings.web.http_port : 'socket'));
   } catch (ex) {
    Log.info(ex);
