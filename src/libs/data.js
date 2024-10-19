@@ -21,7 +21,7 @@ class Data {
    await this.db.query('CREATE TABLE IF NOT EXISTS users_sessions (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.query('CREATE TABLE IF NOT EXISTS modules (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL UNIQUE, server VARCHAR(255) NOT NULL, port INT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
   } catch (ex) {
-   Log.addLog(ex);
+   Log.info(ex);
    process.exit(1);
   }
  }
@@ -282,9 +282,9 @@ class Data {
   if (count !== null)
    params.push(count);
   params.push(offset);
-  Log.addLog('this.db:' + JSON.stringify(this.db));
+  Log.info('this.db:' + JSON.stringify(this.db));
   const res = await this.db.query(query, params);
-  Log.addLog('res:' + JSON.stringify(res));
+  Log.info('res:' + JSON.stringify(res));
   return res;
  }
 

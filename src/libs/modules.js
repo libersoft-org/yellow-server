@@ -7,7 +7,7 @@ class Modules {
    this.data = new Data();
    this.modules = {};
    let res = this.data.adminModulesList(null);
-   Log.addLog('Loading modules:');
+   Log.info('Loading modules:');
    if (res) {
     for (let i = 0; i < res.length; i++) {
      let mod = res[i];
@@ -15,7 +15,7 @@ class Modules {
      //this.add(res[i]);
     }
    }
-   Log.addLog('Modules loaded.');
+   Log.info('Modules loaded.');
   }
 
   add(name) {

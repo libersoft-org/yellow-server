@@ -15,7 +15,7 @@ class API {
    const resAdmin = await this.data.adminDelOldSessions();
    const resUser = await this.data.userDelOldSessions();
    if (resAdmin.changes || resUser.changes)
-    Log.addLog('Expired sessions cleaner: ' + (resAdmin.changes||0) + ' admin sessions and ' + (resUser.changes||0) + ' user sessions deleted.');
+    Log.info('Expired sessions cleaner: ' + (resAdmin.changes||0) + ' admin sessions and ' + (resUser.changes||0) + ' user sessions deleted.');
   }, Info.settings.other.session_cleaner * 1000);
   this.commands = {
    admin_login: { method: this.adminLogin },
@@ -462,7 +462,7 @@ class API {
   if (!clientData) return { error: 4, message: 'Client not found' };
   clientData.userID = c.userID;
   clientData.subscriptions.add(c.params.event);
-  Log.addLog('Client ' + c.ws.remoteAddress + ' subscribed to event: ' + c.params.event);
+  Log.info('Client ' + c.ws.remoteAddress + ' subscribed to event: ' + c.params.event);
   return { error: 0, message: 'Event subscribed' };
  }
 
@@ -471,7 +471,7 @@ class API {
   for (const [ws, clientData] of clients) {
    if (clientData.userID === userID && clientData.subscriptions.has(event)) {
     const res = JSON.stringify({ event, data });
-    Log.addLog('WebSocket event to: ' + ws.remoteAddress + ', message: ' + res);
+    Log.info('WebSocket event to: ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
    }
   }
@@ -489,7 +489,7 @@ class API {
  }
 
  userHeartbeat(c) {
-  Log.addLog('Heartbeat from: ' + c.ws.remoteAddress);
+  Log.info('Heartbeat from: ' + c.ws.remoteAddress);
   return { error: 0, message: 'Heartbeat received' };
  }
 

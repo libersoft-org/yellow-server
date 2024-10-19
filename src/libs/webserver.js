@@ -10,8 +10,8 @@ class WebServer {
    this.api = new API(this);
    await this.startServer();
   } catch (ex) {
-   Log.addLog('Cannot start web server.', 2);
-   Log.addLog(ex, 2);
+   Log.error('Cannot start web server.');
+   Log.error(ex);
   }
  }
 
@@ -24,7 +24,7 @@ class WebServer {
    };
    const certs_exist = (await certs.key.exists()) && (await certs.cert.exists());
    if (!certs_exist) {
-    Log.addLog('Error: HTTPS server has not started due to missing certificate files in ' + Info.settings.https_cert_path, 2);
+    Log.error('Error: HTTPS server has not started due to missing certificate files in ' + Info.settings.https_cert_path);
     process.exit(1);
    }
   }
@@ -35,14 +35,14 @@ class WebServer {
       fetch: this.getFetch(),
       port: Info.settings.web.http_port,
      });
-     Log.addLog('HTTP server is running on port: ' + Info.settings.web.http_port);
+     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
      Bun.serve({
       fetch: this.getFetch(),
       websocket: this.getWebSocket(),
       port: Info.settings.web.https_port,
       tls: certs
      });
-     Log.addLog('HTTPS server is running on port: ' + Info.settings.web.https_port);
+     Log.info('HTTPS server is running on port: ' + Info.settings.web.https_port);
     }
     else
     {
@@ -51,7 +51,7 @@ class WebServer {
       websocket: this.getWebSocket(),
       port: Info.settings.web.http_port,
      });
-     Log.addLog('HTTP server is running on port: ' + Info.settings.web.http_port);
+     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
     }
    } else {
     const socketPath = Info.settings.web.socket_path.startsWith('/') ? Info.settings.web.socket_path : path.join(Info.appPath, Info.settings.web.socket_path);
@@ -62,10 +62,10 @@ class WebServer {
     });
     const fs = require('fs');
     fs.chmodSync(socketPath, '777');
-    Log.addLog('HTTP server is running on Unix socket: ' + socketPath);
+    Log.info('HTTP server is running on Unix socket: ' + socketPath);
    }
   } catch (ex) {
-   Log.addLog('Error: ' + ex.message, 2);
+   Log.error(ex.message);
    process.exit(1);
   }
  }
@@ -81,7 +81,7 @@ class WebServer {
      break;
     }
    }
-   Log.addLog(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
+   Log.info(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
    try {
     const url = new URL(req.url);
     if (url.protocol == 'http:' && !Info.settings.web.https_disabled) {
@@ -100,7 +100,7 @@ class WebServer {
      return this.getFile(req);
     }
    } catch (ex) {
-    Log.addLog('Invalid URL: ' + req.url, 2);
+    Log.error('Invalid URL: ' + req.url);
     return await this.getNotFound();
    }
   };
@@ -110,18 +110,18 @@ class WebServer {
   const api = this.api;
   return {
    message: async (ws, message) => {
-    Log.addLog('WebSocket message from: ' + ws.remoteAddress + ', message: ' + message);
+    Log.info('WebSocket message from: ' + ws.remoteAddress + ', message: ' + message);
     const res = JSON.stringify(await api.processAPI(ws, message));
-    Log.addLog('WebSocket message to: ' + ws.remoteAddress + ', message: ' + res);
+    Log.info('WebSocket message to: ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
    },
    open: ws => {
     this.wsClients.set(ws, { subscriptions: new Set() });
-    Log.addLog('WebSocket connected: ' + ws.remoteAddress);
+    Log.info('WebSocket connected: ' + ws.remoteAddress);
    },
    close: (ws, code, message) => {
     this.wsClients.delete(ws);
-    Log.addLog('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
+    Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
    },
    drain: ws => {
     // the socket is ready to receive more data
