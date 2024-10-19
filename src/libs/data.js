@@ -282,8 +282,9 @@ class Data {
   if (count !== null)
    params.push(count);
   params.push(offset);
+  Common.addLog('this.db:' + JSON.stringify(this.db));
   const res = await this.db.query(query, params);
-  //console.log(res);
+  Common.addLog('res:' + JSON.stringify(res));
   return res;
  }
 

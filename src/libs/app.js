@@ -14,6 +14,7 @@ class App {
     if (args[0] === '--create-settings') await this.createSettings();
     else if (args[0] === '--create-database') await this.createDatabase();
     else if (args[0] === '--create-admin') this.createAdmin();
+    else if (args[0] === '--init-modules') this.initModules();
     else this.getHelp();
     break;
    default:
@@ -46,8 +47,9 @@ class App {
   Common.addLog('');
   Common.addLog('--help - to see this help');
   Common.addLog('--create-settings - to create a default settings file named "' + Common.settingsFile + '"');
-  Common.addLog('--create-database - to create a tables in database defined in the settings file');
+  Common.addLog('--create-database - to create tables in database defined in the settings file');
   Common.addLog('--create-admin - to create an admin account');
+  Common.addLog('--init-modules - to initialize the modules table with default values');
  }
 
  async loadSettings() {
@@ -88,8 +90,8 @@ class App {
     database: {
      host: '127.0.0.1',
      port: 3306,
-     user: 'your_username',
-     password: 'your_password',
+     user: 'username',
+     password: 'password',
      name: 'yellow'
     },
     other: {
@@ -140,6 +142,19 @@ class App {
   const data = new Data();
   await data.adminAdminsAdd(username, password);
   Common.addLog('Admin was created successfully.');
+  process.exit(1);
+ }
+
+ async initModules() {
+  await this.loadSettings();
+  const data = new Data();
+
+  data.adminModulesAdd('messages', 'ws://localhost:7311/', 0)
+  console.log('Added messages');
+  let res = await data.adminModulesList(null);
+  console.log(res);
+
+  Common.addLog('Modules were initialized successfully.');
   process.exit(1);
  }
 

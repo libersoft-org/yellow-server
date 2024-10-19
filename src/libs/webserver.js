@@ -16,7 +16,7 @@ class WebServer {
 
  async startServer() {
   let certs = null;
-  if (Common.settings.https_enabled) {
+  if (!Common.settings.web.https_disabled) {
    certs = {
     key: Bun.file(path.join(Common.settings.web.certificates_path, 'privkey.pem')),
     cert: Bun.file(path.join(Common.settings.web.certificates_path, 'cert.pem'))
@@ -29,7 +29,7 @@ class WebServer {
   }
   try {
    if (Common.settings.web.standalone) {
-    if (Common.settings.https_enabled) {
+    if (!Common.settings.web.https_disabled) {
      Bun.serve({
       fetch: this.getFetch(),
       port: Common.settings.web.http_port,
@@ -71,7 +71,7 @@ class WebServer {
 
  getFetch() {
   return async (req, server) => {
-   if ((server.protocol === 'https' || !this.https_enabled) && server.upgrade(req)) return;
+   if ((server.protocol === 'https' || Common.settings.web.https_disabled) && server.upgrade(req)) return;
    let clientIP = server.requestIP(req).address;
    const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
    for (const header of forwardedHeaders) {
@@ -83,7 +83,7 @@ class WebServer {
    Common.addLog(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
    try {
     const url = new URL(req.url);
-    if (url.protocol == 'http:' && this.https_enabled) {
+    if (url.protocol == 'http:' && !Common.settings.web.https_disabled) {
      url.protocol = 'https:';
      if (Common.settings.web.https_port !== 443)
      {
