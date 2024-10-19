@@ -16,17 +16,8 @@ class Database {
  }
 
  async connect() {
-  if (this.connecting) return;
-  this.connecting = true;
-  try {
    this.conn = await mariaDB.createConnection(this.connectionConfig);
-   this.connecting = false;
    Common.addLog('Connected to the database');
-  } catch (ex) {
-   this.connecting = false;
-   Common.addLog('Error while connecting to database: ' + ex.message, 2);
-   setTimeout(() => this.connect(), 2000);
-  }
  }
 
  async reconnect() {
@@ -42,17 +33,28 @@ class Database {
  }
 
  async execute(callback) {
+
+  Common.addLog('db.execute');
+
   try {
-   if (!this.conn) await this.connect();
+   if (!this.conn)
+   {
+    await this.connect();
+    Common.addLog('Connected: ' + JSON.stringify(this.conn));
+   }
    else {
     try {
      await this.conn.ping();
     } catch (err) {
      Common.addLog('Connection lost: ' + err.message, 2);
      await this.reconnect();
+     Common.addLog('Reconnected: ' + JSON.stringify(this.conn));
     }
    }
-   return await callback(this.conn);
+   Common.addLog('callback: ' + callback);
+   const result = await callback(this.conn);
+   Common.addLog('result: ' + JSON.stringify(result));
+   return result;
   } catch (ex) {
    Common.addLog(ex.message, 2);
    return null;
@@ -60,9 +62,10 @@ class Database {
  }
 
  async query(command, params = []) {
+  Common.addLog('query: ' + command + ' ' + params);
   return await this.execute(async conn => {
+   Common.addLog('conn: ' + JSON.stringify(conn));
    const result = await conn.query(command, params);
-   //console.log(result);
    return result;
   });
  }
