@@ -1,6 +1,17 @@
 import Data from './data';
 import { Log } from 'yellow-server-common';
 
+class Module {
+ constructor(connection_string) {
+  this.connection_string = connection_string;
+  this.connect();
+ }
+ connect() {
+  Log.info('Connecting to the module: ' + this.connection_string);
+  this.ws = new WebSocket(this.connection_string);
+ }
+}
+
 class Modules {
  constructor() {
   this.data = new Data();
@@ -11,7 +22,7 @@ class Modules {
    for (let i = 0; i < res.length; i++) {
     let mod = res[i];
     console.log('Loading module: ' + res[i]);
-    //this.add(res[i]);
+    this.add(res[i]);
    }
   }
   Log.info('Modules loaded.');
@@ -19,8 +30,8 @@ class Modules {
 
  add(name) {
   if (this.modules[name]) return;
-  const module = require('./modules/' + name);
-  this.modules[name] = new module(this.data);
+
+  this.modules[name] = new Module(this.data);
  }
 
  get(name) {

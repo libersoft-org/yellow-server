@@ -280,9 +280,8 @@ class Data {
   query += ' OFFSET ? ROWS';
   if (count !== null) params.push(count);
   params.push(offset);
-  Log.debug('this.db:' + JSON.stringify(this.db));
+  Log.debug('this.db:', this.db);
   const res = await this.db.query(query, params);
-
   return res;
  }
 

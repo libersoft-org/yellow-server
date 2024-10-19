@@ -153,7 +153,7 @@ class App {
   await this.loadSettings();
   const data = new Data();
 
-  data.adminModulesAdd('messages', 'ws://localhost:7311/', 0);
+  data.adminModulesAdd('org.libersoft.messages', 'ws://localhost:7311/', 0);
   Log.info('Added module messages.');
   let res = await data.adminModulesList(null);
 
