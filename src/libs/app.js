@@ -154,9 +154,8 @@ class App {
   const data = new Data();
 
   data.adminModulesAdd('messages', 'ws://localhost:7311/', 0);
-  console.log('Added messages');
+  Log.info('Added module messages.');
   let res = await data.adminModulesList(null);
-  console.log(res);
 
   Log.info('Modules were initialized successfully.');
   process.exit(1);
