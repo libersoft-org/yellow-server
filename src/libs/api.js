@@ -1,7 +1,9 @@
 import os from 'os';
 import Data from './data.js';
 //import DNS from './dns.js';
-import { Common } from './common.js';
+import { Info } from './info.js';
+import { Log } from 'yellow-server-common';
+
 
 class API {
  constructor(webServer) {
@@ -13,8 +15,8 @@ class API {
    const resAdmin = await this.data.adminDelOldSessions();
    const resUser = await this.data.userDelOldSessions();
    if (resAdmin.changes || resUser.changes)
-    Common.addLog('Expired sessions cleaner: ' + (resAdmin.changes||0) + ' admin sessions and ' + (resUser.changes||0) + ' user sessions deleted.');
-  }, Common.settings.other.session_cleaner * 1000);
+    Log.addLog('Expired sessions cleaner: ' + (resAdmin.changes||0) + ' admin sessions and ' + (resUser.changes||0) + ' user sessions deleted.');
+  }, Info.settings.other.session_cleaner * 1000);
   this.commands = {
    admin_login: { method: this.adminLogin },
    admin_sessions_list: { method: this.adminSessionsList, reqAdminSession: true },
@@ -52,7 +54,7 @@ class API {
  }
 
  async processAPI(ws, json) {
-  if (!Common.isValidJSON(json)) return { error: 902, message: 'Invalid JSON command' };
+  if (!this.isValidJSON(json)) return { error: 902, message: 'Invalid JSON command' };
   const req = JSON.parse(json);
   let resp = {};
   if (req.requestID) resp.requestID = req.requestID;
@@ -381,8 +383,8 @@ class API {
    error: 0,
    data: {
     app: {
-     name: Common.appName,
-     version: Common.appVersion
+     name: Info.appName,
+     version: Info.appVersion
     },
     os: {
      name: os.type(),
@@ -460,7 +462,7 @@ class API {
   if (!clientData) return { error: 4, message: 'Client not found' };
   clientData.userID = c.userID;
   clientData.subscriptions.add(c.params.event);
-  Common.addLog('Client ' + c.ws.remoteAddress + ' subscribed to event: ' + c.params.event);
+  Log.addLog('Client ' + c.ws.remoteAddress + ' subscribed to event: ' + c.params.event);
   return { error: 0, message: 'Event subscribed' };
  }
 
@@ -469,7 +471,7 @@ class API {
   for (const [ws, clientData] of clients) {
    if (clientData.userID === userID && clientData.subscriptions.has(event)) {
     const res = JSON.stringify({ event, data });
-    Common.addLog('WebSocket event to: ' + ws.remoteAddress + ', message: ' + res);
+    Log.addLog('WebSocket event to: ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
    }
   }
@@ -487,13 +489,24 @@ class API {
  }
 
  userHeartbeat(c) {
-  Common.addLog('Heartbeat from: ' + c.ws.remoteAddress);
+  Log.addLog('Heartbeat from: ' + c.ws.remoteAddress);
   return { error: 0, message: 'Heartbeat received' };
  }
 
  getUUID() {
   return crypto.randomUUID();
  }
+
+ isValidJSON(text) {
+  try {
+   JSON.parse(text);
+   return true;
+  } catch (e) {
+   return false;
+  }
+ }
+
+
 }
 
 export default API;

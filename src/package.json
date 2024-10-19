@@ -2,5 +2,6 @@
  "name": "yellow-server",
  "dependencies": {
   "mariadb": "*"
- }
+ },
+ "license": "Unlicense"
 }

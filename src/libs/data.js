@@ -1,9 +1,9 @@
-import Database from './database.js';
-import { Common } from './common.js';
+import { Database, Log } from 'yellow-server-common';
+import { Info } from './info.js';
 
 class Data {
  constructor() {
-  this.db = new Database();
+  this.db = new Database(Info.settings.database);
  }
 
  async databaseExists() {
@@ -21,7 +21,7 @@ class Data {
    await this.db.query('CREATE TABLE IF NOT EXISTS users_sessions (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.query('CREATE TABLE IF NOT EXISTS modules (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL UNIQUE, server VARCHAR(255) NOT NULL, port INT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
   } catch (ex) {
-   Common.addLog(ex);
+   Log.addLog(ex);
    process.exit(1);
   }
  }
@@ -32,7 +32,7 @@ class Data {
  }
 
  async adminDelOldSessions() {
-  return await this.db.query('DELETE FROM admins_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Common.settings.other.session_admin]);
+  return await this.db.query('DELETE FROM admins_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Info.settings.other.session_admin]);
  }
 
  async adminSetLogin(adminID, sessionID) {
@@ -74,7 +74,7 @@ class Data {
  }
 
  async adminSessionExpired(sessionID) {
-  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM admins_sessions WHERE session = ?', [Common.settings.other.session_admin, sessionID]);
+  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM admins_sessions WHERE session = ?', [Info.settings.other.session_admin, sessionID]);
   return res[0].expired === 1 ? true : false;
  }
 
@@ -207,7 +207,7 @@ class Data {
  }
 
  async userDelOldSessions() {
-  return await this.db.query('DELETE FROM users_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Common.settings.other.session_user]);
+  return await this.db.query('DELETE FROM users_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Info.settings.other.session_user]);
  }
 
  async userExistsByID(userID) {
@@ -282,9 +282,9 @@ class Data {
   if (count !== null)
    params.push(count);
   params.push(offset);
-  Common.addLog('this.db:' + JSON.stringify(this.db));
+  Log.addLog('this.db:' + JSON.stringify(this.db));
   const res = await this.db.query(query, params);
-  Common.addLog('res:' + JSON.stringify(res));
+  Log.addLog('res:' + JSON.stringify(res));
   return res;
  }
 
@@ -361,7 +361,7 @@ class Data {
  }
 
  async userSessionExpired(sessionID) {
-  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM users_sessions WHERE session = ?', [Common.settings.other.session_user, sessionID]);
+  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM users_sessions WHERE session = ?', [Info.settings.other.session_user, sessionID]);
   return res[0].expired === 1 ? true : false;
  }
 

@@ -1,5 +1,5 @@
 import Data from "./data";
-import { Common } from './common.js';
+import { Log } from 'yellow-server-common';
 
 
 class Modules {
@@ -7,7 +7,7 @@ class Modules {
    this.data = new Data();
    this.modules = {};
    let res = this.data.adminModulesList(null);
-   Common.addLog('Loading modules:');
+   Log.addLog('Loading modules:');
    if (res) {
     for (let i = 0; i < res.length; i++) {
      let mod = res[i];
@@ -15,7 +15,7 @@ class Modules {
      //this.add(res[i]);
     }
    }
-   Common.addLog('Modules loaded.');
+   Log.addLog('Modules loaded.');
   }
 
   add(name) {
