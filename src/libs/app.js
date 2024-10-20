@@ -25,7 +25,7 @@ class App {
  }
 
  async startServer() {
-  try {
+  //try {
    await this.loadSettings();
    const header = Info.appName + ' ver. ' + Info.appVersion;
    const dashes = '='.repeat(header.length);
@@ -34,14 +34,17 @@ class App {
    Log.info(dashes);
    Log.info('');
    await this.checkDatabase();
-   this.webServer = new WebServer();
-   await this.webServer.start();
    this.modules = new Modules();
    await this.modules.init();
+   this.webServer = new WebServer();
+   await this.webServer.start();
    Log.info('Server is running: ' + (Info.settings.web.standalone ? 'http://localhost:' + Info.settings.web.http_port : 'socket'));
-  } catch (ex) {
-   Log.info(ex);
-  }
+  /*} catch (ex) {
+   Log.error('startServer:');
+   //Log.error(ex);
+   //console.error(ex);
+   console.trace(ex);
+  }*/
  }
 
  getHelp() {

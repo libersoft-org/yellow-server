@@ -2,7 +2,7 @@
  "name": "yellow-server",
  "dependencies": {
   "mariadb": "^3.3.2",
-  "yellow-server-common": "https://github.com/libersoft-org/yellow-server-common#main"
+  "yellow-server-common": "https://github.com/libersoft-org/yellow-server-common"
  },
  "license": "Unlicense"
 }

@@ -9,8 +9,9 @@ class Module {
  async connect() {
   Log.info('Connecting to the module: ' + this.connection_string);
   this.ws = new WebSocket(this.connection_string);
-  this.ws.onopen = () => {
+  this.ws.onopen = async () => {
    Log.info('Connected to the module: ' + this.connection_string);
+   await this.ws.send('Hello from the server!');
   };
   this.ws.onmessage = (event) => {
    Log.info('Message from the module: ' + event.data);
@@ -21,8 +22,8 @@ class Module {
   this.ws.onclose = () => {
    Log.info('Disconnected from the module: ' + this.connection_string);
   };
-  await this.ws.send('Hello from the server!');
  }
+
 }
 
 class Modules {
