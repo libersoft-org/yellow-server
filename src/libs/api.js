@@ -63,7 +63,7 @@ class API {
   return true;
  }
 
- async processAPI(ws, ws_guid, json) {
+ async processAPI(ws, wsGuid, json) {
   let req;
   try
   {
@@ -79,22 +79,22 @@ class API {
   const context = { ws };
 
   const target = req.target || 'core';
-  const command = req.command || req.data?.command;
+  const command_name = req.command || req.data?.command;
 
   if (target === 'core') {
 
-   if (!command) return { ...resp, error: 999, message: 'Command not set' };
-   const command_fn = this.commands[req.command];
+   if (!command_name) return { ...resp, error: 999, message: 'Command not set' };
+   const command_fn = this.commands[command_name];
    if (!command_fn) return { ...resp, error: 903, message: 'Unknown command' };
 
-   if (command.reqAdminSession) {
+   if (command_fn.reqAdminSession) {
     if (!req.sessionID) return { ...resp, error: 995, message: 'Admin session is missing' };
     if (!(await this.data.adminSessionCheck(req.sessionID))) return { ...resp, error: 997, message: 'Invalid admin session ID' };
     if (await this.data.adminSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'Admin session is expired' };
     await this.data.adminUpdateSessionTime(req.sessionID);
     const adminID = await this.data.getAdminIDBySession(req.sessionID);
     if (adminID) context.adminID = adminID;
-   } else if (command.reqUserSession) {
+   } else if (command_fn.reqUserSession) {
 
     const auth_result = await this.authenticateUser(req, resp, context);
     if (auth_result !== true) return auth_result;
@@ -103,13 +103,15 @@ class API {
    if (req.sessionID) context.sessionID = req.sessionID;
    if (req.params) context.params = req.params;
 
-   let method_result = await command.method.call(this, context);
+   let method_result = await command_fn.method.call(this, context);
    return { ...resp, ...method_result };
   }
   else
   {
    let msg = {
-    data: req.data;
+    data: req.data,
+    requestID: req.requestID,
+    wsGuid: wsGuid,
    };
 
    const auth_result = await this.authenticateUser(req, resp, msg);
