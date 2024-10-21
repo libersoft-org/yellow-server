@@ -5,6 +5,7 @@ class Module {
  constructor(name, connection_string) {
   this.name = name;
   this.connection_string = connection_string;
+  this.requests = {};
  }
  async connect() {
   Log.info('Connecting to the module: ' + this.connection_string);
@@ -14,7 +15,42 @@ class Module {
    await this.ws.send('Hello from the server!');
   };
   this.ws.onmessage = event => {
-   Log.info('Message from the module: ' + event.data);
+
+   let msg = null;
+   try {
+    msg = JSON.parse(event.data);
+   }
+   catch (e) {
+    Log.error('Error parsing JSON:', event.data);
+    return;
+   }
+
+   Log.info('Message from the module: ' + msg);
+
+   if (msg.type === 'response') {
+    const req = msg.requestID;
+    if (!req) {
+     Log.warning('No request ID in the response:', msg);
+     return;
+    }
+
+    const cb = this.requests[req];
+    if (!cb) {
+     Log.warning('No callback for the request:', req);
+     return;
+    }
+    cb(req);
+    delete this.requests[req];
+   }
+   else if (msg.type === 'event') {
+    Log.info('Event from the module:', msg);
+   }
+   else if (msg.type === 'notify') {
+    Log.info('Notify from the module:', msg);
+   }
+   else {
+    Log.warning('Unknown message type:', msg);
+   }
   };
   this.ws.onerror = event => {
    Log.info('Error from the module: ' + event);
@@ -24,8 +60,14 @@ class Module {
   };
  }
 
- async send(msg)
+ async send(msg, cb)
  {
+  const key = msg.sessionID + '/' + msg.requestID;
+  if (this.requests[key]) {
+   console.log('Request already exists:', key);
+   return;
+  }
+  this.requests[key] = cb;
   await this.ws.send(msg);
  }
 }

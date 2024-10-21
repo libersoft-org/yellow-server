@@ -89,8 +89,10 @@ class API {
   }
   else if (req.module) {
    let msg = {
-    context: {userID: context.userID, sessionID: context.sessionID},
-    data: req.data
+    userID: context.userID,
+    sessionID: context.sessionID,
+    requestID: req.requestID,
+    params: req.params
    };
    return callModule(req.module, msg);
   }
@@ -99,7 +101,7 @@ class API {
  async callModule(module, msg) {
   module = this.modules[module];
   if (!module) return { error: 904, message: 'Unknown module' };
-  await module.ws.send(JSON.stringify(msg));
+  await module.send(msg);
  }
 
  async adminLogin(c) {
