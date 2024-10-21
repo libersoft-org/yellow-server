@@ -26,19 +26,19 @@ class App {
 
  async startServer() {
   //try {
-   await this.loadSettings();
-   const header = Info.appName + ' ver. ' + Info.appVersion;
-   const dashes = '='.repeat(header.length);
-   Log.info(dashes);
-   Log.info(header);
-   Log.info(dashes);
-   Log.info('');
-   await this.checkDatabase();
-   this.modules = new Modules();
-   await this.modules.init();
-   this.webServer = new WebServer();
-   await this.webServer.start();
-   Log.info('Server is running: ' + (Info.settings.web.standalone ? 'http://localhost:' + Info.settings.web.http_port : 'socket'));
+  await this.loadSettings();
+  const header = Info.appName + ' ver. ' + Info.appVersion;
+  const dashes = '='.repeat(header.length);
+  Log.info(dashes);
+  Log.info(header);
+  Log.info(dashes);
+  Log.info('');
+  await this.checkDatabase();
+  this.modules = new Modules();
+  await this.modules.init();
+  this.webServer = new WebServer();
+  await this.webServer.start();
+  Log.info('Server is running: ' + (Info.settings.web.standalone ? 'http://localhost:' + Info.settings.web.http_port : 'socket'));
   /*} catch (ex) {
    Log.error('startServer:');
    //Log.error(ex);

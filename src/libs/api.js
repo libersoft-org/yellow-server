@@ -322,7 +322,7 @@ class API {
  async adminModulesList(c) {
   let orderBy = 'id';
   if (c.params?.orderBy) {
-   const validOrderBy = ['id', 'name', 'server', 'port', 'created'];
+   const validOrderBy = ['id', 'name', 'connection_string', 'created'];
    orderBy = c.params.orderBy.toLowerCase();
    if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
   }
@@ -340,10 +340,9 @@ class API {
   if (!c.params.name) return { error: 2, message: 'Module name is missing' };
   c.params.name = c.params.name.toLowerCase();
   if (await this.data.moduleExistsByName(c.params.name)) return { error: 3, message: 'This module already exists' };
-  if (!c.params.server) return { error: 4, message: 'Module server address is missing' };
-  c.params.server = c.params.server.toLowerCase();
-  if (!c.params.port) return { error: 5, message: 'Module server port is missing' };
-  await this.data.adminModulesAdd(c.params.name, c.params.server, c.params.port);
+  if (!c.params.connection_string) return { error: 4, message: 'Module connection string is missing' };
+  c.params.connection_string = c.params.connection_string.toLowerCase();
+  await this.data.adminModulesAdd(c.params.name, c.params.connection_string);
   return { error: 0, data: { message: 'Module was created successfully' } };
  }
 
@@ -352,9 +351,8 @@ class API {
   if (!c.params.moduleID) return { error: 2, message: 'Module ID is missing' };
   if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 3, message: 'Wrong module ID' };
   if (!c.params.name) return { error: 4, message: 'Module name is missing' };
-  if (!c.params.server) return { error: 5, message: 'Server address is missing' };
-  if (!c.params.port) return { error: 6, message: 'Server port is missing' };
-  await this.data.adminModulesEdit(c.params.moduleID, c.params.name, c.params.server, c.params.port);
+  if (!c.params.connection_string) return { error: 5, message: 'Connection string is missing' };
+  await this.data.adminModulesEdit(c.params.moduleID, c.params.name, c.params.connection_string);
   return { error: 0, message: 'Module was edited successfully' };
  }
 

@@ -19,7 +19,7 @@ class Data {
    await this.db.query('CREATE TABLE IF NOT EXISTS users (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(64) NOT NULL, id_domains INT, visible_name VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domains) REFERENCES domains(id), UNIQUE (username, id_domains))');
    await this.db.query('CREATE TABLE IF NOT EXISTS users_logins (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(128) NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.query('CREATE TABLE IF NOT EXISTS users_sessions (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
-   await this.db.query('CREATE TABLE IF NOT EXISTS modules (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL UNIQUE, server VARCHAR(255) NOT NULL, port INT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+   await this.db.query('CREATE TABLE IF NOT EXISTS modules (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL UNIQUE, connection_string VARCHAR(255) NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
   } catch (ex) {
    Log.error(ex);
    process.exit(1);
@@ -30,7 +30,7 @@ class Data {
   const res = await this.db.query('SELECT id, username, password FROM admins WHERE username = ?', [username]);
   if (res.length === 1) {
    let r = res[0];
-   return {password: r[2], id: r[0], username: r[1]};
+   return { password: r[2], id: r[0], username: r[1] };
   }
  }
 
@@ -271,7 +271,7 @@ class Data {
  }
 
  async adminModulesList(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
-  let query = 'SELECT id, name, server, port, created FROM modules';
+  let query = 'SELECT id, name, connection_string, created FROM modules';
   const params = [];
   if (filterName !== null) {
    query += ' WHERE name LIKE ?';
@@ -288,13 +288,13 @@ class Data {
   return res;
  }
 
- async adminModulesAdd(name, server, port) {
-  await this.db.query('INSERT INTO modules (name, server, port) VALUES (?, ?, ?)', [name, server, port]);
+ async adminModulesAdd(name, connectionString) {
+  await this.db.query('INSERT INTO modules (name, connection_string) VALUES (?, ?)', [name, connectionString]);
  }
 
- async adminModulesEdit(id, name, server, port) {
-  console.log(id, name, server, port);
-  await this.db.query('UPDATE modules SET name = ?, server = ?, port = ? WHERE id = ?', [name, server, port, id]);
+ async adminModulesEdit(id, name, connectionString) {
+  console.log(id, name, connectionString);
+  await this.db.query('UPDATE modules SET name = ?, connection_string = ? WHERE id = ?', [name, connectionString, id]);
  }
 
  async moduleExistsByID(moduleID) {
@@ -312,7 +312,7 @@ class Data {
  }
 
  async getModuleInfoByID(moduleID) {
-  const res = await this.db.query('SELECT name, server, port, created FROM modules WHERE id = ?', [moduleID]);
+  const res = await this.db.query('SELECT name, connection_string, created FROM modules WHERE id = ?', [moduleID]);
   return res.length === 1 ? res[0] : false;
  }
 
