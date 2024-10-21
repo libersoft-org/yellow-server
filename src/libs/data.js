@@ -28,10 +28,7 @@ class Data {
 
  async getAdminCredentials(username) {
   const res = await this.db.query('SELECT id, username, password FROM admins WHERE username = ?', [username]);
-  if (res.length === 1) {
-   let r = res[0];
-   return { password: r[2], id: r[0], username: r[1] };
-  }
+  return res.length === 1 ? res[0] : false;
  }
 
  async adminDelOldSessions() {
