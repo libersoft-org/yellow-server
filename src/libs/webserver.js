@@ -3,11 +3,20 @@ import API from './api.js';
 import { Info } from './info.js';
 import { Log } from 'yellow-server-common';
 
+
+export function getGuid(length = 40) {
+ let result = '';
+ while (result.length < length) result += Math.random().toString(36);
+ return result;
+}
+
+
 class WebServer {
- async start() {
+ async start(modules) {
   try {
    this.wsClients = new Map();
-   this.api = new API(this);
+   this.wsGuids = new Map();
+   this.api = new API(this, modules);
    await this.startServer();
   } catch (ex) {
    Log.error('Cannot start web server.');
@@ -20,7 +29,7 @@ class WebServer {
   if (!Info.settings.web.https_disabled) {
    certs = {
     key: Bun.file(path.join(Info.settings.web.certificates_path, 'privkey.pem')),
-    cert: Bun.file(path.join(Info.settings.web.certificates_path, 'cert.pem'))
+    cert: Bun.file(path.join(Info.settings.web.certificates_path, 'cert.pem')),
    };
    const certs_exist = (await certs.key.exists()) && (await certs.cert.exists());
    if (!certs_exist) {
@@ -33,21 +42,21 @@ class WebServer {
     if (!Info.settings.web.https_disabled) {
      Bun.serve({
       fetch: this.getFetch(),
-      port: Info.settings.web.http_port
+      port: Info.settings.web.http_port,
      });
      Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
      Bun.serve({
       fetch: this.getFetch(),
       websocket: this.getWebSocket(),
       port: Info.settings.web.https_port,
-      tls: certs
+      tls: certs,
      });
      Log.info('HTTPS server is running on port: ' + Info.settings.web.https_port);
     } else {
      Bun.serve({
       fetch: this.getFetch(),
       websocket: this.getWebSocket(),
-      port: Info.settings.web.http_port
+      port: Info.settings.web.http_port,
      });
      Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
     }
@@ -56,7 +65,7 @@ class WebServer {
     Bun.serve({
      fetch: this.getFetch(),
      websocket: this.getWebSocket(),
-     unix: socketPath
+     unix: socketPath,
     });
     const fs = require('fs');
     fs.chmodSync(socketPath, '777');
@@ -104,9 +113,14 @@ class WebServer {
   const api = this.api;
   return {
    message: async (ws, message) => {
-    Log.info('WebSocket message from: ' + ws.remoteAddress + ', message: ' + message);
-    const res = JSON.stringify(await api.processAPI(ws, message));
-    Log.info('WebSocket message to: ' + ws.remoteAddress + ', message: ' + res);
+    Log.debug('WebSocket message from: ' + ws.remoteAddress + ', message: ' + message);
+    let ws_guid = this.wsGuids.get(ws);
+    if (!ws_guid) {
+     ws_guid = getGuid();
+     this.wsGuids.set(ws, ws_guid);
+    }
+    const res = JSON.stringify(await api.processAPI(ws, ws_guid, message));
+    Log.debug('WebSocket message to: ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
    },
    open: ws => {
@@ -115,12 +129,14 @@ class WebServer {
    },
    close: (ws, code, message) => {
     this.wsClients.delete(ws);
+    let ws_guid = this.wsGuids.get(ws);
+    if (ws_guid) this.wsGuids.delete(ws_guid);
     Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
    },
    drain: ws => {
     // the socket is ready to receive more data
     console.log('DRAIN', ws);
-   }
+   },
   };
  }
 

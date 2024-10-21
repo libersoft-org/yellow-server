@@ -5,7 +5,7 @@
  "singleQuote": true,
  "printWidth": 10000,
  "endOfLine": "lf",
- "trailingComma": "none",
+ "trailingComma": "es5",
  "bracketSpacing": true,
  "arrowParens": "avoid",
  "quoteProps": "as-needed",
@@ -13,5 +13,6 @@
  "proseWrap": "preserve",
  "singleAttributePerLine": false,
  "vueIndentScriptAndStyle": true,
- "jsxSingleQuote": false
+ "jsxSingleQuote": false,
+ "svelteSortOrder": "scripts-options-styles-markup"
 }

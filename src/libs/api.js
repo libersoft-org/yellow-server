@@ -5,8 +5,9 @@ import { Info } from './info.js';
 import { Log } from 'yellow-server-common';
 
 class API {
- constructor(webServer) {
+ constructor(webServer, modules) {
   this.webServer = webServer;
+  this.modules = modules;
   this.data = new Data();
   //this.dns = new DNS();
   this.allowedEvents = ['new_message', 'seen_message'];
@@ -47,20 +48,45 @@ class API {
    user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true },
    user_subscribe: { method: this.userSubscribe, reqUserSession: true },
    user_unsubscribe: { method: this.userUnsubscribe, reqUserSession: true },
-   user_heartbeat: { method: this.userHeartbeat, reqUserSession: true }
+   user_heartbeat: { method: this.userHeartbeat, reqUserSession: true },
   };
  }
 
- async processAPI(ws, json) {
-  if (!this.isValidJSON(json)) return { error: 902, message: 'Invalid JSON command' };
-  const req = JSON.parse(json);
+ async authenticateUser(req, resp, context)
+ {
+  if (!req.sessionID) return { ...resp, error: 996, message: 'User session is missing' };
+  if (!(await this.data.userCheckSession(req.sessionID))) return { ...resp, error: 998, message: 'Invalid user session ID' };
+  if (await this.data.userSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'User session is expired' };
+  await this.data.userUpdateSessionTime(req.sessionID);
+  const userID = await this.data.getUserIDBySession(req.sessionID);
+  if (userID) context.userID = userID;
+  return true;
+ }
+
+ async processAPI(ws, ws_guid, json) {
+  let req;
+  try
+  {
+   req = JSON.parse(json);
+  }
+  catch (ex) {
+   return { error: 902, message: 'Invalid JSON command' };
+  }
+
   let resp = {};
   if (req.requestID) resp.requestID = req.requestID;
-  if (!req.command && !req.module) return { ...resp, error: 999, message: 'Command or module not set' };
+
   const context = { ws };
-  if (req.command) {
-   const command = this.commands[req.command];
-   if (!command) return { ...resp, error: 903, message: 'Unknown command' };
+
+  const target = req.target || 'core';
+  const command = req.command || req.data?.command;
+
+  if (target === 'core') {
+
+   if (!command) return { ...resp, error: 999, message: 'Command not set' };
+   const command_fn = this.commands[req.command];
+   if (!command_fn) return { ...resp, error: 903, message: 'Unknown command' };
+
    if (command.reqAdminSession) {
     if (!req.sessionID) return { ...resp, error: 995, message: 'Admin session is missing' };
     if (!(await this.data.adminSessionCheck(req.sessionID))) return { ...resp, error: 997, message: 'Invalid admin session ID' };
@@ -69,25 +95,28 @@ class API {
     const adminID = await this.data.getAdminIDBySession(req.sessionID);
     if (adminID) context.adminID = adminID;
    } else if (command.reqUserSession) {
-    if (!req.sessionID) return { ...resp, error: 996, message: 'User session is missing' };
-    if (!(await this.data.userCheckSession(req.sessionID))) return { ...resp, error: 998, message: 'Invalid user session ID' };
-    if (await this.data.userSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'User session is expired' };
-    await this.data.userUpdateSessionTime(req.sessionID);
-    const userID = await this.data.getUserIDBySession(req.sessionID);
-    if (userID) context.userID = userID;
+
+    const auth_result = await this.authenticateUser(req, resp, context);
+    if (auth_result !== true) return auth_result;
+
    }
    if (req.sessionID) context.sessionID = req.sessionID;
    if (req.params) context.params = req.params;
-   //console.log('SENDING CONTEXT:', context);
+
    let method_result = await command.method.call(this, context);
    return { ...resp, ...method_result };
   }
-  if (req.module) {
+  else
+  {
    let msg = {
-    auth: {},
-    data: {}
+    data: req.data;
    };
-   return {};
+
+   const auth_result = await this.authenticateUser(req, resp, msg);
+   if (auth_result !== true) return auth_result;
+
+   return await this.modules.send(target, msg);
+
   }
  }
 
@@ -385,25 +414,25 @@ class API {
    data: {
     app: {
      name: Info.appName,
-     version: Info.appVersion
+     version: Info.appVersion,
     },
     os: {
      name: os.type(),
-     version: os.release()
+     version: os.release(),
     },
     cpu: {
      cpus: os.cpus().map(cpu => cpu.model),
      arch: os.arch(),
-     load: Math.min(Math.floor((os.loadavg()[0] * 100) / os.cpus().length), 100)
+     load: Math.min(Math.floor((os.loadavg()[0] * 100) / os.cpus().length), 100),
     },
     ram: {
      total: os.totalmem(),
-     free: os.freemem()
+     free: os.freemem(),
     },
     hostname: os.hostname(),
     networks: os.networkInterfaces(),
-    uptime: getUptime(os.uptime())
-   }
+    uptime: getUptime(os.uptime()),
+   },
   };
  }
 

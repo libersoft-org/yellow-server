@@ -36,7 +36,7 @@ class App {
   await this.checkDatabase();
   this.modules = new Modules();
   await this.modules.init();
-  this.webServer = new WebServer();
+  this.webServer = new WebServer(this.modules);
   await this.webServer.start();
   Log.info('Server is running: ' + (Info.settings.web.standalone ? 'http://localhost:' + Info.settings.web.http_port : 'socket'));
   /*} catch (ex) {
@@ -90,16 +90,16 @@ class App {
      web_paths: [
       {
        route: '/',
-       path: 'www'
-      }
-     ]
+       path: 'www',
+      },
+     ],
     },
     database: {
      host: '127.0.0.1',
      port: 3306,
      user: 'username',
      password: 'password',
-     name: 'yellow'
+     name: 'yellow',
     },
     other: {
      session_admin: 600, // 10 minutes
@@ -107,8 +107,8 @@ class App {
      session_cleaner: 600, // 10 minutes
      db_file: 'server.db',
      log_file: 'server.log',
-     log_to_file: true
-    }
+     log_to_file: true,
+    },
    };
    await Bun.write(Info.settingsFile, JSON.stringify(settings, null, 1));
    Log.info('Settings file was created sucessfully.');
