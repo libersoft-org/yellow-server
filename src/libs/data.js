@@ -318,9 +318,11 @@ class Data {
   await this.db.query('INSERT INTO users_sessions (id_users, session) VALUES (?, ?)', [userID, sessionID]);
  }
 
- async userCheckSession(sessionID) {
+ async userSession(sessionID) {
   const res = await this.db.query('SELECT id FROM users_sessions WHERE session = ?', [sessionID]);
-  return res.length === 1 ? true : false;
+  if (res.length === 1) {
+   return {id: res[0].id};
+  }
  }
 
  async getUserIDBySession(sessionID) {

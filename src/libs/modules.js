@@ -23,6 +23,11 @@ class Module {
    Log.info('Disconnected from the module: ' + this.connection_string);
   };
  }
+
+ async send(msg)
+ {
+  await this.ws.send(msg);
+ }
 }
 
 class Modules {

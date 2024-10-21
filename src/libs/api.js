@@ -51,6 +51,16 @@ class API {
   };
  }
 
+
+ async checkAuth(req, context) {
+  if (!(await this.data.userSession(req.sessionID))) return { ...resp, error: 998, message: 'Invalid user session ID' };
+  if (await this.data.userSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'User session is expired' };
+  await this.data.userUpdateSessionTime(req.sessionID);
+  const userID = await this.data.getUserIDBySession(req.sessionID);
+  if (userID) context.userID = userID;
+ }
+
+
  async processAPI(ws, json) {
   if (!this.isValidJSON(json)) return { error: 902, message: 'Invalid JSON command' };
   const req = JSON.parse(json);
@@ -69,12 +79,7 @@ class API {
     const adminID = await this.data.getAdminIDBySession(req.sessionID);
     if (adminID) context.adminID = adminID;
    } else if (command.reqUserSession) {
-    if (!req.sessionID) return { ...resp, error: 996, message: 'User session is missing' };
-    if (!(await this.data.userCheckSession(req.sessionID))) return { ...resp, error: 998, message: 'Invalid user session ID' };
-    if (await this.data.userSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'User session is expired' };
-    await this.data.userUpdateSessionTime(req.sessionID);
-    const userID = await this.data.getUserIDBySession(req.sessionID);
-    if (userID) context.userID = userID;
+    checkAuth(req, context);
    }
    if (req.sessionID) context.sessionID = req.sessionID;
    if (req.params) context.params = req.params;
@@ -82,13 +87,19 @@ class API {
    let method_result = await command.method.call(this, context);
    return { ...resp, ...method_result };
   }
-  if (req.module) {
+  else if (req.module) {
    let msg = {
-    auth: {},
-    data: {}
+    context: {userID: context.userID, sessionID: context.sessionID},
+    data: req.data
    };
-   return {};
+   return callModule(req.module, msg);
   }
+ }
+
+ async callModule(module, msg) {
+  module = this.modules[module];
+  if (!module) return { error: 904, message: 'Unknown module' };
+  await module.ws.send(JSON.stringify(msg));
  }
 
  async adminLogin(c) {
