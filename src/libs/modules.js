@@ -28,8 +28,9 @@ class Module {
    Log.info('Message from the module: ' + msg);
 
    if (msg.type === 'response') {
-    const req = msg.requestID;
-    if (!req) {
+    const sessionID = msg.sessionID;
+    const requestID = msg.requestID;
+    if (!requestID) {
      Log.warning('No request ID in the response:', msg);
      return;
     }
