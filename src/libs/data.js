@@ -276,10 +276,11 @@ class Data {
   }
   query += ' GROUP BY id';
   query += ' ORDER BY ' + orderBy + ' ' + direction;
-  if (count !== null) query += ' LIMIT ?';
-  query += ' OFFSET ? ROWS';
-  if (count !== null) params.push(count);
-  params.push(offset);
+  if (count !== null && offset !== null) {
+   query += ' LIMIT ? OFFSET ?';
+   params.push(count);
+   params.push(offset);
+  }
   Log.debug('this.db:', this.db);
   const res = await this.db.query(query, params);
   return res;
