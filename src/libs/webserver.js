@@ -37,7 +37,6 @@ class WebServer {
     process.exit(1);
    }
   }
-  try {
    if (Info.settings.web.standalone) {
     if (!Info.settings.web.https_disabled) {
      Bun.serve({
@@ -71,10 +70,6 @@ class WebServer {
     fs.chmodSync(socketPath, '777');
     Log.info('HTTP server is running on Unix socket: ' + socketPath);
    }
-  } catch (ex) {
-   Log.error(ex.message);
-   process.exit(1);
-  }
  }
 
  getFetch() {
@@ -113,14 +108,14 @@ class WebServer {
   const api = this.api;
   return {
    message: async (ws, message) => {
-    Log.debug('WebSocket message from: ' + ws.remoteAddress + ', message: ' + message);
+    Log.debug('WebSocket message from: ', ws.remoteAddress, ', message: ', message);
     let ws_guid = this.wsGuids.get(ws);
     if (!ws_guid) {
      ws_guid = getGuid();
      this.wsGuids.set(ws, ws_guid);
     }
     const res = JSON.stringify(await api.processAPI(ws, ws_guid, message));
-    Log.debug('WebSocket message to: ' + ws.remoteAddress + ', message: ' + res);
+    Log.debug('WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
    },
    open: ws => {

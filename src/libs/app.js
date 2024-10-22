@@ -36,8 +36,8 @@ class App {
   await this.checkDatabase();
   this.modules = new Modules();
   await this.modules.init();
-  this.webServer = new WebServer(this.modules);
-  await this.webServer.start();
+  this.webServer = new WebServer();
+  await this.webServer.start(this.modules);
   Log.info('Server is running: ' + (Info.settings.web.standalone ? 'http://localhost:' + Info.settings.web.http_port : 'socket'));
   /*} catch (ex) {
    Log.error('startServer:');
@@ -157,7 +157,7 @@ class App {
   await this.loadSettings();
   const data = new Data();
 
-  data.adminModulesAdd('org.libersoft.messages', 'ws://localhost:7311/', 0);
+  data.adminModulesAdd('org.libersoft.messages', 'ws://localhost:25001/', 0);
   Log.info('Added module messages.');
   let res = await data.adminModulesList(null);
 
