@@ -25,7 +25,7 @@ class Module {
     return;
    }
 
-   Log.info('Message from the module: ' + msg);
+   Log.info('Message from module: ', msg);
 
    if (msg.type === 'response') {
 
