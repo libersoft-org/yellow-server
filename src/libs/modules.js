@@ -12,7 +12,7 @@ class Module {
   this.ws = new WebSocket(this.connection_string);
   this.ws.onopen = async () => {
    Log.info('Connected to the module: ' + this.connection_string);
-   await this.ws.send('Hello from the server!');
+   //await this.ws.send('Hello from the server!');
   };
   this.ws.onmessage = event => {
 
@@ -99,7 +99,7 @@ class Modules {
    for (let i = 0; i < res.length; i++) {
     let mod = res[i];
     Log.info('Loading module:', mod);
-    await this.add(new Module(mod[1], mod[2]));
+    await this.add(new Module(mod.name, mod.connection_string));
    }
   }
   Log.info('Modules loaded.');
