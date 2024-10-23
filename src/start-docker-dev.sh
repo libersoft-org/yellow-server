@@ -2,6 +2,5 @@
 
 [ ! -d "./node_modules/" ] && ../docker-dev-init.sh
 
-echo RUN BUN
-
+bun server.js --create-database
 bun --watch server.js
