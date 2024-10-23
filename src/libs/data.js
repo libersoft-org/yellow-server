@@ -1,6 +1,11 @@
 import { Log, DataGeneric } from 'yellow-server-common';
+import { Info } from './info.js';
 
 class Data extends DataGeneric {
+
+ constructor() {
+  super(Info.settings.database);
+ }
 
  async createDB() {
   try {
