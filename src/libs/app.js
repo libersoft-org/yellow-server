@@ -127,8 +127,8 @@ class App {
   await this.loadSettings();
   const data = new Data();
   await data.createDB();
-  await data.close();
   Log.info('Database creation completed.');
+  await data.close();
   process.exit(1);
  }
 

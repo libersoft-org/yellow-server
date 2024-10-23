@@ -1,19 +1,6 @@
-import { Database, Log } from 'yellow-server-common';
-import { Info } from './info.js';
+import { Log, DataGeneric } from 'yellow-server-common';
 
-class Data {
- constructor() {
-  this.db = new Database(Info.settings.database);
- }
-
- async close()
- {
-  await this.db.disconnect();
- }
-
- async databaseExists() {
-  return await this.db.databaseExists();
- }
+class Data extends DataGeneric {
 
  async createDB() {
   try {
@@ -286,7 +273,7 @@ class Data {
    params.push(count);
    params.push(offset);
   }
-  Log.debug('this.db:', this.db);
+  //Log.debug('this.db:', this.db);
   const res = await this.db.query(query, params);
   return res;
  }
