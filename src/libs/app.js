@@ -127,6 +127,7 @@ class App {
   await this.loadSettings();
   const data = new Data();
   await data.createDB();
+  await data.close();
   Log.info('Database creation completed.');
   process.exit(1);
  }
@@ -157,7 +158,7 @@ class App {
   await this.loadSettings();
   const data = new Data();
 
-  data.adminModulesAdd('org.libersoft.messages', 'ws://localhost:25001/', 0);
+  data.adminModulesAdd('org.libersoft.messages', 'ws://localhost:25001/');
   Log.info('Added module messages.');
   let res = await data.adminModulesList(null);
 

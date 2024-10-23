@@ -6,6 +6,11 @@ class Data {
   this.db = new Database(Info.settings.database);
  }
 
+ async close()
+ {
+  await this.db.disconnect();
+ }
+
  async databaseExists() {
   return await this.db.databaseExists();
  }

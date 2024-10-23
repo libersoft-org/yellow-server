@@ -8,8 +8,6 @@ class API {
  constructor(webServer, modules) {
   this.webServer = webServer;
   this.modules = modules;
-  console.log('API constructor');
-  console.log('this.modules:', this.modules);
   this.data = new Data();
   //this.dns = new DNS();
   this.allowedEvents = ['new_message', 'seen_message'];

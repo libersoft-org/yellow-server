@@ -1,6 +1,6 @@
 FROM oven/bun:latest
 
-RUN apt update && apt install -y mariadb-client
+#RUN apt update && apt install -y mariadb-client
 
 
 USER 1000:1000
