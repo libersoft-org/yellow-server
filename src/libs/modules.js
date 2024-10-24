@@ -32,7 +32,7 @@ class Modules {
  }
 
  async send(name, msg, wsGuid, requestID) {
-  Log.debug('Sending message:', msg, 'to module:', name);
+  Log.debug('to module:', name, 'sending message:', msg);
   let m = this.modules[name];
   if (!m) {
    Log.error('Module not found:', name);

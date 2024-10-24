@@ -379,6 +379,15 @@ class Data extends DataGeneric {
   return res.length === 1 ? res[0] : false;
  }
 
+ async getUserAddressByID(userID) {
+  const res = await this.db.query('SELECT users.username, domains.name AS domain FROM users JOIN domains ON users.id_domains = domains.id WHERE users.id = ?', [userID]);
+  if (res.length === 1) {
+   let userName = res[0].username + '@' + res[0].domain;
+   Log.debug('getUserAddressById:', userName);
+   return userName;
+  }
+ }
+
  getHash(password, memoryCost = 65536, hashLength = 64, timeCost = 20, parallelism = 1) {
   // default: 64 MB RAM, 64 characters length, 20 difficulty to calculate, 1 thread needed
   return Bun.password.hashSync(password, { algorithm: 'argon2id', memoryCost, hashLength, timeCost, parallelism });

@@ -66,6 +66,7 @@ class API {
   };
   await this.data.userUpdateSessionTime(req.sessionID);
   const userID = await this.data.getUserIDBySession(req.sessionID);
+  context.userAddress = await this.data.getUserAddressByID(userID);
   if (userID) context.userID = userID;
   return true;
  }
@@ -113,7 +114,7 @@ class API {
    const adminID = await this.data.getAdminIDBySession(req.sessionID);
    if (adminID) context.adminID = adminID;
   } else if (command_fn.reqUserSession) {
-   const auth_result = await this.authenticateUser(req, resp, context);
+   const auth_result = await this.authenticateUser(req, resp, /*ref*/context);
    if (auth_result !== true) return auth_result;
   }
 

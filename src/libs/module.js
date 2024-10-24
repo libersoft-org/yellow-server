@@ -43,10 +43,11 @@ class Module {
 
     const cb = this.requests[wsGuid]?.[requestID];
     if (!cb) {
-     Log.warning('No callback for the request:', req);
+     Log.warning('No callback for the request:', msg);
      return;
     }
-    cb(req);
+
+    cb(msg);
     delete this.requests[wsGuid]?.[requestID];
 
    }
@@ -81,11 +82,7 @@ class Module {
    this.requests[wsGuid] = {};
   }
 
-  let promise = new Promise((resolve, reject) => {
-   /*setTimeout(() => {
-    reject('Request timeout');
-   }, 5000);*/
-  });
+  let promise = new Promise((resolve, reject) => { });
 
   this.requests[wsGuid][requestID] = (res) => {
    promise.resolve(res);
