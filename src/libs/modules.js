@@ -38,8 +38,8 @@ class Modules {
    Log.error('Module not found:', name);
    return {error: 999, message: 'Module not found' };
   }
-  await m.send(msg, wsGuid, requestID);
-  Log.info('Message sent.');
+  return await m.send(msg, wsGuid, requestID);
+  //Log.info('Message sent.');
  }
 
 }
