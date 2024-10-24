@@ -4,7 +4,8 @@ import Module from './module';
 
 
 class Modules {
- constructor() {
+ constructor(app) {
+  this.app = app;
   this.data = new Data();
   this.modules = {};
  }
@@ -16,7 +17,7 @@ class Modules {
    for (let i = 0; i < res.length; i++) {
     let mod = res[i];
     Log.info('Loading module:', mod);
-    await this.add(new Module(data, mod.name, mod.connection_string));
+    await this.add(new Module(this.app, this.data, mod.name, mod.connection_string));
    }
   }
   Log.info('Modules loaded.');
@@ -38,8 +39,9 @@ class Modules {
    Log.error('Module not found:', name);
    return {error: 999, message: 'Module not found' };
   }
-  return await m.send(msg, wsGuid, requestID);
-  //Log.info('Message sent.');
+  let res = await m.send(msg, wsGuid, requestID);
+
+  return res;
  }
 
 }

@@ -109,23 +109,21 @@ class WebServer {
   return {
    message: async (ws, message) => {
     Log.debug('WebSocket message from: ', ws.remoteAddress, ', message: ', message);
-    let ws_guid = this.wsGuids.get(ws);
-    if (!ws_guid) {
-     ws_guid = getGuid();
-     this.wsGuids.set(ws, ws_guid);
-    }
+    let ws_guid = this.wsClients.get(ws).ws_guid;
     const res = JSON.stringify(await api.processAPI(ws, ws_guid, message));
     Log.debug('WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
    },
    open: ws => {
-    this.wsClients.set(ws, { subscriptions: new Set() });
+    let ws_guid = getGuid();
+    this.wsGuids.set(ws_guid, ws);
+    this.wsClients.set(ws, { subscriptions: new Set(), ws_guid});
     Log.info('WebSocket connected: ' + ws.remoteAddress);
    },
    close: (ws, code, message) => {
-    this.wsClients.delete(ws);
-    let ws_guid = this.wsGuids.get(ws);
+    let ws_guid = this.wsClients.get(ws).ws_guid;
     if (ws_guid) this.wsGuids.delete(ws_guid);
+    this.wsClients.delete(ws);
     Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
    },
    drain: ws => {

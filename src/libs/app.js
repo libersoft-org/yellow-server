@@ -34,7 +34,7 @@ class App {
   Log.info(dashes);
   Log.info('');
   await this.checkDatabase();
-  this.modules = new Modules();
+  this.modules = new Modules(this);
   await this.modules.init();
   this.webServer = new WebServer();
   await this.webServer.start(this.modules);
