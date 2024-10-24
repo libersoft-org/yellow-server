@@ -36,10 +36,10 @@ class Modules {
   let m = this.modules[name];
   if (!m) {
    Log.error('Module not found:', name);
-   return;
+   return {error: 999, message: 'Module not found' };
   }
-  await m.send(msg, wsGuid, requestID);
-  Log.info('Message sent.');
+  return await m.send(msg, wsGuid, requestID);
+  //Log.info('Message sent.');
  }
 
 }

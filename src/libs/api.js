@@ -138,7 +138,8 @@ class API {
   };
   const auth_result = await this.authenticateUser(req, resp, msg);
   if (auth_result !== true) return auth_result;
-  return await this.modules.send(target, msg, wsGuid, req.requestID);
+  let r = await this.modules.send(target, msg, wsGuid, req.requestID);
+  return {...resp, ...r};
  }
 
  async adminLogin(c) {
