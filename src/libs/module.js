@@ -1,8 +1,8 @@
 import { Log } from "yellow-server-common";
-import Modules from "./modules";
 
 class Module {
- constructor(name, connection_string) {
+ constructor(data, name, connection_string) {
+  this.data = data;
   this.name = name;
   this.connection_string = connection_string;
   this.requests = {};
@@ -14,7 +14,7 @@ class Module {
    Log.info('Connected to the module: ' + this.connection_string);
    //await this.ws.send('Hello from the server!');
   };
-  this.ws.onmessage = event => {
+  this.ws.onmessage = async (event) => {
 
    let msg = null;
    try {
@@ -51,12 +51,23 @@ class Module {
     delete this.requests[wsGuid]?.[requestID];
 
    }
-   else if (msg.type === 'event') {
-    Log.info('Event from module', this.name, msg);
-   }
    else if (msg.type === 'notify') {
+
     Log.info('Notify from module', this.name, msg);
+
+    /* todo */
+
+
+
    }
+   else if (msg.type === 'command') {
+
+    Log.info('Command from module', this.name, msg);
+
+    await this.processCommandFromModule(msg);
+   }
+
+
    else {
     Log.warning('Unknown message type from module', this.name, msg);
    }
@@ -68,6 +79,20 @@ class Module {
    Log.info('Disconnected from the module: ' + this.connection_string);
   };
  }
+
+ async processCommandFromModule(msg) {
+  const cmd = msg.command;
+  const cmds = {
+   'getDomainIDByName': this.data.getDomainIDByName,
+   'getUserIDByUsernameAndDomainID': this.data.getUserIDByUsernameAndDomainID,
+   'userGetUserInfo': this.data.userGetUserInfo,
+   'getDomainNameByID': this.data.getDomainNameByID,
+   
+
+
+  }
+ }
+
 
  async send(msg, wsGuid, requestID)
  {
@@ -82,13 +107,11 @@ class Module {
    this.requests[wsGuid] = {};
   }
 
-  let promise = new Promise((resolve, reject) => { });
+  let promise = new Promise((resolve, reject) => {
+   this.requests[wsGuid][requestID] = (res) => { resolve(res); }
+   this.ws.send(JSON.stringify(msg));
+  });
 
-  this.requests[wsGuid][requestID] = (res) => {
-   promise.resolve(res);
-  }
-
-  await this.ws.send(JSON.stringify(msg));
   await promise;
  }
 }

@@ -16,7 +16,7 @@ class Modules {
    for (let i = 0; i < res.length; i++) {
     let mod = res[i];
     Log.info('Loading module:', mod);
-    await this.add(new Module(mod.name, mod.connection_string));
+    await this.add(new Module(data, mod.name, mod.connection_string));
    }
   }
   Log.info('Modules loaded.');
