@@ -54,16 +54,16 @@ class Module {
     cb(msg);
     delete this.requests[wsGuid]?.[requestID];
    } else if (msg.type === 'notify') {
-    Log.info('Notify from module', this.name, msg);
-    console.log('this.app.webServer.wsGuids:', this.app.webServer.wsGuids);
+    ///Log.info('Notify from module', this.name, msg);
+    //console.log('this.app.webServer.wsGuids:', this.app.webServer.wsGuids);
     let client_ws = this.app.webServer.wsGuids.get(msg.wsGuid);
     if (!client_ws) {
-     Log.warning('No client ws for wsGuid:', msg);
+     //Log.warning('No client ws for wsGuid:', msg);
      return;
     }
     await client_ws.send(JSON.stringify(msg));
    } else if (msg.type === 'command') {
-    Log.info('Command from module', this.name, msg);
+    ///Log.info('Command from module', this.name, msg);
     await this.ws.send(JSON.stringify({ type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg) }));
    } else {
     Log.warning('Unknown message type from module', this.name, msg);
