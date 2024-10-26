@@ -54,7 +54,7 @@ class Module {
     cb(msg);
     delete this.requests[wsGuid]?.[requestID];
    } else if (msg.type === 'notify') {
-    ///Log.info('Notify from module', this.name, msg);
+    Log.info('Notify from module', this.name, msg);
     //console.log('this.app.webServer.wsGuids:', this.app.webServer.wsGuids);
     let client_ws = this.app.webServer.wsGuids.get(msg.wsGuid);
     if (!client_ws) {

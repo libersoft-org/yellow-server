@@ -10,7 +10,7 @@ class API {
   this.modules = modules;
   this.data = new Data();
   //this.dns = new DNS();
-  this.allowedEvents = ['new_message', 'seen_message'];
+  this.allowedEvents = [];
   setInterval(async () => {
    const resAdmin = await this.data.adminDelOldSessions();
    const resUser = await this.data.userDelOldSessions();
