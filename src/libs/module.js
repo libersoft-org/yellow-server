@@ -1,5 +1,4 @@
 import { Log } from 'yellow-server-common';
-import ReconnectingWebSocket from 'reconnecting-websocket';
 
 class Module {
  constructor(app, data, name, connection_string) {
