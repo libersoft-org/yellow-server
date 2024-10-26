@@ -368,7 +368,7 @@ class Data extends DataGeneric {
   return res.length === 1 ? res[0].id : false;
  }
 
- async getUserIDByUsernameAndDomain(username, domain) {
+ async getUserIDByUsernameAndDomainName(username, domain) {
   const res = await this.db.query('SELECT u.id FROM users u JOIN domains d ON u.id_domains = d.id WHERE u.username = ? AND d.name = ?', [username, domain]);
   return res.length === 1 ? res[0].id : false;
  }

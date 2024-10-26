@@ -88,9 +88,8 @@ class Module {
   const cmds = {
    getDomainNameByID: this.data.getDomainNameByID.bind(this.data),
    getDomainIDByName: this.data.getDomainIDByName.bind(this.data),
-
    getUserIDByUsernameAndDomainID: this.data.getUserIDByUsernameAndDomainID.bind(this.data),
-
+   getUserIDByUsernameAndDomainName: this.data.getUserIDByUsernameAndDomainName.bind(this.data),
    userGetUserInfo: this.data.userGetUserInfo.bind(this.data),
   };
   const cmd_fn = cmds[cmd];
