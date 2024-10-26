@@ -3,13 +3,11 @@ import API from './api.js';
 import { Info } from './info.js';
 import { Log } from 'yellow-server-common';
 
-
 export function getGuid(length = 40) {
  let result = '';
  while (result.length < length) result += Math.random().toString(36);
  return result;
 }
-
 
 class WebServer {
  async start(modules) {
@@ -37,39 +35,39 @@ class WebServer {
     process.exit(1);
    }
   }
-   if (Info.settings.web.standalone) {
-    if (!Info.settings.web.https_disabled) {
-     Bun.serve({
-      fetch: this.getFetch(),
-      port: Info.settings.web.http_port,
-     });
-     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
-     Bun.serve({
-      fetch: this.getFetch(),
-      websocket: this.getWebSocket(),
-      port: Info.settings.web.https_port,
-      tls: certs,
-     });
-     Log.info('HTTPS server is running on port: ' + Info.settings.web.https_port);
-    } else {
-     Bun.serve({
-      fetch: this.getFetch(),
-      websocket: this.getWebSocket(),
-      port: Info.settings.web.http_port,
-     });
-     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
-    }
-   } else {
-    const socketPath = Info.settings.web.socket_path.startsWith('/') ? Info.settings.web.socket_path : path.join(Info.appPath, Info.settings.web.socket_path);
+  if (Info.settings.web.standalone) {
+   if (!Info.settings.web.https_disabled) {
+    Bun.serve({
+     fetch: this.getFetch(),
+     port: Info.settings.web.http_port,
+    });
+    Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
     Bun.serve({
      fetch: this.getFetch(),
      websocket: this.getWebSocket(),
-     unix: socketPath,
+     port: Info.settings.web.https_port,
+     tls: certs,
     });
-    const fs = require('fs');
-    fs.chmodSync(socketPath, '777');
-    Log.info('HTTP server is running on Unix socket: ' + socketPath);
+    Log.info('HTTPS server is running on port: ' + Info.settings.web.https_port);
+   } else {
+    Bun.serve({
+     fetch: this.getFetch(),
+     websocket: this.getWebSocket(),
+     port: Info.settings.web.http_port,
+    });
+    Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
    }
+  } else {
+   const socketPath = Info.settings.web.socket_path.startsWith('/') ? Info.settings.web.socket_path : path.join(Info.appPath, Info.settings.web.socket_path);
+   Bun.serve({
+    fetch: this.getFetch(),
+    websocket: this.getWebSocket(),
+    unix: socketPath,
+   });
+   const fs = require('fs');
+   fs.chmodSync(socketPath, '777');
+   Log.info('HTTP server is running on Unix socket: ' + socketPath);
+  }
  }
 
  getFetch() {
@@ -117,7 +115,7 @@ class WebServer {
    open: ws => {
     let ws_guid = getGuid();
     this.wsGuids.set(ws_guid, ws);
-    this.wsClients.set(ws, { subscriptions: new Set(), ws_guid});
+    this.wsClients.set(ws, { subscriptions: new Set(), ws_guid });
     Log.info('WebSocket connected: ' + ws.remoteAddress);
    },
    close: (ws, code, message) => {

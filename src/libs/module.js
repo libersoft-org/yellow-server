@@ -1,4 +1,4 @@
-import { Log } from "yellow-server-common";
+import { Log } from 'yellow-server-common';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
 class Module {
@@ -21,14 +21,12 @@ class Module {
    //await this.ws.send('Hello from the server!');
   });
 
-
-   this.ws.addEventListener('message', async (event) => {
+  this.ws.addEventListener('message', async event => {
    Log.info('Message from module', this.name, event.data);
    let msg = null;
    try {
     msg = JSON.parse(event.data);
-   }
-   catch (e) {
+   } catch (e) {
     Log.error('Error parsing JSON:', event.data);
     return;
    }
@@ -36,7 +34,6 @@ class Module {
    Log.info('Message from module', this.name, msg);
 
    if (msg.type === 'response') {
-
     const wsGuid = msg.wsGuid;
     const requestID = msg.requestID;
 
@@ -57,23 +54,19 @@ class Module {
 
     cb(msg);
     delete this.requests[wsGuid]?.[requestID];
-
-   }
-   else if (msg.type === 'notify') {
+   } else if (msg.type === 'notify') {
     Log.info('Notify from module', this.name, msg);
     console.log('this.app.webServer.wsGuids:', this.app.webServer.wsGuids);
     let client_ws = this.app.webServer.wsGuids.get(msg.wsGuid);
     if (!client_ws) {
      Log.warning('No client ws for wsGuid:', msg);
-     return
+     return;
     }
     await client_ws.send(JSON.stringify(msg));
-   }
-   else if (msg.type === 'command') {
+   } else if (msg.type === 'command') {
     Log.info('Command from module', this.name, msg);
-    await this.ws.send(JSON.stringify({ type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg)}));
-   }
-   else {
+    await this.ws.send(JSON.stringify({ type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg) }));
+   } else {
     Log.warning('Unknown message type from module', this.name, msg);
    }
   });
@@ -89,32 +82,28 @@ class Module {
     this.connect();
    }, 1000);
   });
-
  }
 
  async processCommandFromModule(msg) {
   const cmd = msg.command;
   const cmds = {
-   'getDomainNameByID': this.data.getDomainNameByID.bind(this.data),
-   'getDomainIDByName': this.data.getDomainIDByName.bind(this.data),
+   getDomainNameByID: this.data.getDomainNameByID.bind(this.data),
+   getDomainIDByName: this.data.getDomainIDByName.bind(this.data),
 
-   'getUserIDByUsernameAndDomainID': this.data.getUserIDByUsernameAndDomainID.bind(this.data),
+   getUserIDByUsernameAndDomainID: this.data.getUserIDByUsernameAndDomainID.bind(this.data),
 
-   'userGetUserInfo': this.data.userGetUserInfo.bind(this.data),
-  }
+   userGetUserInfo: this.data.userGetUserInfo.bind(this.data),
+  };
   const cmd_fn = cmds[cmd];
   if (!cmd_fn) {
    const err = { error: 903, message: 'Unknown core API command' };
    Log.error(err);
-   return err
+   return err;
   }
   return await cmd_fn(...msg.params);
  }
 
-
- async send(msg, wsGuid, requestID)
- {
-
+ async send(msg, wsGuid, requestID) {
   if (this.requests[wsGuid]?.[requestID]) {
    console.log('Request already exists:', wsGuid, requestID);
    return;
@@ -126,8 +115,10 @@ class Module {
   }
 
   let promise = new Promise((resolve, reject) => {
-   this.requests[wsGuid][requestID] = (res) => { resolve(res); }
-   this.ws.send(JSON.stringify({type: 'request', ...msg}));
+   this.requests[wsGuid][requestID] = res => {
+    resolve(res);
+   };
+   this.ws.send(JSON.stringify({ type: 'request', ...msg }));
   });
 
   return await promise;

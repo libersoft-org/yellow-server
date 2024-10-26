@@ -2,7 +2,6 @@ import Data from './data';
 import { Log } from 'yellow-server-common';
 import Module from './module';
 
-
 class Modules {
  constructor(app) {
   this.app = app;
@@ -37,13 +36,12 @@ class Modules {
   let m = this.modules[name];
   if (!m) {
    Log.error('Module not found:', name);
-   return {error: 999, message: 'Module not found' };
+   return { error: 999, message: 'Module not found' };
   }
   let res = await m.send(msg, wsGuid, requestID);
 
   return res;
  }
-
 }
 
 export default Modules;
