@@ -9,15 +9,21 @@ class Module {
   this.connection_string = connection_string;
   this.requests = {};
  }
+
  async connect() {
-  Log.info('Connecting to the module: ' + this.connection_string);
+  Log.info('Connecting to the module: ', this.connection_string);
+
+  //this.ws = new ReconnectingWebSocket(this.connection_string, [], {debug:true});
   this.ws = new WebSocket(this.connection_string);
-  this.ws.onopen = async () => {
+
+  this.ws.addEventListener('open', async () => {
    Log.info('Connected to the module: ' + this.connection_string);
    //await this.ws.send('Hello from the server!');
-  };
-   this.ws.onmessage = async (event) => {
+  });
 
+
+   this.ws.addEventListener('message', async (event) => {
+   Log.info('Message from module', this.name, event.data);
    let msg = null;
    try {
     msg = JSON.parse(event.data);
@@ -55,36 +61,35 @@ class Module {
    }
    else if (msg.type === 'notify') {
     Log.info('Notify from module', this.name, msg);
-
     console.log('this.app.webServer.wsGuids:', this.app.webServer.wsGuids);
-
     let client_ws = this.app.webServer.wsGuids.get(msg.wsGuid);
     if (!client_ws) {
      Log.warning('No client ws for wsGuid:', msg);
      return
     }
     await client_ws.send(JSON.stringify(msg));
-
    }
    else if (msg.type === 'command') {
-
     Log.info('Command from module', this.name, msg);
     await this.ws.send(JSON.stringify({ type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg)}));
-
-
    }
-
-
    else {
     Log.warning('Unknown message type from module', this.name, msg);
    }
-  };
-  this.ws.onerror = event => {
+  });
+
+  this.ws.addEventListener('error', event => {
    Log.error('Error from module', this.name, event);
-  };
-  this.ws.onclose = () => {
+  });
+
+  this.ws.addEventListener('close', () => {
    Log.info('Disconnected from the module: ' + this.connection_string);
-  };
+   setTimeout(() => {
+    Log.info('Reconnecting to the module: ' + this.connection_string);
+    this.connect();
+   }, 1000);
+  });
+
  }
 
  async processCommandFromModule(msg) {
