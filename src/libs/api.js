@@ -123,9 +123,10 @@ class API {
   if (req.sessionID) context.sessionID = req.sessionID;
   if (req.data?.params) context.params = req.data.params;
 
-  Log.debug('req:', req);
-  Log.debug('command_fn:', command_fn);
-  Log.debug('context:', context);
+  //Log.debug('coreCmd:');
+  //Log.debug('req:', req);
+  //Log.debug('command_fn:', command_fn);
+  //Log.debug('context:', context);
 
   let method_result = await command_fn.method.call(this, context);
   return { ...resp, ...method_result };

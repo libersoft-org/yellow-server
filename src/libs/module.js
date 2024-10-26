@@ -71,7 +71,7 @@ class Module {
   });
 
   this.ws.addEventListener('error', event => {
-   Log.error('Error from module', this.name, event);
+   Log.error('Error in module connection to ', this.name, event);
   });
 
   this.ws.addEventListener('close', () => {

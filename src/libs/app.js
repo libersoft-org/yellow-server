@@ -1,5 +1,5 @@
 import WebServer from './webserver.js';
-import Data from './data.js';
+import Data from './data';
 import Modules from './modules.js';
 import { Info } from './info.js';
 import { Log } from 'yellow-server-common';
