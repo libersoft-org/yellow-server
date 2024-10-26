@@ -1,4 +1,5 @@
 import { Log } from "yellow-server-common";
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
 class Module {
  constructor(app, data, name, connection_string) {
@@ -15,7 +16,7 @@ class Module {
    Log.info('Connected to the module: ' + this.connection_string);
    //await this.ws.send('Hello from the server!');
   };
-  this.ws.onmessage = async (event) => {
+   this.ws.onmessage = async (event) => {
 
    let msg = null;
    try {
