@@ -55,10 +55,9 @@ class Module {
     delete this.requests[wsGuid]?.[requestID];
    } else if (msg.type === 'notify') {
     Log.info('Notify from module', this.name, msg);
-    //console.log('this.app.webServer.wsGuids:', this.app.webServer.wsGuids);
-    let client_ws = this.app.webServer.wsGuids.get(msg.wsGuid);
+    let client_ws = this.app.webServer.clients.get(msg.wsGuid)?.ws;
     if (!client_ws) {
-     //Log.warning('No client ws for wsGuid:', msg);
+     //Log.debug('No client ws for wsGuid, (disconnected?):', msg);
      return;
     }
     await client_ws.send(JSON.stringify(msg));

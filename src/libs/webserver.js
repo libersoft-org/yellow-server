@@ -12,8 +12,12 @@ export function getGuid(length = 40) {
 class WebServer {
  async start(modules) {
   try {
+
+
    this.wsClients = new Map();
-   this.wsGuids = new Map();
+
+   /* map from ws_guid to client data, including ws and subscriptions */
+   this.clients = new Map();
    this.api = new API(this, modules);
    await this.startServer();
   } catch (ex) {
@@ -114,13 +118,13 @@ class WebServer {
    },
    open: ws => {
     let ws_guid = getGuid();
-    this.wsGuids.set(ws_guid, ws);
+    this.clients.set(ws_guid, { ws });
     this.wsClients.set(ws, { subscriptions: new Set(), ws_guid });
     Log.info('WebSocket connected: ' + ws.remoteAddress);
    },
    close: (ws, code, message) => {
     let ws_guid = this.wsClients.get(ws).ws_guid;
-    if (ws_guid) this.wsGuids.delete(ws_guid);
+    if (ws_guid) this.clients.delete(ws_guid);
     this.wsClients.delete(ws);
     Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
    },
