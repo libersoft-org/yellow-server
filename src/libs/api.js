@@ -565,44 +565,6 @@ class API {
   return { error: 0, data: userInfo };
  }
 
- userSubscribe(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.event) return { error: 2, message: 'Event parameter is missing' };
-  if (!this.allowedEvents.includes(c.params.event)) return { error: 3, message: 'Unsupported event name' };
-  const clientData = this.webServer.wsClients.get(c.ws);
-  if (!clientData) return { error: 4, message: 'Client not found' };
-  clientData.userID = c.userID;
-  clientData.subscriptions.add(c.params.event);
-  Log.info('Client ' + c.ws.remoteAddress + ' subscribed to event: ' + c.params.event);
-  return { error: 0, message: 'Event subscribed' };
- }
-
- notifySubscriber(userID, event, data) {
-  const clients = this.webServer.wsClients;
-  for (const [ws, clientData] of clients) {
-   if (clientData.userID === userID && clientData.subscriptions.has(event)) {
-    const res = JSON.stringify({ event, data });
-    Log.info('WebSocket event to: ' + ws.remoteAddress + ', message: ' + res);
-    ws.send(res);
-   }
-  }
- }
-
- userUnsubscribe(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.event) return { error: 2, message: 'Event parameter is missing' };
-  if (!this.allowedEvents.includes(c.params.event)) return { error: 3, message: 'Unsupported event name' };
-  const clientData = this.webServer.wsClients.get(c.ws);
-  if (!clientData) return { error: 4, message: 'Client not found' };
-  if (!clientData.subscriptions?.has(c.params.event))
-   return {
-    error: 5,
-    message: 'Client is not subscribed to this event',
-   };
-  clientData.subscriptions?.delete(c.params.event);
-  return { error: 0, message: 'Event unsubscribed' };
- }
-
  userHeartbeat(c) {
   Log.info('Heartbeat from: ' + c.ws.remoteAddress);
   return { error: 0, message: 'Heartbeat received' };

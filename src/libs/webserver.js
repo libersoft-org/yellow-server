@@ -13,11 +13,12 @@ class WebServer {
  async start(modules) {
   try {
 
-
-   this.wsClients = new Map();
+   /* map from ws to ws_guid */
+   this.wsGuids = new Map();
 
    /* map from ws_guid to client data, including ws and subscriptions */
    this.clients = new Map();
+
    this.api = new API(this, modules);
    await this.startServer();
   } catch (ex) {
@@ -111,7 +112,8 @@ class WebServer {
   return {
    message: async (ws, message) => {
     Log.debug('WebSocket message from: ', ws.remoteAddress, ', message: ', message);
-    let ws_guid = this.wsClients.get(ws).ws_guid;
+    let ws_guid = this.wsGuids.get(ws);
+    if (!ws_guid) { throw new Error('No ws_guid for ws'); }
     const res = JSON.stringify(await api.processAPI(ws, ws_guid, message));
     Log.debug('WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
     ws.send(res);
@@ -119,13 +121,13 @@ class WebServer {
    open: ws => {
     let ws_guid = getGuid();
     this.clients.set(ws_guid, { ws });
-    this.wsClients.set(ws, { subscriptions: new Set(), ws_guid });
+    this.wsGuids.set(ws, ws_guid);
     Log.info('WebSocket connected: ' + ws.remoteAddress);
    },
    close: (ws, code, message) => {
-    let ws_guid = this.wsClients.get(ws).ws_guid;
+    let ws_guid = this.wsGuids.get(ws);
     if (ws_guid) this.clients.delete(ws_guid);
-    this.wsClients.delete(ws);
+    this.wsGuids.delete(ws);
     Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
    },
    drain: ws => {
