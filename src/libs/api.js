@@ -2,12 +2,17 @@ import os from 'os';
 import Data from './data.js';
 //import DNS from './dns.js';
 import { Info } from './info.js';
-import { Log } from 'yellow-server-common';
+import { Log, Signals } from 'yellow-server-common';
 
 class API {
  constructor(webServer, modules) {
   this.webServer = webServer;
   this.modules = modules;
+  this.signals = new Signals(
+   ['new_user'],
+   this.webServer.clients,
+   (_wsGuid, clientData, msg) => clientData.ws?.send(JSON.stringify({ ...msg, type: 'notify' }))
+  );
   this.data = new Data();
   //this.dns = new DNS();
   this.allowedEvents = [];
@@ -46,8 +51,8 @@ class API {
    user_sessions_list: { method: this.userListSessions, reqUserSession: true },
    user_session_del: { method: this.userDelSession, reqUserSession: true },
    user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true },
-   user_subscribe: { method: this.userSubscribe, reqUserSession: true },
-   user_unsubscribe: { method: this.userUnsubscribe, reqUserSession: true },
+   user_subscribe: { method: this.signals.subscribe.bind(this.signals) , reqUserSession: true },
+   user_unsubscribe: { method: this.signals.usubscribe.bind(this.signals), reqUserSession: true },
    user_heartbeat: { method: this.userHeartbeat, reqUserSession: true },
   };
  }
@@ -363,6 +368,7 @@ class API {
 
   // TRANSACTION END
 
+  this.signals.notify('new_user', { username: c.params.username, domainID: c.params.domainID });
   return { error: 0, message: 'User was added successfully' };
  }
 
