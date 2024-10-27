@@ -21,7 +21,7 @@ class Module {
   });
 
   this.ws.addEventListener('message', async event => {
-   Log.info('Message from module', this.name, event.data);
+
    let msg = null;
    try {
     msg = JSON.parse(event.data);
