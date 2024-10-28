@@ -38,10 +38,18 @@ class Modules {
    Log.error('Module not found:', name);
    return { error: 999, message: 'Module not found' };
   }
-  let res = await m.send(msg, wsGuid, requestID);
+  let res = await m.sendRequest(msg, wsGuid, requestID);
 
   return res;
  }
+
+ async notifyModulesOfClientDisconnect(wsGuid) {
+  for (let name in this.modules) {
+   let m = this.modules[name];
+   await m.notify({event: 'client_disconnect', data: wsGuid});
+  }
+ }
+
 }
 
 export default Modules;

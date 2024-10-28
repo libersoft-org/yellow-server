@@ -17,7 +17,6 @@ class Module {
 
   this.ws.addEventListener('open', async () => {
    Log.info('Connected to the module: ' + this.connection_string);
-   //await this.ws.send('Hello from the server!');
   });
 
   this.ws.addEventListener('message', async event => {
@@ -63,7 +62,7 @@ class Module {
     await client_ws.send(JSON.stringify(msg));
    } else if (msg.type === 'command') {
     ///Log.info('Command from module', this.name, msg);
-    await this.ws.send(JSON.stringify({ type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg) }));
+    await this.send({ type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg) });
    } else {
     Log.warning('Unknown message type from module', this.name, msg);
    }
@@ -100,7 +99,7 @@ class Module {
   return await cmd_fn(...msg.params);
  }
 
- async send(msg, wsGuid, requestID) {
+ async sendRequest(msg, wsGuid, requestID) {
   if (this.requests[wsGuid]?.[requestID]) {
    console.log('Request already exists:', wsGuid, requestID);
    return;
@@ -115,11 +114,20 @@ class Module {
    this.requests[wsGuid][requestID] = res => {
     resolve(res);
    };
-   this.ws.send(JSON.stringify({ type: 'request', ...msg }));
+   this.send({ type: 'request', ...msg });
   });
 
   return await promise;
  }
+
+ async send(msg) {
+  return await this.ws.send(JSON.stringify(msg));
+ }
+
+ async notify(notification) {
+  await this.send({ type: 'notify', data: notification });
+ }
+
 }
 
 export default Module;

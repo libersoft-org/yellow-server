@@ -12,6 +12,7 @@ export function getGuid(length = 40) {
 class WebServer {
  async start(modules) {
   try {
+   this.modules = modules;
 
    /* map from ws to ws_guid */
    this.wsGuids = new Map();
@@ -124,11 +125,12 @@ class WebServer {
     this.wsGuids.set(ws, ws_guid);
     Log.info('WebSocket connected: ' + ws.remoteAddress);
    },
-   close: (ws, code, message) => {
+   close: async (ws, code, message) => {
     let ws_guid = this.wsGuids.get(ws);
     if (ws_guid) this.clients.delete(ws_guid);
     this.wsGuids.delete(ws);
     Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
+    await this.modules.notifyModulesOfClientDisconnect(ws_guid);
    },
    drain: ws => {
     // the socket is ready to receive more data
