@@ -124,6 +124,7 @@ class WebServer {
     this.clients.set(ws_guid, { ws });
     this.wsGuids.set(ws, ws_guid);
     Log.info('WebSocket connected: ' + ws.remoteAddress);
+    // await client.ws.send(JSON.stringify({ type: 'notify', event: 'module_ready', data: { name: this.name } }));
    },
    close: async (ws, code, message) => {
     let ws_guid = this.wsGuids.get(ws);
