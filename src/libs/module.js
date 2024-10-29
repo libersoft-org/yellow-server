@@ -17,10 +17,8 @@ class Module {
 
   this.ws.addEventListener('open', async () => {
    Log.info('Connected to module: ' + this.connection_string);
-   this.app.webServer.clients.forEach(async (wsGuid, client) => {
-    this.connected = true;
-    await client.ws.send(JSON.stringify({ type: 'notify', event: 'modules_available', data: { modules_available: {this.name: true }}}));
-   })
+   this.connected = true;
+   await this.notifyModuleAvailable();
   });
 
   this.ws.addEventListener('message', async event => {
@@ -83,6 +81,14 @@ class Module {
     Log.info('Reconnecting to module: ' + this.connection_string);
     this.connect();
    }, 1000);
+  });
+ }
+
+ async notifyModuleAvailable() {
+  let ma = {};
+  ma[this.name] = this.connected;
+  this.app.webServer.clients.forEach(async (wsGuid, client) => {
+   await client.ws.send(JSON.stringify({type: 'notify', event: 'modules_available', data: {modules_available: ma}}));
   });
  }
 

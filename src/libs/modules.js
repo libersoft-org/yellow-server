@@ -14,7 +14,7 @@ class Modules {
   for (let name in this.modules) {
    res[name] = this.modules[name].connected;
   }
-  return
+  return res;
  }
 
  async init() {
