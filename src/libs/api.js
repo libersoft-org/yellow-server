@@ -535,7 +535,7 @@ class API {
   if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 7, message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.userSetLogin(userCredentials.id, sessionID);
-  return { error: 0, data: { sessionID } };
+  return { error: 0, data: { sessionID, modules_available: this.modules.getAvailable() } };
  }
 
  async userListSessions(c) {

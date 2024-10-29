@@ -9,6 +9,14 @@ class Modules {
   this.modules = {};
  }
 
+ getAvailable() {
+  let res = {};
+  for (let name in this.modules) {
+   res[name] = this.modules[name].connected;
+  }
+  return
+ }
+
  async init() {
   let res = await this.data.adminModulesList(null);
   Log.info('Loading modules:');
@@ -49,7 +57,6 @@ class Modules {
    await m.notify({event: 'client_disconnect', data: wsGuid});
   }
  }
-
 }
 
 export default Modules;
