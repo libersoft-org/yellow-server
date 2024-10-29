@@ -71,11 +71,12 @@ class Module {
   });
 
   this.ws.addEventListener('error', event => {
-   Log.error('Error in module connection to ', this.name, event);
+   Log.error('Error in module connection to', this.name);
+   Log.error(event)
   });
 
   this.ws.addEventListener('close', () => {
-   Log.info('Disconnected from module: ' + this.connection_string);
+   Log.info('Connection to module closed: ' + this.connection_string);
    this.connected = false;
    setTimeout(() => {
     Log.info('Reconnecting to module: ' + this.connection_string);
@@ -87,7 +88,8 @@ class Module {
  async notifyModuleAvailable() {
   let ma = {};
   ma[this.name] = this.connected;
-  this.app.webServer.clients.forEach(async (wsGuid, client) => {
+  this.app.webServer.clients.forEach(async (client, wsGuid) => {
+   Log.debug('Notifying client of modules available:', wsGuid, client);
    await client.ws.send(JSON.stringify({type: 'notify', event: 'modules_available', data: {modules_available: ma}}));
   });
  }
