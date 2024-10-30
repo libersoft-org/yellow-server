@@ -75,9 +75,12 @@ class Module {
    Log.error(event)
   });
 
-  this.ws.addEventListener('close', () => {
+  this.ws.addEventListener('close', async () => {
    Log.info('Connection to module closed: ' + this.connection_string);
-   this.connected = false;
+   if (this.connected) {
+    this.connected = false;
+    await this.notifyModuleAvailable();
+   }
    setTimeout(() => {
     Log.info('Reconnecting to module: ' + this.connection_string);
     this.connect();
