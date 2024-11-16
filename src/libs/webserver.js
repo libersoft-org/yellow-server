@@ -10,17 +10,17 @@ export function getGuid(length = 40) {
 }
 
 class WebServer {
- async start(modules) {
-  try {
+ constructor(modules) {
    this.modules = modules;
-
    /* map from ws to ws_guid */
    this.wsGuids = new Map();
-
    /* map from ws_guid to client data, including ws and subscriptions */
    this.clients = new Map();
-
    this.api = new API(this, modules);
+ }
+
+ async start() {
+  try {
    await this.startServer();
   } catch (ex) {
    Log.error('Cannot start web server.');
@@ -127,10 +127,10 @@ class WebServer {
     // await client.ws.send(JSON.stringify({ type: 'notify', event: 'module_ready', data: { name: this.name } }));
    },
    close: async (ws, code, message) => {
+    Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
     let ws_guid = this.wsGuids.get(ws);
     if (ws_guid) this.clients.delete(ws_guid);
     this.wsGuids.delete(ws);
-    Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
     await this.modules.notifyModulesOfClientDisconnect(ws_guid);
    },
    drain: ws => {

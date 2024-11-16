@@ -1,3 +1,19 @@
+/*
+
+ We try to maintain flexibility for different types of modules with unexpected kinds of workloads.
+
+ Requests to modules construct promises.
+
+ The promises are not automatically rejected when the module is disconnected.
+ A module might still be able to answer after a disconnect, as in the case of a long running operation.
+ todo, A module that does not persist requests should send a "clear" command to server on connect, which would clear the request queue on server.
+
+ In the same vein, the server does not impose timeouts on requests to modules.
+ Clients should implement timeouts where appropriate.
+
+ */
+
+
 import { Log } from 'yellow-server-common';
 
 class Module {
@@ -12,8 +28,12 @@ class Module {
  async connect() {
   Log.info('Connecting to the module: ', this.connection_string);
 
-  //this.ws = new ReconnectingWebSocket(this.connection_string, [], {debug:true});
-  this.ws = new WebSocket(this.connection_string);
+  try {
+   this.ws = new WebSocket(this.connection_string);
+  } catch (e) {
+   Log.error('Error creating WebSocket:', e);
+   return;
+  }
 
   this.ws.addEventListener('open', async () => {
    Log.info('Connected to module: ' + this.connection_string);
@@ -46,7 +66,7 @@ class Module {
      return;
     }
 
-    const cb = this.requests[wsGuid]?.[requestID];
+    const cb = this.requests[wsGuid]?.[requestID]?.resolve;
     if (!cb) {
      Log.warning('No callback for the request:', msg);
      return;
@@ -116,20 +136,17 @@ class Module {
  }
 
  async sendRequest(msg, wsGuid, requestID) {
-  if (this.requests[wsGuid]?.[requestID]) {
-   console.log('Request already exists:', wsGuid, requestID);
-   return;
-  }
-
-  const ws_requests = this.requests[wsGuid];
-  if (!ws_requests) {
+  if (!this.requests[wsGuid]) {
    this.requests[wsGuid] = {};
   }
 
+  if (this.requests[wsGuid]?.[requestID]) {
+   Log.error('Request already exists:', wsGuid, requestID);
+   return;
+  }
+
   let promise = new Promise((resolve, reject) => {
-   this.requests[wsGuid][requestID] = res => {
-    resolve(res);
-   };
+   this.requests[wsGuid][requestID] = { resolve, reject };
    this.send({ type: 'request', ...msg });
   });
 
@@ -142,6 +159,13 @@ class Module {
 
  async notify(notification) {
   await this.send({ type: 'notify', data: notification });
+ }
+
+ async handleClientDisconnect(wsGuid) {
+  for (let requestID in this.requests[wsGuid]) {
+   this.requests[wsGuid][requestID].reject({ error: 1000, message: 'Client disconnected' });
+  }
+  delete this.requests[wsGuid];
  }
 
 }

@@ -39,22 +39,21 @@ class Modules {
   return this.modules[name];
  }
 
- async send(name, msg, wsGuid, requestID) {
-  Log.debug('to module:', name, 'sending message:', msg);
-  let m = this.modules[name];
+ async sendUserCmdToModule(module_name, msg, wsGuid, requestID) {
+  Log.debug('to module:', module_name, 'sending message:', msg);
+  let m = this.modules[module_name];
   if (!m) {
-   Log.error('Module not found:', name);
+   Log.error('Module not found:', module_name);
    return { error: 999, message: 'Module not found' };
   }
   let res = await m.sendRequest(msg, wsGuid, requestID);
-
   return res;
  }
 
  async notifyModulesOfClientDisconnect(wsGuid) {
   for (let name in this.modules) {
    let m = this.modules[name];
-   await m.notify({event: 'client_disconnect', data: wsGuid});
+   await m.handleClientDisconnect(wsGuid);
   }
  }
 }
