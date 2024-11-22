@@ -133,6 +133,7 @@ class API {
   //Log.debug('command_fn:', command_fn);
   //Log.debug('context:', context);
 
+  Log.debug('Executing core command:', command_name);
   let method_result = await command_fn.method.call(this, context);
   return { ...resp, ...method_result };
  }

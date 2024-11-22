@@ -108,30 +108,73 @@ class WebServer {
   };
  }
 
+ async handleMessage(ws, message) {
+  Log.debug('WebSocket message from: ', ws.remoteAddress, ', message: ', message);
+  let ws_guid = this.wsGuids.get(ws);
+  if (!ws_guid) {
+   throw new Error('No ws_guid for ws');
+  }
+  const res = JSON.stringify(await this.api.processAPI(ws, ws_guid, message));
+  Log.debug('WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
+  ws.send(res);
+ }
+
+ async handleOpen(ws) {
+  let ws_guid = getGuid();
+  this.clients.set(ws_guid, {ws});
+  this.wsGuids.set(ws, ws_guid);
+  Log.info('WebSocket connected: ' + ws.remoteAddress);
+ }
+
+ async handleClose(ws, code, message) {
+  Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
+  let ws_guid = this.wsGuids.get(ws);
+  if (ws_guid) this.clients.delete(ws_guid);
+  this.wsGuids.delete(ws);
+  await this.modules.notifyModulesOfClientDisconnect(ws_guid);
+ }
+
  getWebSocket() {
   const api = this.api;
   return {
    message: async (ws, message) => {
-    Log.debug('WebSocket message from: ', ws.remoteAddress, ', message: ', message);
-    let ws_guid = this.wsGuids.get(ws);
-    if (!ws_guid) { throw new Error('No ws_guid for ws'); }
-    const res = JSON.stringify(await api.processAPI(ws, ws_guid, message));
-    Log.debug('WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
-    ws.send(res);
+    if (import.meta.env.VITE_YELLOW_DEBUG) {
+     await this.handleMessage(ws, message);
+    }
+    else
+    {
+     try {
+      await this.handleMessage(ws, message);
+     } catch (ex) {
+      Log.error('Error processing WebSocket message:', ex);
+     }
+    }
    },
-   open: ws => {
-    let ws_guid = getGuid();
-    this.clients.set(ws_guid, { ws });
-    this.wsGuids.set(ws, ws_guid);
-    Log.info('WebSocket connected: ' + ws.remoteAddress);
-    // await client.ws.send(JSON.stringify({ type: 'notify', event: 'module_ready', data: { name: this.name } }));
+   open: async ws => {
+    if (import.meta.env.VITE_YELLOW_DEBUG) {
+     await this.handleOpen(ws);
+    }
+    else
+    {
+     try {
+      await this.handleOpen(ws);
+     } catch (ex) {
+      Log.error('Error processing WebSocket open:', ex);
+     }
+    }
    },
    close: async (ws, code, message) => {
-    Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
-    let ws_guid = this.wsGuids.get(ws);
-    if (ws_guid) this.clients.delete(ws_guid);
-    this.wsGuids.delete(ws);
-    await this.modules.notifyModulesOfClientDisconnect(ws_guid);
+    if (import.meta.env.VITE_YELLOW_DEBUG) {
+     await this.handleClose(ws, code, message);
+    }
+    else
+    {
+     try {
+      await this.handleClose(ws, code, message);
+     } catch (ex) {
+      Log.error('Error processing WebSocket close:', ex);
+     }
+    }
    },
    drain: ws => {
     // the socket is ready to receive more data

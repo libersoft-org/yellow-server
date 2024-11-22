@@ -147,6 +147,7 @@ class Module {
 
   let promise = new Promise((resolve, reject) => {
    this.requests[wsGuid][requestID] = { resolve, reject };
+   Log.debug('Request to module:', this.name, requestID);
    this.send({ type: 'request', ...msg });
   });
 
