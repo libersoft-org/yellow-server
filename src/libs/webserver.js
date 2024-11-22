@@ -41,32 +41,40 @@ class WebServer {
     process.exit(1);
    }
   }
+  let options = {
+     development: true,
+     fetch: this.fetch,
+     port: Info.settings.web.http_port,
+     error(error) {
+        console.log('Error:', error);
+        return new Response(`<pre>${error}\n${error.stack}</pre>`, {
+          headers: {
+            "Content-Type": "text/html",
+          },
+        });
+      },
+  }
   if (Info.settings.web.standalone) {
    if (!Info.settings.web.https_disabled) {
-    Bun.serve({
-     fetch: this.getFetch(),
-     port: Info.settings.web.http_port,
-    });
+    Bun.serve(options);
     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
-    Bun.serve({
-     fetch: this.getFetch(),
+    Bun.serve({...options,
      websocket: this.getWebSocket(),
      port: Info.settings.web.https_port,
      tls: certs,
     });
     Log.info('HTTPS server is running on port: ' + Info.settings.web.https_port);
    } else {
-    Bun.serve({
-     fetch: this.getFetch(),
+    Bun.serve({...options,
      websocket: this.getWebSocket(),
-     port: Info.settings.web.http_port,
     });
     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
    }
   } else {
    const socketPath = Info.settings.web.socket_path.startsWith('/') ? Info.settings.web.socket_path : path.join(Info.appPath, Info.settings.web.socket_path);
    Bun.serve({
-    fetch: this.getFetch(),
+    ...options,
+    port: undefined,
     websocket: this.getWebSocket(),
     unix: socketPath,
    });
@@ -76,8 +84,7 @@ class WebServer {
   }
  }
 
- getFetch() {
-  return async (req, server) => {
+ async fetch(req, server){
    if ((server.protocol === 'https' || Info.settings.web.https_disabled) && server.upgrade(req)) return;
    let clientIP = server.requestIP(req).address;
    const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
@@ -98,6 +105,8 @@ class WebServer {
       url.port = '';
      }
      return new Response(null, { status: 301, headers: { Location: url.toString() } });
+    } else if (url.pathname == '/health') {
+     return new Response('OK', { headers: { 'Content-Type': 'text/plain' } });
     } else {
      return this.getFile(req);
     }
@@ -105,7 +114,6 @@ class WebServer {
     Log.error('Invalid URL: ' + req.url);
     return await this.getNotFound();
    }
-  };
  }
 
  async handleMessage(ws, message) {

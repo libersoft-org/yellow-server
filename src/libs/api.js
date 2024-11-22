@@ -79,6 +79,7 @@ class API {
  }
 
  async processAPI(ws, wsGuid, json) {
+  Log.debug('API request:', json);
   let req;
   try {
    req = JSON.parse(json);
@@ -145,8 +146,13 @@ class API {
    requestID: req.requestID,
    wsGuid: wsGuid,
   };
+  Log.debug('authenticating user for module command:', target, command_name);
   const auth_result = await this.authenticateUser(req, resp, msg);
-  if (auth_result !== true) return auth_result;
+  if (auth_result !== true) {
+   Log.warning('User authentication failed for module command:', target, command_name);
+   return auth_result;
+  }
+  Log.debug('User authenticated for module command.');
   let r = await this.modules.sendUserCmdToModule(target, msg, wsGuid, req.requestID);
   return { ...resp, ...r };
  }
