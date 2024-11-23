@@ -43,7 +43,7 @@ class WebServer {
   }
   let options = {
      development: true,
-     fetch: this.fetch,
+     fetch: this.fetch.bind(this),
      port: Info.settings.web.http_port,
      error(error) {
         console.log('Error:', error);
@@ -218,6 +218,7 @@ class WebServer {
   }
   return new Response('<h1>404 Not Found</h1>', { status: 404, headers: { 'Content-Type': 'text/html' } });
  }
+
 }
 
 export default WebServer;
