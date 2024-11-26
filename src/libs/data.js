@@ -29,7 +29,7 @@ class Data extends DataGeneric {
  }
 
  async adminDelOldSessions() {
-  return await this.db.query('DELETE FROM admins_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Info.settings.other.session_admin]);
+  return await this.db.query('DELETE FROM admins_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Info.settings.session.admin]);
  }
 
  async adminSetLogin(adminID, sessionID) {
@@ -71,7 +71,7 @@ class Data extends DataGeneric {
  }
 
  async adminSessionExpired(sessionID) {
-  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM admins_sessions WHERE session = ?', [Info.settings.other.session_admin, sessionID]);
+  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM admins_sessions WHERE session = ?', [Info.settings.session.admin, sessionID]);
   return res[0].expired === 1 ? true : false;
  }
 
@@ -204,7 +204,7 @@ class Data extends DataGeneric {
  }
 
  async userDelOldSessions() {
-  return await this.db.query('DELETE FROM users_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Info.settings.other.session_user]);
+  return await this.db.query('DELETE FROM users_sessions WHERE last <= DATE_SUB(NOW(), INTERVAL ? SECOND)', [Info.settings.session.user]);
  }
 
  async userExistsByID(userID) {
@@ -356,7 +356,7 @@ class Data extends DataGeneric {
  }
 
  async userSessionExpired(sessionID) {
-  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM users_sessions WHERE session = ?', [Info.settings.other.session_user, sessionID]);
+  const res = await this.db.query('SELECT (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(last)) > ? AS expired FROM users_sessions WHERE session = ?', [Info.settings.session.user, sessionID]);
   return res[0].expired === 1 ? true : false;
  }
 

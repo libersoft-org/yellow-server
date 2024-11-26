@@ -29,16 +29,33 @@ class WebServer {
  }
 
  async startServer() {
-  let certs = null;
+  const certs = Info.settings.web.certificates;
+  const certs_bun = [];
   if (!Info.settings.web.https_disabled) {
-   certs = {
-    key: Bun.file(path.join(Info.settings.web.certificates_path, 'privkey.pem')),
-    cert: Bun.file(path.join(Info.settings.web.certificates_path, 'cert.pem')),
-   };
-   const certs_exist = (await certs.key.exists()) && (await certs.cert.exists());
-   if (!certs_exist) {
-    Log.error('Error: HTTPS server has not started due to missing certificate files in ' + Info.settings.https_cert_path);
-    process.exit(1);
+   for (const c of certs) {
+    if (!c.domain) {
+     Log.error('Error: One of the certificates has a missing domain name in settings file.');
+     process.exit(1);
+    }
+    if (!c.private) {
+     Log.error('Error: Private key path for domain ' + c.domain + ' is missing in settings file.');
+     process.exit(1);
+    }
+    if (!c.public) {
+     Log.error('Error: Public key path for domain ' + c.domain + ' is missing in settings file.');
+     process.exit(1);
+    }
+    const priv = Bun.file(c.private);
+    if (!(await priv.exists())) {
+     Log.error('Error: Private key file for domain ' + c.domain + ' cannot be loaded.');
+     process.exit(1);
+    }
+    const pub = Bun.file(c.public);
+    if (!(await pub.exists())) {
+     Log.error('Error: Public key file for domain ' + c.domain + ' cannot be loaded.');
+     process.exit(1);
+    }
+    certs_bun.push({ key: priv, cert: pub, serverName: c.domain });
    }
   }
   let options = {
@@ -58,7 +75,12 @@ class WebServer {
    if (!Info.settings.web.https_disabled) {
     Bun.serve(options);
     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
-    Bun.serve({ ...options, websocket: this.getWebSocket(), port: Info.settings.web.https_port, tls: certs });
+    Bun.serve({
+     ...options,
+     websocket: this.getWebSocket(),
+     port: Info.settings.web.https_port,
+     tls: certs_bun,
+    });
     Log.info('HTTPS server is running on port: ' + Info.settings.web.https_port);
    } else {
     Bun.serve({ ...options, websocket: this.getWebSocket() });

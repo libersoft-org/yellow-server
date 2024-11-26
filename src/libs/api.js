@@ -16,7 +16,7 @@ class API {
    const resAdmin = await this.data.adminDelOldSessions();
    const resUser = await this.data.userDelOldSessions();
    if (resAdmin.changes || resUser.changes) Log.info('Expired sessions cleaner: ' + (resAdmin.changes || 0) + ' admin sessions and ' + (resUser.changes || 0) + ' user sessions deleted.');
-  }, Info.settings.other.session_cleaner * 1000);
+  }, Info.settings.session.cleaner * 1000);
   this.commands = {
    admin_login: { method: this.adminLogin },
    admin_sessions_list: { method: this.adminSessionsList, reqAdminSession: true },

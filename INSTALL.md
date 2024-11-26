@@ -167,12 +167,12 @@ crontab -e
   - **user** - database user name
   - **password** - database password
   - **name** - database name
-- **other** section:
-  - **session_admin** - how many seconds we store admins' sessions - for example: 600 = 10 minutes
-  - **session_user** - how many seconds we store users' sessions - for example: 2592000 = 30 days
-  - **session_cleaner** - after how many seconds should we check for old sessions - for example: 600 = every 10 minutes
-  - **log_file** - the path to your log file (ignored if log_to_file is false)
-  - **log_to_file** - if you'd like to log to console and log file (true) or to console only (false)
+- **session** section:
+  - **admin** - how many seconds we store admins' sessions - for example: 600 = 10 minutes
+  - **user** - how many seconds we store users' sessions - for example: 2592000 = 30 days
+  - **cleaner** - after how many seconds should we check for old sessions - for example: 600 = every 10 minutes
+- **log_file** - the path to your log file (ignored if log_to_file is false)
+- **log_to_file** - if you'd like to log to console and log file (true) or to console only (false)
 
 ## 4. Start the server
 

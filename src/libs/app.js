@@ -80,12 +80,22 @@ class App {
    Log.error('Settings file "' + Info.settingsFile + '" already exists. If you need to replace it with default one, delete the old one first.');
    process.exit(1);
   } else {
+   // TODO: fix log in code
+   // TODO: add mariadb support for log
+   // TODO: add support to multiple certificates per domain
+   // TODO: update INSTALL.md with new settings structure
    var settings = {
     web: {
      standalone: true,
      http_port: 80,
      https_port: 443,
-     certificates_path: '/etc/letsencrypt/live/{DOMAIN}/',
+     certificates: [
+      {
+       domain: '{DOMAIN}',
+       private: '/etc/letsencrypt/live/{DOMAIN}/privkey.pem',
+       public: '/etc/letsencrypt/live/{DOMAIN}/cert.pem',
+      },
+     ],
      socket_path: 'server.sock',
      web_paths: [
       {
@@ -101,13 +111,41 @@ class App {
      password: 'password',
      name: 'yellow',
     },
-    other: {
-     session_admin: 600, // 10 minutes
-     session_user: 2592000, // 30 days
-     session_cleaner: 600, // 10 minutes
-     db_file: 'server.db',
-     log_file: 'server.log',
-     log_to_file: true,
+    log: {
+     screen: {
+      enabled: true,
+      levels: {
+       debug: true, // true = all, false = none, specific topics = 'topic1;topic2;topic3'
+       info: true,
+       warning: true,
+       error: true,
+      },
+     },
+     file: {
+      enabled: true,
+      name: 'server.log',
+      levels: {
+       debug: true,
+       info: true,
+       warning: true,
+       error: true,
+      },
+     },
+     database: {
+      enabled: true,
+      table: 'logs',
+      levels: {
+       debug: true,
+       info: true,
+       warning: true,
+       error: true,
+      },
+     },
+    },
+    session: {
+     admin: 600, // 10 minutes
+     user: 2592000, // 30 days
+     cleaner: 600, // 10 minutes
     },
    };
    await Bun.write(Info.settingsFile, JSON.stringify(settings, null, 1));
