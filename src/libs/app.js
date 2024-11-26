@@ -80,10 +80,6 @@ class App {
    Log.error('Settings file "' + Info.settingsFile + '" already exists. If you need to replace it with default one, delete the old one first.');
    process.exit(1);
   } else {
-   // TODO: fix log in code
-   // TODO: add mariadb support for log
-   // TODO: add support to multiple certificates per domain
-   // TODO: update INSTALL.md with new settings structure
    var settings = {
     web: {
      standalone: true,
@@ -133,7 +129,6 @@ class App {
      },
      database: {
       enabled: true,
-      table: 'logs',
       levels: {
        debug: true,
        info: true,

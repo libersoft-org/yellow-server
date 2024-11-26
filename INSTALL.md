@@ -167,6 +167,17 @@ crontab -e
   - **user** - database user name
   - **password** - database password
   - **name** - database name
+- **log** section:
+  - **screen** - log on screen settings
+    - **enabled** - true / false
+    - **levels** - showing levels and topics per level (levels: debug, info, warning, error, topics: true = all, false = none, specific topics = 'topic1;topic2;topic3')
+  - **file** - log in file settings
+    - **enabled** - true / false
+    - **name** - file name
+    - **levels** - showing levels and topics per level (levels: debug, info, warning, error, topics: true = all, false = none, specific topics = 'topic1;topic2;topic3')
+  - **database** - log in database
+    - **enabled** - true / false
+    - **levels** - showing levels and topics per level (levels: debug, info, warning, error, topics: true = all, false = none, specific topics = 'topic1;topic2;topic3')
 - **session** section:
   - **admin** - how many seconds we store admins' sessions - for example: 600 = 10 minutes
   - **user** - how many seconds we store users' sessions - for example: 2592000 = 30 days
