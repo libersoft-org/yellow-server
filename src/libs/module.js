@@ -51,7 +51,7 @@ class Module {
     return;
    }
 
-   Log.info('Message from module', this.name, msg);
+   //Log.info('Message from module', this.name, msg);
 
    if (msg.type === 'response') {
     const wsGuid = msg.wsGuid;
@@ -147,7 +147,7 @@ class Module {
 
   let promise = new Promise((resolve, reject) => {
    this.requests[wsGuid][requestID] = { resolve, reject };
-   Log.debug('Request to module:', this.name, requestID);
+   //Log.debug('Request to module:', this.name, requestID);
    this.send({ type: 'request', ...msg });
   });
 
