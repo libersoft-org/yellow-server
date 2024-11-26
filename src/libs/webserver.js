@@ -11,12 +11,12 @@ export function getGuid(length = 40) {
 
 class WebServer {
  constructor(modules) {
-   this.modules = modules;
-   /* map from ws to ws_guid */
-   this.wsGuids = new Map();
-   /* map from ws_guid to client data, including ws and subscriptions */
-   this.clients = new Map();
-   this.api = new API(this, modules);
+  this.modules = modules;
+  /* map from ws to ws_guid */
+  this.wsGuids = new Map();
+  /* map from ws_guid to client data, including ws and subscriptions */
+  this.clients = new Map();
+  this.api = new API(this, modules);
  }
 
  async start() {
@@ -42,32 +42,26 @@ class WebServer {
    }
   }
   let options = {
-     development: true,
-     fetch: this.fetch.bind(this),
-     port: Info.settings.web.http_port,
-     error(error) {
-        console.log('Error:', error);
-        return new Response(`<pre>${error}\n${error.stack}</pre>`, {
-          headers: {
-            "Content-Type": "text/html",
-          },
-        });
-      },
-  }
+   development: true,
+   fetch: this.fetch.bind(this),
+   port: Info.settings.web.http_port,
+   error(error) {
+    console.log('Error:', error);
+    return new Response(`<pre>${error}\n${error.stack}</pre>`, {
+     headers: {
+      'Content-Type': 'text/html',
+     },
+    });
+   },
+  };
   if (Info.settings.web.standalone) {
    if (!Info.settings.web.https_disabled) {
     Bun.serve(options);
     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
-    Bun.serve({...options,
-     websocket: this.getWebSocket(),
-     port: Info.settings.web.https_port,
-     tls: certs,
-    });
+    Bun.serve({ ...options, websocket: this.getWebSocket(), port: Info.settings.web.https_port, tls: certs });
     Log.info('HTTPS server is running on port: ' + Info.settings.web.https_port);
    } else {
-    Bun.serve({...options,
-     websocket: this.getWebSocket(),
-    });
+    Bun.serve({ ...options, websocket: this.getWebSocket() });
     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
    }
   } else {
@@ -84,36 +78,36 @@ class WebServer {
   }
  }
 
- async fetch(req, server){
-   if ((server.protocol === 'https' || Info.settings.web.https_disabled) && server.upgrade(req)) return;
-   let clientIP = server.requestIP(req).address;
-   const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
-   for (const header of forwardedHeaders) {
-    if (header) {
-     clientIP = header.split(',')[0];
-     break;
-    }
+ async fetch(req, server) {
+  if ((server.protocol === 'https' || Info.settings.web.https_disabled) && server.upgrade(req)) return;
+  let clientIP = server.requestIP(req).address;
+  const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
+  for (const header of forwardedHeaders) {
+   if (header) {
+    clientIP = header.split(',')[0];
+    break;
    }
-   Log.info(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
-   try {
-    const url = new URL(req.url);
-    if (url.protocol == 'http:' && !Info.settings.web.https_disabled) {
-     url.protocol = 'https:';
-     if (Info.settings.web.https_port !== 443) {
-      url.port = Info.settings.web.https_port;
-     } else {
-      url.port = '';
-     }
-     return new Response(null, { status: 301, headers: { Location: url.toString() } });
-    } else if (url.pathname == '/health') {
-     return new Response('OK', { headers: { 'Content-Type': 'text/plain' } });
+  }
+  Log.info(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
+  try {
+   const url = new URL(req.url);
+   if (url.protocol == 'http:' && !Info.settings.web.https_disabled) {
+    url.protocol = 'https:';
+    if (Info.settings.web.https_port !== 443) {
+     url.port = Info.settings.web.https_port;
     } else {
-     return this.getFile(req);
+     url.port = '';
     }
-   } catch (ex) {
-    Log.error('Invalid URL: ' + req.url);
-    return await this.getNotFound();
+    return new Response(null, { status: 301, headers: { Location: url.toString() } });
+   } else if (url.pathname == '/health') {
+    return new Response('OK', { headers: { 'Content-Type': 'text/plain' } });
+   } else {
+    return this.getFile(req);
    }
+  } catch (ex) {
+   Log.error('Invalid URL: ' + req.url);
+   return await this.getNotFound();
+  }
  }
 
  async handleMessage(ws, message) {
@@ -129,7 +123,7 @@ class WebServer {
 
  async handleOpen(ws) {
   let ws_guid = getGuid();
-  this.clients.set(ws_guid, {ws});
+  this.clients.set(ws_guid, { ws });
   this.wsGuids.set(ws, ws_guid);
   Log.info('WebSocket connected: ' + ws.remoteAddress);
  }
@@ -148,9 +142,7 @@ class WebServer {
    message: async (ws, message) => {
     if (import.meta.env.VITE_YELLOW_DEBUG) {
      await this.handleMessage(ws, message);
-    }
-    else
-    {
+    } else {
      try {
       await this.handleMessage(ws, message);
      } catch (ex) {
@@ -161,9 +153,7 @@ class WebServer {
    open: async ws => {
     if (import.meta.env.VITE_YELLOW_DEBUG) {
      await this.handleOpen(ws);
-    }
-    else
-    {
+    } else {
      try {
       await this.handleOpen(ws);
      } catch (ex) {
@@ -174,9 +164,7 @@ class WebServer {
    close: async (ws, code, message) => {
     if (import.meta.env.VITE_YELLOW_DEBUG) {
      await this.handleClose(ws, code, message);
-    }
-    else
-    {
+    } else {
      try {
       await this.handleClose(ws, code, message);
      } catch (ex) {
@@ -218,7 +206,6 @@ class WebServer {
   }
   return new Response('<h1>404 Not Found</h1>', { status: 404, headers: { 'Content-Type': 'text/html' } });
  }
-
 }
 
 export default WebServer;

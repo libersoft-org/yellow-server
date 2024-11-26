@@ -8,11 +8,7 @@ class API {
  constructor(webServer, modules) {
   this.webServer = webServer;
   this.modules = modules;
-  this.signals = new Signals(
-   ['new_user'],
-   this.webServer.clients,
-   (_wsGuid, clientData, msg) => clientData.ws?.send(JSON.stringify({ ...msg, type: 'notify' }))
-  );
+  this.signals = new Signals(['new_user'], this.webServer.clients, (_wsGuid, clientData, msg) => clientData.ws?.send(JSON.stringify({ ...msg, type: 'notify' })));
   this.data = new Data();
   //this.dns = new DNS();
   this.allowedEvents = [];
@@ -51,7 +47,7 @@ class API {
    user_sessions_list: { method: this.userListSessions, reqUserSession: true },
    user_session_del: { method: this.userDelSession, reqUserSession: true },
    user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true },
-   user_subscribe: { method: this.signals.subscribe.bind(this.signals) , reqUserSession: true },
+   user_subscribe: { method: this.signals.subscribe.bind(this.signals), reqUserSession: true },
    user_unsubscribe: { method: this.signals.unsubscribe.bind(this.signals), reqUserSession: true },
    user_heartbeat: { method: this.userHeartbeat, reqUserSession: true },
   };

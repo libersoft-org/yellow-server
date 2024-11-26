@@ -13,7 +13,6 @@
 
  */
 
-
 import { Log } from 'yellow-server-common';
 
 class Module {
@@ -42,7 +41,6 @@ class Module {
   });
 
   this.ws.addEventListener('message', async event => {
-
    let msg = null;
    try {
     msg = JSON.parse(event.data);
@@ -92,7 +90,7 @@ class Module {
 
   this.ws.addEventListener('error', event => {
    Log.error('Error in module connection to', this.name);
-   Log.error(event)
+   Log.error(event);
   });
 
   this.ws.addEventListener('close', async () => {
@@ -113,7 +111,7 @@ class Module {
   ma[this.name] = this.connected;
   this.app.webServer.clients.forEach(async (client, wsGuid) => {
    Log.debug('Notifying client of modules available:', wsGuid, client);
-   await client.ws.send(JSON.stringify({type: 'notify', event: 'modules_available', data: {modules_available: ma}}));
+   await client.ws.send(JSON.stringify({ type: 'notify', event: 'modules_available', data: { modules_available: ma } }));
   });
  }
 
@@ -168,7 +166,6 @@ class Module {
   }
   delete this.requests[wsGuid];
  }
-
 }
 
 export default Module;
