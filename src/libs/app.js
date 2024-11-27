@@ -2,7 +2,12 @@ import WebServer from './webserver.js';
 import Data from './data';
 import Modules from './modules.js';
 import { Info } from './info.js';
-import { Log } from 'yellow-server-common';
+import { Log, newLogger, testLogging, initLogging } from 'yellow-server-common';
+
+
+
+let log;
+
 
 class App {
  async run() {
@@ -34,6 +39,12 @@ class App {
   Log.info(dashes);
   Log.info('');
   await this.checkDatabase();
+
+  initLogging({database: Info.settings.database});
+  log = newLogger('app');
+  log.info('app start');
+  testLogging();
+
   this.modules = new Modules(this);
   this.webServer = new WebServer(this.modules);
   await this.modules.init();
