@@ -2,7 +2,6 @@
  "name": "yellow-server",
  "dependencies": {
   "mariadb": "2",
-  "pino-pretty": "^13.0.0",
   "yellow-server-common": "https://github.com/libersoft-org/yellow-server-common"
  },
  "license": "Unlicense"

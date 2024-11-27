@@ -39,7 +39,7 @@ class App {
   Log.info('');
   await this.checkDatabase();
 
-//  reconfigureLogging({database: Info.settings.database});
+  reconfigureLogging({database: Info.settings.database});
   Log.info('app start');
   testLogging();
 
@@ -158,11 +158,15 @@ class App {
  }
 
  async checkDatabase() {
+  console.log('checkDatabase0');
   const data = new Data();
+  console.log('checkDatabase1');
   if (!(await data.databaseExists())) {
+   console.log('checkDatabase2');
    Log.error('Database is not yet created. Please run "./start.sh --create-database" first.');
    process.exit(1);
   }
+  console.log('checkDatabase3');
  }
 
  async createDatabase() {
