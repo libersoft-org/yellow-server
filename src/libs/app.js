@@ -5,7 +5,6 @@ import { Info } from './info.js';
 import { Log, newLogger, testLogging, initLogging } from 'yellow-server-common';
 
 
-
 let log;
 
 
@@ -59,13 +58,13 @@ class App {
  }
 
  getHelp() {
-  Log.info('Command line arguments:');
-  Log.info('');
-  Log.info('--help - to see this help');
-  Log.info('--create-settings - to create a default settings file named "' + Info.settingsFile + '"');
-  Log.info('--create-database - to create tables in database defined in the settings file');
-  Log.info('--create-admin - to create an admin account');
-  Log.info('--init-modules - to initialize the modules table with default values');
+  console.log('Command line arguments:');
+  console.log('');
+  console.log('--help - to see this help');
+  console.log('--create-settings - to create a default settings file named "' + Info.settingsFile + '"');
+  console.log('--create-database - to create tables in database defined in the settings file');
+  console.log('--create-admin - to create an admin account');
+  console.log('--init-modules - to initialize the modules table with default values');
  }
 
  async loadSettings() {

@@ -1,7 +1,11 @@
 import path from 'path';
 import API from './api.js';
 import { Info } from './info.js';
-import { Log } from 'yellow-server-common';
+import { newLog } from 'yellow-server-common';
+
+
+const Log = newLog('webserver');
+
 
 export function getGuid(length = 40) {
  let result = '';
@@ -63,7 +67,7 @@ class WebServer {
    fetch: this.fetch.bind(this),
    port: Info.settings.web.http_port,
    error(error) {
-    console.log('Error:', error);
+    Log.error(error);
     return new Response(`<pre>${error}\n${error.stack}</pre>`, {
      headers: {
       'Content-Type': 'text/html',
@@ -127,8 +131,8 @@ class WebServer {
     return this.getFile(req);
    }
   } catch (ex) {
-   Log.error('Invalid URL: ' + req.url);
-   return await this.getNotFound();
+   console.error(ex);
+   return await this.getNotFound(req);
   }
  }
 
@@ -213,14 +217,16 @@ class WebServer {
     break;
    }
   }
-  if (!matchedPath) return await this.getNotFound();
+  if (!matchedPath) return await this.getNotFound(req);
   if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
   const file = Bun.file(path.join(matchedPath, url.pathname.replace(matchedRoute, '')));
   if (await file.exists()) return new Response(file, { headers: { 'Content-Type': file.type } });
-  return await this.getNotFound();
+  return await this.getNotFound(req);
  }
 
- async getNotFound() {
+ async getNotFound(req) {
+  Log.error('Not found: ' + req.url);
+  console.log('Not found: ' + req.url);
   const rootPathObj = Info.settings.web.web_paths.find(path => path.route === '/');
   if (rootPathObj) {
    const notFoundFile = Bun.file(path.join(rootPathObj.path, 'notfound.html'));
