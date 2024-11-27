@@ -1,10 +1,10 @@
 import path from 'path';
 import API from './api.js';
 import { Info } from './info.js';
-import { newLog } from 'yellow-server-common';
+import { newLogger } from 'yellow-server-common';
 
 
-const Log = newLog('webserver');
+const Log = newLogger('webserver');
 
 
 export function getGuid(length = 40) {

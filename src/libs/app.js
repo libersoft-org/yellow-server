@@ -2,10 +2,10 @@ import WebServer from './webserver.js';
 import Data from './data';
 import Modules from './modules.js';
 import { Info } from './info.js';
-import { Log, newLogger, testLogging, initLogging } from 'yellow-server-common';
+import { newLogger, testLogging, reconfigureLogging } from 'yellow-server-common';
 
 
-let log;
+let Log = newLogger('app');
 
 
 class App {
@@ -39,9 +39,8 @@ class App {
   Log.info('');
   await this.checkDatabase();
 
-  initLogging({database: Info.settings.database});
-  log = newLogger('app');
-  log.info('app start');
+//  reconfigureLogging({database: Info.settings.database});
+  Log.info('app start');
   testLogging();
 
   this.modules = new Modules(this);
