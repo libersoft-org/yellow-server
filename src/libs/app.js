@@ -118,40 +118,26 @@ class App {
      name: 'yellow',
     },
     log: {
-     screen: {
+     level: "trace",
+     stdout: {
       enabled: true,
-      levels: {
-       debug: true, // true = all, false = none, specific topics = 'topic1;topic2;topic3'
-       info: true,
-       warning: true,
-       error: true,
-      },
-     },
-     file: {
-      enabled: true,
-      name: 'server.log',
-      levels: {
-       debug: true,
-       info: true,
-       warning: true,
-       error: true,
-      },
+      level: "info"
      },
      database: {
       enabled: true,
-      levels: {
-       debug: true,
-       info: true,
-       warning: true,
-       error: true,
-      },
+      level: "debug"
      },
+     file: {
+      enabled: true,
+      name: "server.log",
+      level: "trace"
+     }
     },
     session: {
      admin: 600, // 10 minutes
      user: 2592000, // 30 days
      cleaner: 600, // 10 minutes
-    },
+    }
    };
    await Bun.write(Info.settingsFile, JSON.stringify(settings, null, 1));
    Log.info('Settings file was created sucessfully.');
