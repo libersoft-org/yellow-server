@@ -8,6 +8,7 @@ import { newLogger, testLogging, reconfigureLogging } from 'yellow-server-common
 let Log = newLogger('app');
 
 
+
 class App {
  async run() {
   const args = process.argv.slice(2);
@@ -39,7 +40,7 @@ class App {
   Log.info('');
   await this.checkDatabase();
 
-  reconfigureLogging({database: Info.settings.database});
+  reconfigureLogging(Info.settings);
   Log.info('app start');
   testLogging();
 
