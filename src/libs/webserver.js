@@ -105,8 +105,6 @@ class WebServer {
  }
 
  async fetch(req, server) {
-  if ((server.protocol === 'https' || Info.settings.web.https_disabled) && server.upgrade(req)) return;
-
   let clientIP0 = server.requestIP(req).address;
   let clientIP = clientIP0;
 
@@ -118,9 +116,13 @@ class WebServer {
     break;
    }
   }
-  Log.info(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
 
-  req.log = Log.child({ clientIP0, headers: req.headers, clientIP, url: req.url, method:req.method });
+  let corr = { clientIP0, headers: req.headers, clientIP, url: req.url, method:req.method };
+  Log.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
+
+  if ((server.protocol === 'https' || Info.settings.web.https_disabled)) {
+   if (server.upgrade(req, { data: {corr}})) return;
+  }
 
   try {
    const url = new URL(req.url);
@@ -139,18 +141,18 @@ class WebServer {
    }
   } catch (ex) {
    console.error(ex);
-   return await this.getNotFound(req);
+   return await this.getNotFound(corr, req);
   }
  }
 
  async handleMessage(corr, ws, message) {
-  Log.debug('WebSocket message from: ', ws.remoteAddress, ', message: ', message);
+  Log.debug(corr, 'WebSocket message from: ', ws.remoteAddress, ', message: ', message);
   let ws_guid = this.wsGuids.get(ws);
   if (!ws_guid) {
    throw new Error('No ws_guid for ws');
   }
   const res = JSON.stringify(await this.api.processAPI(corr, ws, ws_guid, message));
-  Log.debug('WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
+  Log.debug(corr, 'WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
   ws.send(res);
  }
 
@@ -158,11 +160,11 @@ class WebServer {
   let ws_guid = getGuid();
   this.clients.set(ws_guid, { ws });
   this.wsGuids.set(ws, ws_guid);
-  Log.info('WebSocket connected: ' + ws.remoteAddress);
+  Log.info(ws.data.corr, 'WebSocket connected: ' + ws.remoteAddress);
  }
 
  async handleClose(ws, code, message) {
-  Log.info('WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
+  Log.info(ws.data.corr, 'WebSocket disconnected: ' + ws.remoteAddress + ', code: ' + code + (message ? ', message: ' + message : ''));
   let ws_guid = this.wsGuids.get(ws);
   if (ws_guid) this.clients.delete(ws_guid);
   this.wsGuids.delete(ws);
@@ -173,7 +175,7 @@ class WebServer {
   const api = this.api;
   return {
    message: async (ws, message) => {
-    let corr = { clientWsGuid: this.wsGuids[ws], messageGuid: message.guid, requestGuid: getGuid() };
+    let corr = { ...ws.data, clientWsGuid: this.wsGuids[ws], messageGuid: message.guid, requestGuid: getGuid() };
     if (import.meta.env.VITE_YELLOW_DEBUG) {
      await this.handleMessage(corr, ws, message);
     } else {
@@ -232,8 +234,8 @@ class WebServer {
   return await this.getNotFound(req);
  }
 
- async getNotFound(req) {
-  req.log.error('Not found: ' + req.url);
+ async getNotFound(corr, req) {
+  Log.error(corr, 'Not found: ' + req.url);
   //console.log('Not found: ' + req.url);
   const rootPathObj = Info.settings.web.web_paths.find(path => path.route === '/');
   if (rootPathObj) {
