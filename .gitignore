@@ -4,3 +4,4 @@ src/*.sock
 src/*.db
 src/*.log
 .secret_git
+.idea
