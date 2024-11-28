@@ -13,7 +13,11 @@
 
  */
 
-import { Log } from 'yellow-server-common';
+import { newLogger } from 'yellow-server-common';
+
+
+let Log = newLogger('module');
+
 
 class Module {
  constructor(app, data, name, connection_string) {

@@ -2,7 +2,11 @@ import os from 'os';
 import Data from './data.js';
 //import DNS from './dns.js';
 import { Info } from './info.js';
-import { Log, Signals } from 'yellow-server-common';
+import { newLogger, Signals } from 'yellow-server-common';
+
+
+let Log = newLogger('api');
+
 
 class API {
  constructor(webServer, modules) {

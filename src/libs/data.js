@@ -1,5 +1,10 @@
-import { Log, DataGeneric } from 'yellow-server-common';
+import { newLogger, DataGeneric} from 'yellow-server-common';
 import { Info } from './info.js';
+
+
+let Log = newLogger('data');
+
+
 
 class Data extends DataGeneric {
  constructor() {
