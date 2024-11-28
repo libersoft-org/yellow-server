@@ -6,6 +6,7 @@ let Log = newLogger('module');
 
 class Module {
  constructor(app, data, name, connection_string) {
+  Log.debug('Creating module: ', name);
   this.log = Log.child({ module: name });
   this.app = app;
   this.data = data;
@@ -39,7 +40,7 @@ class Module {
     return;
    }
 
-   //this.log.info('Message from module', this.name, msg);
+   this.log.trace('Message from module', this.name, msg);
 
    if (msg.type === 'response') {
     const wsGuid = msg.wsGuid;
@@ -72,7 +73,7 @@ class Module {
     await client_ws.send(JSON.stringify(msg));
    } else if (msg.type === 'command') {
     this.log.trace('Command from module', this.name, msg);
-    await this.send({ type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg) });
+    await this.send({},{ type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg) });
    } else {
     this.log.warning('Unknown message type from module', this.name, msg);
    }
@@ -123,31 +124,33 @@ class Module {
   return await cmd_fn(...msg.params);
  }
 
- async sendRequest(msg, wsGuid, requestID) {
+ async sendRequest(corr, msg, wsGuid, requestID) {
+  corr = {...corr, module: this.name};
+
   if (!this.requests[wsGuid]) {
    this.requests[wsGuid] = {};
   }
 
   if (this.requests[wsGuid]?.[requestID]) {
-   this.log.error('Request already exists:', wsGuid, requestID);
+   this.log.error(corr, 'Request already exists:', wsGuid, requestID);
    return;
   }
 
   let promise = new Promise((resolve, reject) => {
    this.requests[wsGuid][requestID] = { resolve, reject };
-   this.log.trace('Request to module:', this.name, requestID);
-   this.send({ type: 'request', ...msg });
+   this.log.trace(corr, 'Request to module:', this.name, requestID);
+   this.send(corr,{ type: 'request', ...msg });
   });
 
   return await promise;
  }
 
- async send(msg) {
-  return await this.ws.send(JSON.stringify(msg));
+ async send(corr, msg) {
+  return await this.ws.send(JSON.stringify({...msg, correlation: corr}));
  }
 
  async notify(notification) {
-  await this.send({ type: 'notify', data: notification });
+  await this.send({},{ type: 'notify', data: notification });
  }
 
  async handleClientDisconnect(wsGuid) {

@@ -42,7 +42,7 @@ class App {
 
   reconfigureLogging(Info.settings);
   Log.info('app start');
-  testLogging();
+  //testLogging();
 
   this.modules = new Modules(this);
   this.webServer = new WebServer(this.modules);
@@ -145,15 +145,15 @@ class App {
  }
 
  async checkDatabase() {
-  console.log('checkDatabase0');
+  //console.log('checkDatabase0');
   const data = new Data();
-  console.log('checkDatabase1');
+  //console.log('checkDatabase1');
   if (!(await data.databaseExists())) {
-   console.log('checkDatabase2');
+   //console.log('checkDatabase2');
    Log.error('Database is not yet created. Please run "./start.sh --create-database" first.');
    process.exit(1);
   }
-  console.log('checkDatabase3');
+  //console.log('checkDatabase3');
  }
 
  async createDatabase() {

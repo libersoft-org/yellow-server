@@ -21,7 +21,8 @@ class Data extends DataGeneric {
    await this.db.query('CREATE TABLE IF NOT EXISTS users_logins (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(128) NULL, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.query('CREATE TABLE IF NOT EXISTS users_sessions (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.query('CREATE TABLE IF NOT EXISTS modules (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL UNIQUE, connection_string VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)');
-   await this.db.query('CREATE TABLE IF NOT EXISTS logs (id INT PRIMARY KEY AUTO_INCREMENT, level VARCHAR(16) NOT NULL, topic VARCHAR(32) NOT NULL, message TEXT NULL, params TEXT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+//await this.db.query('CREATE TABLE IF NOT EXISTS logs (id INT PRIMARY KEY AUTO_INCREMENT, level INT NOT NULL, topic VARCHAR(32) NOT NULL, message TEXT NULL, params TEXT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
+   await this.db.query('CREATE TABLE IF NOT EXISTS logs (id INT PRIMARY KEY AUTO_INCREMENT, level INT NOT NULL, message TEXT NULL, params JSON NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
   } catch (ex) {
    Log.error('createDB:', ex);
    process.exit(1);
@@ -293,7 +294,7 @@ class Data extends DataGeneric {
  }
 
  async adminModulesEdit(id, name, connectionString) {
-  console.log(id, name, connectionString);
+  //console.log(id, name, connectionString);
   await this.db.query('UPDATE modules SET name = ?, connection_string = ? WHERE id = ?', [name, connectionString, id]);
  }
 

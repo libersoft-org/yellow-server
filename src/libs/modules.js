@@ -43,14 +43,14 @@ class Modules {
   return this.modules[name];
  }
 
- async sendUserCmdToModule(module_name, msg, wsGuid, requestID) {
-  Log.debug('to module:', module_name, 'sending message:', msg);
+ async sendUserCmdToModule(corr, module_name, msg, wsGuid, requestID) {
+  Log.debug(corr, 'to module:', module_name, 'sending message:', msg);
   let m = this.modules[module_name];
   if (!m) {
-   Log.error('Module not found:', module_name);
+   Log.error(corr, 'Module not found:', module_name);
    return { error: 999, message: 'Module not found' };
   }
-  let res = await m.sendRequest(msg, wsGuid, requestID);
+  let res = await m.sendRequest(corr, msg, wsGuid, requestID);
   return res;
  }
 

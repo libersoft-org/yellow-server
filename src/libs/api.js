@@ -78,8 +78,8 @@ class API {
   return true;
  }
 
- async processAPI(ws, wsGuid, json) {
-  Log.debug('API request:', json);
+ async processAPI(corr, ws, wsGuid, json) {
+  Log.debug(corr, 'API request:', json);
   let req;
   try {
    req = JSON.parse(json);
@@ -95,11 +95,11 @@ class API {
   const target = req.target || 'core';
   const command_name = req.command || req.data?.command;
 
-  if (target === 'core') return await this.coreCmd(command_name, resp, req, context);
-  else return await this.moduleCmd(wsGuid, target, command_name, req, resp);
+  if (target === 'core') return await this.coreCmd(corr, command_name, resp, req, context);
+  else return await this.moduleCmd(corr, wsGuid, target, command_name, req, resp);
  }
 
- async coreCmd(command_name, resp, req, context) {
+ async coreCmd(corr, command_name, resp, req, context) {
   if (!command_name) return { ...resp, error: 999, message: 'Command not set' };
   const command_fn = this.commands[command_name];
   if (!command_fn) return { ...resp, error: 903, message: 'Unknown command' };
@@ -134,26 +134,26 @@ class API {
   //Log.debug('command_fn:', command_fn);
   //Log.debug('context:', context);
 
-  Log.debug('Executing core command:', command_name);
+  Log.debug(corr, 'Executing core command:', command_name);
   let method_result = await command_fn.method.call(this, context);
   return { ...resp, ...method_result };
  }
 
- async moduleCmd(wsGuid, target, command_name, req, resp) {
+ async moduleCmd(corr, wsGuid, target, command_name, req, resp) {
   let msg = {
    data: req.data,
    sessionID: req.sessionID,
    requestID: req.requestID,
    wsGuid: wsGuid,
   };
-  Log.debug('authenticating user for module command:', target, command_name);
+  Log.debug(corr, 'authenticating user for module command:', target, command_name);
   const auth_result = await this.authenticateUser(req, resp, msg);
   if (auth_result !== true) {
-   Log.warning('User authentication failed for module command:', target, command_name);
+   Log.warning(corr, 'User authentication failed for module command:', target, command_name);
    return auth_result;
   }
-  Log.debug('User authenticated for module command.');
-  let r = await this.modules.sendUserCmdToModule(target, msg, wsGuid, req.requestID);
+  Log.debug(corr, 'User authenticated for module command.');
+  let r = await this.modules.sendUserCmdToModule(corr, target, msg, wsGuid, req.requestID);
   return { ...resp, ...r };
  }
 
@@ -538,7 +538,7 @@ class API {
   if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
   const userCredentials = await this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 6, message: 'Wrong user address' };
-  console.log(userCredentials.password, c.params.password);
+  //console.log(userCredentials.password, c.params.password);
   if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 7, message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.userSetLogin(userCredentials.id, sessionID);

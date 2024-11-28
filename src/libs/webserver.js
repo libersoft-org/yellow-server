@@ -106,8 +106,12 @@ class WebServer {
 
  async fetch(req, server) {
   if ((server.protocol === 'https' || Info.settings.web.https_disabled) && server.upgrade(req)) return;
-  let clientIP = server.requestIP(req).address;
+
+  let clientIP0 = server.requestIP(req).address;
+  let clientIP = clientIP0;
+
   const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
+
   for (const header of forwardedHeaders) {
    if (header) {
     clientIP = header.split(',')[0];
@@ -115,6 +119,9 @@ class WebServer {
    }
   }
   Log.info(req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
+
+  req.log = Log.child({ clientIP0, headers: req.headers, clientIP, url: req.url, method:req.method });
+
   try {
    const url = new URL(req.url);
    if (url.protocol == 'http:' && !Info.settings.web.https_disabled) {
@@ -136,13 +143,13 @@ class WebServer {
   }
  }
 
- async handleMessage(ws, message) {
+ async handleMessage(corr, ws, message) {
   Log.debug('WebSocket message from: ', ws.remoteAddress, ', message: ', message);
   let ws_guid = this.wsGuids.get(ws);
   if (!ws_guid) {
    throw new Error('No ws_guid for ws');
   }
-  const res = JSON.stringify(await this.api.processAPI(ws, ws_guid, message));
+  const res = JSON.stringify(await this.api.processAPI(corr, ws, ws_guid, message));
   Log.debug('WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
   ws.send(res);
  }
@@ -166,11 +173,12 @@ class WebServer {
   const api = this.api;
   return {
    message: async (ws, message) => {
+    let corr = { clientWsGuid: this.wsGuids[ws], messageGuid: message.guid, requestGuid: getGuid() };
     if (import.meta.env.VITE_YELLOW_DEBUG) {
-     await this.handleMessage(ws, message);
+     await this.handleMessage(corr, ws, message);
     } else {
      try {
-      await this.handleMessage(ws, message);
+      await this.handleMessage(corr, ws, message);
      } catch (ex) {
       Log.error('Error processing WebSocket message:', ex);
      }
@@ -200,7 +208,7 @@ class WebServer {
    },
    drain: ws => {
     // the socket is ready to receive more data
-    console.log('DRAIN', ws);
+    //console.log('DRAIN', ws);
    },
   };
  }
@@ -225,8 +233,8 @@ class WebServer {
  }
 
  async getNotFound(req) {
-  Log.error('Not found: ' + req.url);
-  console.log('Not found: ' + req.url);
+  req.log.error('Not found: ' + req.url);
+  //console.log('Not found: ' + req.url);
   const rootPathObj = Info.settings.web.web_paths.find(path => path.route === '/');
   if (rootPathObj) {
    const notFoundFile = Bun.file(path.join(rootPathObj.path, 'notfound.html'));
