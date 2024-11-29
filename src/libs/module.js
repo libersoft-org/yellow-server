@@ -7,7 +7,7 @@ let Log = newLogger('module');
 class Module {
  constructor(app, data, name, connection_string) {
   Log.debug('Creating module: ', name);
-  this.log = Log.child({ module: name });
+  this.log = Log.child(name);
   this.app = app;
   this.data = data;
   this.name = name;

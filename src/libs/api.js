@@ -46,6 +46,9 @@ class API {
    admin_modules_del: { method: this.adminModulesDel, reqAdminSession: true },
    admin_modules_info: { method: this.adminModulesInfo, reqAdminSession: true },
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
+   admin_clients_list: { method: this.adminClientsList, reqAdminSession: true },
+   admin_client_kick: { method: this.adminClientKick, reqAdminSession: true },
+   admin_clients_kick_by_ip: { method: this.adminClientsKickByIp, reqAdminSession: true },
    user_login: { method: this.userLogin },
 
    user_sessions_list: { method: this.userListSessions, reqUserSession: true },
@@ -526,6 +529,22 @@ class API {
   };
  }
 
+
+ async adminClientsList(c) {
+  console.log(this.webServer.clients);
+ }
+
+ async adminClientKick(c) {
+  this.webServer.clients[c.params.guid].close();
+ }
+
+ async adminClientsKickByIp(c) {
+  for (let client of this.webServer.clients) {
+   console.log(client);
+  }
+ }
+
+
  async userLogin(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
   if (!c.params.address) return { error: 2, message: 'Address is missing' };
@@ -577,6 +596,7 @@ class API {
   const userInfo = await this.data.userGetUserInfo(userID);
   return { error: 0, data: userInfo };
  }
+
 
  userHeartbeat(c) {
   Log.info('Heartbeat from: ' + c.ws.remoteAddress);

@@ -3,7 +3,7 @@ import {newLogger} from 'yellow-server-common';
 import Module from './module';
 
 
-let Log = newLogger('module');
+let Log = newLogger('modules');
 
 
 class Modules {

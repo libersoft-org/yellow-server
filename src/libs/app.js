@@ -119,19 +119,28 @@ class App {
     },
     log: {
      level: "trace",
+
      stdout: {
       enabled: true,
-      level: "info"
+      levels: [{"*":"info"}]
+     },
+     file: {
+      enabled: true,
+      name: "server.log",
+      levels: [{"*":"info"}]
      },
      database: {
       enabled: true,
       level: "debug"
      },
-     file: {
+     json: {
       enabled: true,
-      name: "server.log",
+      name: "json.log",
       level: "trace"
-     }
+     },
+     elasticsearch: {
+      enabled: true
+     },
     },
     session: {
      admin: 600, // 10 minutes
