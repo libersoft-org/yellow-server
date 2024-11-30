@@ -531,7 +531,19 @@ class API {
 
 
  async adminClientsList(c) {
-  console.log(this.webServer.clients);
+  let items = [];
+  this.webServer.clients.forEach((value, key) => {
+   items.push({
+    id: key,
+    ip: value.ws.remoteAddress,
+   });
+  });
+  items = sortItems(items, c.params?.orderBy, c.params?.direction);
+  //count, offset, orderBy: sortBy, direction
+
+  items = filterItems(items, c.params?.filterIp);
+  items = items.slice(c.params.offset || 0, c.params.count || items.length);
+  return { error: 0, data: { items } };
  }
 
  async adminClientKick(c) {
