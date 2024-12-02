@@ -532,19 +532,38 @@ class API {
 
  async adminClientsList(c) {
   let items = [];
+
   this.webServer.clients.forEach((value, key) => {
-   items.push({
-    id: key,
-    ip: value.ws.remoteAddress,
-   });
+   if (!c.params?.filterIp || c.params?.filterIp === value.ws.remoteAddress) {
+    if (!c.params?.filterGuid || c.params?.filterGuid === key) {
+     items.push({
+      guid: key,
+      ip: value.ws.remoteAddress,
+     });
+    }
+   }
   });
   items = sortItems(items, c.params?.orderBy, c.params?.direction);
-  //count, offset, orderBy: sortBy, direction
-
-  items = filterItems(items, c.params?.filterIp);
-  items = items.slice(c.params.offset || 0, c.params.count || items.length);
+  items = items.slice(c.params.offset || 0, c.params.count || 10);
   return { error: 0, data: { items } };
  }
+
+ function sortItems(items, orderBy, direction) {
+  if (!orderBy) return items;
+  if (orderBy === 'guid') {
+   items.sort((a, b) => {
+    if (direction === 'ASC') return a.guid.localeCompare(b.guid);
+    else return b.guid.localeCompare(a.guid);
+   });
+  } else if (orderBy === 'ip') {
+   items.sort((a, b) => {
+    if (direction === 'ASC') return a.ip.localeCompare(b.ip);
+    else return b.ip.localeCompare(a.ip);
+   });
+  }
+  return items;
+ }
+
 
  async adminClientKick(c) {
   this.webServer.clients[c.params.guid].close();
