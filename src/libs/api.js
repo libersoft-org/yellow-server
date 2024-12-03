@@ -4,9 +4,8 @@ import Data from './data.js';
 import { Info } from './info.js';
 import { newLogger, Signals } from 'yellow-server-common';
 
-
 let Log = newLogger('api');
-
+let authLog = newLogger('auth');
 
 class API {
  constructor(webServer, modules) {
@@ -149,13 +148,13 @@ class API {
    requestID: req.requestID,
    wsGuid: wsGuid,
   };
-  Log.debug(corr, 'authenticating user for module command:', target, command_name);
+  authLog.debug(corr, 'authenticating user for module command:', target, command_name);
   const auth_result = await this.authenticateUser(req, resp, msg);
   if (auth_result !== true) {
-   Log.warning(corr, 'User authentication failed for module command:', target, command_name);
+   authLog.warning(corr, 'User authentication failed for module command:', target, command_name);
    return auth_result;
   }
-  Log.debug(corr, 'User authenticated for module command.');
+  authLog.debug(corr, 'User authenticated for module command.');
   let r = await this.modules.sendUserCmdToModule(corr, target, msg, wsGuid, req.requestID);
   return { ...resp, ...r };
  }
@@ -168,9 +167,9 @@ class API {
   const adminCredentials = await this.data.getAdminCredentials(c.params.username);
   if (!adminCredentials) return { error: 4, message: 'Wrong username' };
 
-  Log.debug('adminCredentials:', adminCredentials);
-  Log.debug('c.params:', c.params);
-  Log.debug('c.params.password:', c.params.password);
+  authLog.debug('adminCredentials:', adminCredentials);
+  authLog.debug('c.params:', c.params);
+  authLog.debug('c.params.password:', c.params.password);
 
   if (!this.data.verifyHash(adminCredentials.password, c.params.password)) return { error: 5, message: 'Wrong password' };
   const sessionID = this.getUUID();
@@ -529,7 +528,6 @@ class API {
   };
  }
 
-
  async adminClientsList(c) {
   let items = [];
 
@@ -543,12 +541,12 @@ class API {
     }
    }
   });
-  items = sortItems(items, c.params?.orderBy, c.params?.direction);
+  items = this.sortItems(items, c.params?.orderBy, c.params?.direction);
   items = items.slice(c.params.offset || 0, c.params.count || 10);
   return { error: 0, data: { items } };
  }
 
- function sortItems(items, orderBy, direction) {
+ sortItems(items, orderBy, direction) {
   if (!orderBy) return items;
   if (orderBy === 'guid') {
    items.sort((a, b) => {
@@ -564,7 +562,6 @@ class API {
   return items;
  }
 
-
  async adminClientKick(c) {
   this.webServer.clients[c.params.guid].close();
  }
@@ -574,7 +571,6 @@ class API {
    console.log(client);
   }
  }
-
 
  async userLogin(c) {
   if (!c.params) return { error: 1, message: 'Parameters are missing' };
@@ -628,9 +624,8 @@ class API {
   return { error: 0, data: userInfo };
  }
 
-
  userHeartbeat(c) {
-  Log.info('Heartbeat from: ' + c.ws.remoteAddress);
+  //Log.debug('Heartbeat from: ' + c.ws.remoteAddress);
   return { error: 0, message: 'Heartbeat received' };
  }
 

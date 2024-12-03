@@ -1,10 +1,8 @@
 import Data from './data';
-import {newLogger} from 'yellow-server-common';
+import { newLogger } from 'yellow-server-common';
 import Module from './module';
 
-
 let Log = newLogger('modules');
-
 
 class Modules {
  constructor(app) {

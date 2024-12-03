@@ -1,10 +1,7 @@
-import { newLogger, DataGeneric} from 'yellow-server-common';
+import { newLogger, DataGeneric } from 'yellow-server-common';
 import { Info } from './info.js';
 
-
 let Log = newLogger('data');
-
-
 
 class Data extends DataGeneric {
  constructor() {
@@ -388,7 +385,7 @@ class Data extends DataGeneric {
   const res = await this.db.query('SELECT users.username, domains.name AS domain FROM users JOIN domains ON users.id_domains = domains.id WHERE users.id = ?', [userID]);
   if (res.length === 1) {
    let userName = res[0].username + '@' + res[0].domain;
-   Log.debug('getUserAddressById:', userName);
+   Log.trace('getUserAddressById:', userName);
    return userName;
   }
  }

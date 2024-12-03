@@ -1,8 +1,6 @@
 import { newLogger } from 'yellow-server-common';
 
-
 let Log = newLogger('module');
-
 
 class Module {
  constructor(app, data, name, connection_string) {
@@ -73,7 +71,7 @@ class Module {
     await client_ws.send(JSON.stringify(msg));
    } else if (msg.type === 'command') {
     this.log.trace('Command from module', this.name, msg);
-    await this.send({},{ type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg) });
+    await this.send({}, { type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg) });
    } else {
     this.log.warning('Unknown message type from module', this.name, msg);
    }
@@ -125,7 +123,7 @@ class Module {
  }
 
  async sendRequest(corr, msg, wsGuid, requestID) {
-  corr = {...corr, module: this.name};
+  corr = { ...corr, module: this.name };
 
   if (!this.requests[wsGuid]) {
    this.requests[wsGuid] = {};
@@ -139,18 +137,18 @@ class Module {
   let promise = new Promise((resolve, reject) => {
    this.requests[wsGuid][requestID] = { resolve, reject };
    this.log.trace(corr, 'Request to module:', this.name, requestID);
-   this.send(corr,{ type: 'request', ...msg });
+   this.send(corr, { type: 'request', ...msg });
   });
 
   return await promise;
  }
 
  async send(corr, msg) {
-  return await this.ws.send(JSON.stringify({...msg, correlation: corr}));
+  return await this.ws.send(JSON.stringify({ ...msg, correlation: corr }));
  }
 
  async notify(notification) {
-  await this.send({},{ type: 'notify', data: notification });
+  await this.send({}, { type: 'notify', data: notification });
  }
 
  async handleClientDisconnect(wsGuid) {

@@ -4,10 +4,7 @@ import Modules from './modules.js';
 import { Info } from './info.js';
 import { newLogger, testLogging, reconfigureLogging } from 'yellow-server-common';
 
-
 let Log = newLogger('app');
-
-
 
 class App {
  async run() {
@@ -118,35 +115,35 @@ class App {
      name: 'yellow',
     },
     log: {
-     level: "trace",
+     level: 'trace',
 
      stdout: {
       enabled: true,
-      levels: [{"*":"info"}]
+      levels: [{ '*': 'info' }],
      },
      file: {
       enabled: true,
-      name: "server.log",
-      levels: [{"*":"info"}]
+      name: 'server.log',
+      levels: [{ '*': 'info' }],
      },
      database: {
       enabled: true,
-      level: "debug"
+      level: 'debug',
      },
      json: {
       enabled: true,
-      name: "json.log",
-      level: "trace"
+      name: 'json.log',
+      level: 'trace',
      },
      elasticsearch: {
-      enabled: true
+      enabled: true,
      },
     },
     session: {
      admin: 600, // 10 minutes
      user: 2592000, // 30 days
      cleaner: 600, // 10 minutes
-    }
+    },
    };
    await Bun.write(Info.settingsFile, JSON.stringify(settings, null, 1));
    Log.info('Settings file was created sucessfully.');
