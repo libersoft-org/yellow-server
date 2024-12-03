@@ -5,6 +5,7 @@ import { newLogger } from 'yellow-server-common';
 
 
 const Log = newLogger('webserver');
+const healthcheckLog = newLogger('healthcheck');
 
 
 export function getGuid(length = 40) {
@@ -117,15 +118,20 @@ class WebServer {
    }
   }
 
+  const url = new URL(req.url);
+
   let corr = { clientIP0, headers: req.headers, clientIP, url: req.url, method:req.method };
-  Log.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
+
+  if (url.pathname === '/health')
+   healthcheckLog.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
+  else
+   Log.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
 
   if ((server.protocol === 'https' || Info.settings.web.https_disabled)) {
    if (server.upgrade(req, { data: {corr}})) return;
   }
 
   try {
-   const url = new URL(req.url);
    if (url.protocol == 'http:' && !Info.settings.web.https_disabled) {
     url.protocol = 'https:';
     if (Info.settings.web.https_port !== 443) {
@@ -246,4 +252,4 @@ class WebServer {
  }
 }
 
-export default WebServer;
+ export default WebServer;
