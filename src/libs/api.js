@@ -46,7 +46,7 @@ class API {
    admin_modules_info: { method: this.adminModulesInfo, reqAdminSession: true },
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
    admin_clients_list: { method: this.adminClientsList, reqAdminSession: true },
-   admin_client_kick: { method: this.adminClientKick, reqAdminSession: true },
+   admin_clients_kick: { method: this.adminClientsKick, reqAdminSession: true },
    admin_clients_kick_by_ip: { method: this.adminClientsKickByIp, reqAdminSession: true },
    user_login: { method: this.userLogin },
 
@@ -562,8 +562,11 @@ class API {
   return items;
  }
 
- async adminClientKick(c) {
-  this.webServer.clients[c.params.guid].close();
+ async adminClientsKick(c) {
+  /*console.log(this.webServer.clients);
+  console.log(c.params.guid);*/
+  const client = this.webServer.clients.get(c.params.guid);
+  client?.ws?.close();
  }
 
  async adminClientsKickByIp(c) {
