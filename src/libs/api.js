@@ -49,13 +49,12 @@ class API {
    admin_clients_kick: { method: this.adminClientsKick, reqAdminSession: true },
    admin_clients_kick_by_ip: { method: this.adminClientsKickByIp, reqAdminSession: true },
    user_login: { method: this.userLogin },
-
    user_sessions_list: { method: this.userListSessions, reqUserSession: true },
    user_session_del: { method: this.userDelSession, reqUserSession: true },
    user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true },
    user_subscribe: { method: this.signals.subscribe.bind(this.signals), reqUserSession: true },
    user_unsubscribe: { method: this.signals.unsubscribe.bind(this.signals), reqUserSession: true },
-   user_heartbeat: { method: this.userHeartbeat, reqUserSession: true },
+   ping: { method: this.userPing },
   };
  }
 
@@ -627,9 +626,9 @@ class API {
   return { error: 0, data: userInfo };
  }
 
- userHeartbeat(c) {
-  //Log.debug('Heartbeat from: ' + c.ws.remoteAddress);
-  return { error: 0, message: 'Heartbeat received' };
+ userPing(c) {
+  //Log.debug('Ping from: ' + c.ws.remoteAddress);
+  return { error: 0, message: 'Pong' };
  }
 
  getUUID() {
