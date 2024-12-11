@@ -8,4 +8,9 @@ class Info {
  static settings;
 }
 
+console.log(Info.appName + ' ver. ' + Info.appVersion);
+console.log('appPath:', Info.appPath);
+console.log('settingsFile:', Info.settingsFile);
+console.log('import.meta.dir:', import.meta.dir);
+
 export { Info };
