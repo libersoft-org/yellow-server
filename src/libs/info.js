@@ -1,5 +1,7 @@
 import path from 'path';
 
+console.log('import.meta.dir:', import.meta.dir);
+
 class Info {
  static appName = 'Yellow Server';
  static appVersion = '0.01';
@@ -11,6 +13,5 @@ class Info {
 console.log(Info.appName + ' ver. ' + Info.appVersion);
 console.log('appPath:', Info.appPath);
 console.log('settingsFile:', Info.settingsFile);
-console.log('import.meta.dir:', import.meta.dir);
 
 export { Info };

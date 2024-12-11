@@ -37,7 +37,7 @@ class App {
   Log.info('');
   await this.checkDatabase();
 
-  reconfigureLogging(Info.settings);
+  reconfigureLogging({ appPath: Info.appPath, ...Info.settings });
   Log.info('app start');
   //testLogging();
 
