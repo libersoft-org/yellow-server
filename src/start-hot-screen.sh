@@ -1,7 +1,5 @@
-#!/bin/sh
+#!/bin/bash
 
-bun i
-screen -dmS yellow-server bash -c '
-echo -ne "\033]0;YELLOW SERVER\007"
-bun --watch server.js
-'
+#screen -mS yellow-server bash -c "screen bash& ./start-hot.sh "
+
+screen -dmS yellow-server bash -c "trap bash SIGINT; while true; do ./start-hot.sh; done"
