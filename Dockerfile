@@ -1,12 +1,18 @@
 FROM oven/bun:latest
 
+ARG UID=1000
+ARG GID=1000
+
 RUN apt update && apt install -y curl tini
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 RUN mkdir /var/log/yellow
-RUN chown 1000:1000 /var/log/yellow
+RUN chown $UID:$GID /var/log/yellow
 
-USER 1000:1000
+ARG APP_DIR=/app/app/src/
+RUN mkdir -p $APP_DIR
+RUN chown $UID:$GID $APP_DIR
+USER $UID:$GID
+WORKDIR $APP_DIR
 
-WORKDIR /app/app/src/
 CMD ./start-docker-dev.sh
