@@ -6,5 +6,6 @@ src/*.log
 src/bun.lock
 src/bun.lockb
 src/bun.lockb.txt
+src/package-lock.json
 .secret_git
 .idea
