@@ -222,6 +222,7 @@ class WebServer {
   let matchedPath = null;
   let matchedRoute = null;
   const sortedPaths = Info.settings.web.web_paths.sort((a, b) => b.route.length - a.route.length);
+  Log.info('url.pathname:', url.pathname);
   for (const webPath of sortedPaths) {
    if (url.pathname.startsWith(webPath.route)) {
     matchedPath = webPath.path.startsWith('/') ? webPath.path : path.join(Info.appPath, webPath.path);
