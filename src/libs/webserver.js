@@ -225,8 +225,8 @@ class WebServer {
    }
   }
   if (!matchedPath) return await this.getNotFound(req, corr);
-  Log.info('matchedRoute:', matchedRoute);
-  if (statSync(matchedRoute).isDirectory()) url.pathname = path.join(url.pathname, '/index.html');
+  Log.info('matchedPath:', matchedPath);
+  if (statSync(matchedPath).isDirectory()) url.pathname = path.join(url.pathname, '/index.html');
   const file = Bun.file(path.join(matchedPath, url.pathname.replace(matchedRoute, '')));
   if (await file.exists()) return new Response(file, { headers: { 'Content-Type': file.type } });
   return await this.getNotFound(req, corr);
