@@ -213,31 +213,42 @@ class WebServer {
 
  async getFile(req, corr = {}) {
   const url = new URL(req.url);
-  let matchedPath = null;
-  let matchedRoute = null;
+  let fsAbsPathBase = null;
+  let urlPathBase = null;
   const sortedPaths = Info.settings.web.web_paths.sort((a, b) => b.route.length - a.route.length);
   Log.info('url.pathname:', url.pathname);
+
   for (const webPath of sortedPaths) {
    if (url.pathname.startsWith(webPath.route)) {
-    matchedPath = webPath.path.startsWith('/') ? webPath.path : path.join(Info.appPath, webPath.path);
-    matchedRoute = webPath.route;
+
+    /* filesystem absolute path */
+    fsAbsPathBase = webPath.path.startsWith('/') ? webPath.path : path.join(Info.appPath, webPath.path);
+
+    /* url path */
+    urlPathBase = webPath.route;
+
     break;
    }
   }
-  if (!matchedPath) return await this.getNotFound(req, corr);
-  Log.info('matchedPath:', matchedPath);
 
-  let matchedFilePath = path.join(matchedPath, url.pathname.replace(matchedRoute, ''));
-  Log.info('matchedFilePath:', matchedFilePath);
+  Log.info('fsAbsPathBase:', fsAbsPathBase);
+
+  /* if no matching item found in web_paths */
+  if (!fsAbsPathBase) return await this.getNotFound(req, corr);
+
+  let fsAbsPathFull = path.join(fsAbsPathBase, url.pathname.replace(urlPathBase, ''));
+  Log.info('fsAbsPathFull:', fsAbsPathFull);
 
   if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
-  else if (statSync(matchedFilePath).isDirectory())
+
+  else if (statSync(fsAbsPathFull).isDirectory())
   {
+   Log.debug('redirect to index.html for directory', fsAbsPathFull);
    let redirect = path.join(url.pathname, '/index.html');
    return new Response(null, { status: 301, headers: { Location: redirect } });
   }
 
-  const file = Bun.file(matchedFilePath);
+  const file = Bun.file(fsAbsPathFull);
   if (await file.exists()) return new Response(file, { headers: { 'Content-Type': file.type } });
   return await this.getNotFound(req, corr);
  }
