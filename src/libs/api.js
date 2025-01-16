@@ -126,15 +126,12 @@ class API {
    const auth_result = await this.authenticateUser(req, resp, /*ref*/ context);
    if (auth_result !== true) return auth_result;
   }
-
   if (req.sessionID) context.sessionID = req.sessionID;
   if (req.data?.params) context.params = req.data.params;
-
   //Log.debug('coreCmd:');
   //Log.debug('req:', req);
   //Log.debug('command_fn:', command_fn);
   //Log.debug('context:', context);
-
   Log.debug(corr, 'Executing core command:', command_name);
   let method_result = await command_fn.method.call(this, context);
   return { ...resp, ...method_result };
@@ -165,11 +162,9 @@ class API {
   c.params.username = c.params.username.toLowerCase();
   const adminCredentials = await this.data.getAdminCredentials(c.params.username);
   if (!adminCredentials) return { error: 4, message: 'Wrong username' };
-
   authLog.debug('adminCredentials:', adminCredentials);
   authLog.debug('c.params:', c.params);
   authLog.debug('c.params.password:', c.params.password);
-
   if (!this.data.verifyHash(adminCredentials.password, c.params.password)) return { error: 5, message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.adminSetLogin(adminCredentials.id, sessionID);
@@ -373,9 +368,7 @@ class API {
    };
   if (c.params.password.length < 8) return { error: 7, message: 'Password has to be 8 or more characters long' };
   await this.data.adminUsersAdd(c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
-
   // TRANSACTION END
-
   this.signals.notify('new_user', { username: c.params.username, domainID: c.params.domainID });
   return { error: 0, message: 'User was added successfully' };
  }
@@ -396,11 +389,8 @@ class API {
      message: 'Invalid username. Username must be 1-64 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row',
     };
   }
-
   // TRANSACTION BEGIN
-
   if (!(await this.data.userExistsByID(c.params.userID))) return { error: 3, message: 'Wrong user ID' };
-
   if (c.params.domainID) {
    if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 6, message: 'Wrong domain ID' };
   }
@@ -413,9 +403,7 @@ class API {
    if (c.params.password.length < 8) return { error: 8, message: 'Password has to be 8 or more characters long' };
   }
   await this.data.adminUsersEdit(c.params.userID, c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
-
   // TRANSACTION END
-
   return { error: 0, message: 'User was edited successfully' };
  }
 
@@ -529,7 +517,6 @@ class API {
 
  async adminClientsList(c) {
   let items = [];
-
   this.webServer.clients.forEach((value, key) => {
    if (!c.params?.filterIp || c.params?.filterIp === value.ws.remoteAddress) {
     if (!c.params?.filterGuid || c.params?.filterGuid === key) {

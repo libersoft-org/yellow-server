@@ -1,5 +1,4 @@
 import { newLogger } from 'yellow-server-common';
-
 let Log = newLogger('module');
 
 class Module {
@@ -15,7 +14,6 @@ class Module {
 
  async connect() {
   this.log.info('Connecting to the module: ', this.connection_string);
-
   try {
    this.ws = new WebSocket(this.connection_string);
   } catch (e) {
@@ -37,13 +35,10 @@ class Module {
     this.log.error('Error parsing JSON:', event.data);
     return;
    }
-
    this.log.trace('Message from module', this.name, msg);
-
    if (msg.type === 'response') {
     const wsGuid = msg.wsGuid;
     const requestID = msg.requestID;
-
     if (!requestID) {
      this.log.warning('No request ID in the response:', msg);
      return;
@@ -52,13 +47,11 @@ class Module {
      this.log.warning('No wsGuid in the response:', msg);
      return;
     }
-
     const cb = this.requests[wsGuid]?.[requestID]?.resolve;
     if (!cb) {
      this.log.warning('No callback for the request:', msg);
      return;
     }
-
     cb(msg);
     delete this.requests[wsGuid]?.[requestID];
    } else if (msg.type === 'notify') {
@@ -76,12 +69,10 @@ class Module {
     this.log.warning('Unknown message type from module', this.name, msg);
    }
   });
-
   this.ws.addEventListener('error', event => {
    this.log.error('Error in module connection to', this.name);
    this.log.error(event);
   });
-
   this.ws.addEventListener('close', async () => {
    this.log.info('Connection to module closed: ' + this.connection_string);
    if (this.connected) {
@@ -124,22 +115,16 @@ class Module {
 
  async sendRequest(corr, msg, wsGuid, requestID) {
   corr = { ...corr, module: this.name };
-
-  if (!this.requests[wsGuid]) {
-   this.requests[wsGuid] = {};
-  }
-
+  if (!this.requests[wsGuid]) this.requests[wsGuid] = {};
   if (this.requests[wsGuid]?.[requestID]) {
    this.log.error(corr, 'Request already exists:', wsGuid, requestID);
    return;
   }
-
   let promise = new Promise((resolve, reject) => {
    this.requests[wsGuid][requestID] = { resolve, reject };
    this.log.trace(corr, 'Request to module:', this.name, requestID);
    this.send(corr, { type: 'request', ...msg });
   });
-
   return await promise;
  }
 

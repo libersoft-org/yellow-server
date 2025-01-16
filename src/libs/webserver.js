@@ -2,9 +2,7 @@ import path from 'path';
 import API from './api.js';
 import { Info } from './info.js';
 import { newLogger } from 'yellow-server-common';
-import {statSync, existsSync } from "fs";
-
-
+import { statSync, existsSync } from 'fs';
 const Log = newLogger('webserver');
 const healthcheckLog = newLogger('healthcheck');
 
@@ -137,7 +135,7 @@ class WebServer {
     return this.getFile(req, corr);
    }
   } catch (ex) {
-   console.log(ex)
+   console.log(ex);
    console.error(ex);
    return await this.getNotFound(req, corr);
   }
@@ -170,7 +168,6 @@ class WebServer {
  }
 
  getWebSocket() {
-  const api = this.api;
   return {
    message: async (ws, message) => {
     let corr = { ...ws.data, clientWsGuid: this.wsGuids[ws], messageGuid: message.guid, requestGuid: getGuid() };
@@ -219,44 +216,32 @@ class WebServer {
   let urlPathBase = null;
   const sortedPaths = Info.settings.web.web_paths.sort((a, b) => b.route.length - a.route.length);
   Log.info('url.pathname:', url.pathname);
-
   for (const webPath of sortedPaths) {
    if (url.pathname.startsWith(webPath.route)) {
-
     /* filesystem absolute path */
     fsAbsPathBase = webPath.path.startsWith('/') ? webPath.path : path.join(Info.appPath, webPath.path);
-
     /* url path */
     urlPathBase = webPath.route;
-
     break;
    }
   }
 
   Log.info('fsAbsPathBase:', fsAbsPathBase);
-
   /* if no matching item found in web_paths */
   if (!fsAbsPathBase) {
    log.info('no matching item found in web_paths');
    return await this.getNotFound(req, corr);
   }
-
   let fsAbsPathFull = path.join(fsAbsPathBase, url.pathname.replace(urlPathBase, ''));
   Log.info('fsAbsPathFull:', fsAbsPathFull);
-
-  if (url.pathname.endsWith('/'))
-  {
+  if (url.pathname.endsWith('/')) {
    fsAbsPathFull = path.join(fsAbsPathFull, 'index.html');
    Log.debug('redirect to index.html for directory -> fsAbsPathFull=', fsAbsPathFull);
-  }
-
-  else if (existsSync(fsAbsPathFull) && statSync(fsAbsPathFull).isDirectory())
-  {
+  } else if (existsSync(fsAbsPathFull) && statSync(fsAbsPathFull).isDirectory()) {
    Log.debug('redirect to directory', fsAbsPathFull);
    let redirect = path.join(url.pathname, '/');
    return new Response(null, { status: 301, headers: { Location: redirect } });
   }
-
   const file = Bun.file(fsAbsPathFull);
   if (await file.exists()) return new Response(file, { headers: { 'Content-Type': file.type } });
   return await this.getNotFound(req, corr);
