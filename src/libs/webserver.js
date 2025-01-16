@@ -242,7 +242,7 @@ class WebServer {
   let fsAbsPathFull = path.join(fsAbsPathBase, url.pathname.replace(urlPathBase, ''));
   Log.info('fsAbsPathFull:', fsAbsPathFull);
 
-  if (fsAbsPathFull.endsWith('/'))
+  if (url.pathname.endsWith('/'))
   {
    fsAbsPathFull = path.join(fsAbsPathFull, 'index.html');
    Log.debug('redirect to index.html for directory -> fsAbsPathFull=', fsAbsPathFull);
