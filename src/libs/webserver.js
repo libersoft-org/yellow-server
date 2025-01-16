@@ -245,7 +245,7 @@ class WebServer {
   if (url.pathname.endsWith('/'))
   {
    fsAbsPathFull = path.join(url.pathname, 'index.html');
-   log.debug('redirect to index.html for directory -> fsAbsPathFull=', fsAbsPathFull);
+   Log.debug('redirect to index.html for directory -> fsAbsPathFull=', fsAbsPathFull);
   }
 
   else if (statSync(fsAbsPathFull).isDirectory())
