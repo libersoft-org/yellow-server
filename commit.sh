@@ -1,7 +1,7 @@
 #!/bin/sh
 
 REPO="yellow-server.git"
-NAME="Liberland Software Foundation"
+NAME="LiberSoft"
 BRANCH="main"
 EMAIL="info@libersoft.org"
 USER="libersoft-org"
