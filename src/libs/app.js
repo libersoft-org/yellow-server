@@ -17,7 +17,7 @@ class App {
     if (args[0] === '--create-settings') await this.createSettings();
     else if (args[0] === '--create-database') await this.createDatabase();
     else if (args[0] === '--create-admin') this.createAdmin();
-    else if (args[0] === '--init-modules') this.initModules();
+    //else if (args[0] === '--init-modules') this.initModules();
     else this.getHelp();
     break;
    default:
@@ -87,7 +87,7 @@ class App {
    Log.error('Settings file "' + Info.settingsFile + '" already exists. If you need to replace it with default one, delete the old one first.');
    process.exit(1);
   } else {
-   var settings = {
+   let settings = {
     web: {
      standalone: true,
      http_port: 80,
@@ -192,19 +192,17 @@ class App {
   Log.info('Admin was created successfully.');
   process.exit(1);
  }
-
+ /*
  async initModules() {
   await this.loadSettings();
   const data = new Data();
-
   data.adminModulesAdd('org.libersoft.messages', 'ws://localhost:25001/');
   Log.info('Added module messages.');
-  let res = await data.adminModulesList(null);
-
+  await data.adminModulesList(null);
   Log.info('Modules were initialized successfully.');
   process.exit(1);
  }
-
+*/
  async getInput(promptMessage, isPassword = false, defaultValue = '') {
   return new Promise(resolve => {
    let input = '';

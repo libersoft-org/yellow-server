@@ -168,7 +168,6 @@ class WebServer {
  }
 
  getWebSocket() {
-  const api = this.api;
   return {
    message: async (ws, message) => {
     let corr = { ...ws.data, clientWsGuid: this.wsGuids[ws], messageGuid: message.guid, requestGuid: getGuid() };
