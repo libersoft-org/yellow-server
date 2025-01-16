@@ -2,7 +2,6 @@ import path from 'path';
 import API from './api.js';
 import { Info } from './info.js';
 import { newLogger } from 'yellow-server-common';
-
 const Log = newLogger('webserver');
 const healthcheckLog = newLogger('healthcheck');
 
@@ -106,27 +105,20 @@ class WebServer {
  async fetch(req, server) {
   let clientIP0 = server.requestIP(req).address;
   let clientIP = clientIP0;
-
   const forwardedHeaders = [req.headers.get('x-forwarded-for'), req.headers.get('cf-connecting-ip'), req.headers.get('x-real-ip'), req.headers.get('forwarded'), req.headers.get('x-client-ip'), req.headers.get('x-cluster-client-ip'), req.headers.get('true-client-ip'), req.headers.get('proxy-client-ip'), req.headers.get('wl-proxy-client-ip')];
-
   for (const header of forwardedHeaders) {
    if (header) {
     clientIP = header.split(',')[0];
     break;
    }
   }
-
   const url = new URL(req.url);
-
   let corr = { clientIP0, headers: req.headers, clientIP, url: req.url, method: req.method };
-
   if (url.pathname === '/health') healthcheckLog.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
   else Log.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
-
   if (server.protocol === 'https' || Info.settings.web.https_disabled) {
    if (server.upgrade(req, { data: { corr } })) return;
   }
-
   try {
    if (url.protocol == 'http:' && !Info.settings.web.https_disabled) {
     url.protocol = 'https:';
@@ -139,11 +131,11 @@ class WebServer {
    } else if (url.pathname == '/health') {
     return new Response('OK', { headers: { 'Content-Type': 'text/plain' } });
    } else {
-    return this.getFile(req);
+    return this.getFile(req, corr);
    }
   } catch (ex) {
    console.error(ex);
-   return await this.getNotFound(corr, req);
+   return await this.getNotFound(req, corr);
   }
  }
 
@@ -217,7 +209,7 @@ class WebServer {
   };
  }
 
- async getFile(req) {
+ async getFile(req, corr = {}) {
   const url = new URL(req.url);
   let matchedPath = null;
   let matchedRoute = null;
@@ -230,14 +222,14 @@ class WebServer {
     break;
    }
   }
-  if (!matchedPath) return await this.getNotFound(req);
+  if (!matchedPath) return await this.getNotFound(req, corr);
   if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
   const file = Bun.file(path.join(matchedPath, url.pathname.replace(matchedRoute, '')));
   if (await file.exists()) return new Response(file, { headers: { 'Content-Type': file.type } });
-  return await this.getNotFound(req);
+  return await this.getNotFound(req, corr);
  }
 
- async getNotFound(corr, req) {
+ async getNotFound(req, corr = {}) {
   Log.error(corr, 'Not found: ' + req.url);
   //console.log('Not found: ' + req.url);
   const rootPathObj = Info.settings.web.web_paths.find(path => path.route === '/');
