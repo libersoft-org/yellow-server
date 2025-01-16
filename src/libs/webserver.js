@@ -2,7 +2,8 @@ import path from 'path';
 import API from './api.js';
 import { Info } from './info.js';
 import { newLogger } from 'yellow-server-common';
-import {statSync, accessSync } from "fs";
+import {statSync, accessSync, constants } from "fs";
+
 
 const Log = newLogger('webserver');
 const healthcheckLog = newLogger('healthcheck');
@@ -248,7 +249,7 @@ class WebServer {
    Log.debug('redirect to index.html for directory -> fsAbsPathFull=', fsAbsPathFull);
   }
 
-  else if (accessSync(fsAbsPathFull) && statSync(fsAbsPathFull).isDirectory())
+  else if (accessSync(fsAbsPathFull, constants.F_OK) && statSync(fsAbsPathFull).isDirectory())
   {
    Log.debug('redirect to directory', fsAbsPathFull);
    let redirect = path.join(url.pathname, '/');
