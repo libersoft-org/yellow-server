@@ -250,8 +250,8 @@ class WebServer {
 
   else if (statSync(fsAbsPathFull).isDirectory())
   {
-   Log.debug('redirect to index.html for directory', fsAbsPathFull);
-   let redirect = path.join(url.pathname, '/index.html');
+   Log.debug('redirect to directory', fsAbsPathFull);
+   let redirect = path.join(url.pathname, '/');
    return new Response(null, { status: 301, headers: { Location: redirect } });
   }
 
