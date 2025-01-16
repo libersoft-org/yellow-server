@@ -231,7 +231,7 @@ class WebServer {
   Log.info('matchedFilePath:', matchedFilePath);
 
   if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
-  else if (statSync(matchedPath).isDirectory())
+  else if (statSync(matchedFilePath).isDirectory())
   {
    let redirect = path.join(url.pathname, '/index.html');
    return new Response(null, { status: 301, headers: { Location: redirect } });
