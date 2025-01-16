@@ -137,6 +137,7 @@ class WebServer {
     return this.getFile(req, corr);
    }
   } catch (ex) {
+   console.log(ex)
    console.error(ex);
    return await this.getNotFound(req, corr);
   }
@@ -249,7 +250,7 @@ class WebServer {
    Log.debug('redirect to index.html for directory -> fsAbsPathFull=', fsAbsPathFull);
   }
 
-  else if (accessSync(fsAbsPathFull, constants.F_OK) && statSync(fsAbsPathFull).isDirectory())
+  else if (accessSync(fsAbsPathFull, constants.R_OK) && statSync(fsAbsPathFull).isDirectory())
   {
    Log.debug('redirect to directory', fsAbsPathFull);
    let redirect = path.join(url.pathname, '/');
