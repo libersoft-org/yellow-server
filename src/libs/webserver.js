@@ -242,7 +242,7 @@ class WebServer {
   let fsAbsPathFull = path.join(fsAbsPathBase, url.pathname.replace(urlPathBase, ''));
   Log.info('fsAbsPathFull:', fsAbsPathFull);
 
-  if (url.pathname.endsWith('/')) url.pathname = path.join(url.pathname, 'index.html');
+  if (url.pathname.endsWith('/')) fsAbsPathFull = path.join(url.pathname, 'index.html');
 
   else if (statSync(fsAbsPathFull).isDirectory())
   {
