@@ -103,6 +103,7 @@ class Module {
    getUserIDByUsernameAndDomainID: this.data.getUserIDByUsernameAndDomainID.bind(this.data),
    getUserIDByUsernameAndDomainName: this.data.getUserIDByUsernameAndDomainName.bind(this.data),
    userGetUserInfo: this.data.userGetUserInfo.bind(this.data),
+   getUserAddressByID: this.data.getUserAddressByID.bind(this.data),
   };
   const cmd_fn = cmds[cmd];
   if (!cmd_fn) {

@@ -1,7 +1,7 @@
 import path from 'path';
 import API from './api.js';
 import { Info } from './info.js';
-import { newLogger } from 'yellow-server-common';
+import { newLogger, websocketOptions } from 'yellow-server-common';
 import { statSync, existsSync } from 'fs';
 const Log = newLogger('webserver');
 const healthcheckLog = newLogger('healthcheck');
@@ -62,6 +62,7 @@ class WebServer {
    }
   }
   let options = {
+   websocket: this.getWebSocket(),
    development: true,
    fetch: this.fetch.bind(this),
    port: Info.settings.web.http_port,
@@ -80,13 +81,12 @@ class WebServer {
     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
     Bun.serve({
      ...options,
-     websocket: this.getWebSocket(),
      port: Info.settings.web.https_port,
      tls: certs_bun,
     });
     Log.info('HTTPS server is running on port: ' + Info.settings.web.https_port);
    } else {
-    Bun.serve({ ...options, websocket: this.getWebSocket() });
+    Bun.serve(options);
     Log.info('HTTP server is running on port: ' + Info.settings.web.http_port);
    }
   } else {
@@ -94,7 +94,6 @@ class WebServer {
    Bun.serve({
     ...options,
     port: undefined,
-    websocket: this.getWebSocket(),
     unix: socketPath,
    });
    const fs = require('fs');
@@ -169,6 +168,7 @@ class WebServer {
 
  getWebSocket() {
   return {
+   ...websocketOptions(Info.settings),
    message: async (ws, message) => {
     let corr = { ...ws.data, clientWsGuid: this.wsGuids[ws], messageGuid: message.guid, requestGuid: getGuid() };
     if (import.meta.env.VITE_YELLOW_DEBUG) {
