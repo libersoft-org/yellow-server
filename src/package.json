@@ -1,11 +1,11 @@
 {
- "name": "yellow-server",
- "dependencies": {
-  "mariadb": "^2.5.6",
-  "pino-elasticsearch": "^8.1.0",
-  "pino-filter": "^2.0.0",
-  "pino-pretty": "^13.0.0",
-  "yellow-server-common": "https://github.com/libersoft-org/yellow-server-common#4d8791dc59811e853c9ec0e28b5964ac24bf1b22"
- },
- "license": "Unlicense"
+  "name": "yellow-server",
+  "dependencies": {
+    "mariadb": "^2.5.6",
+    "pino-elasticsearch": "^8.1.0",
+    "pino-filter": "^2.0.0",
+    "pino-pretty": "^13.0.0",
+    "yellow-server-common": "git+https://github.com/libersoft-org/yellow-server-common#96e468cd50a492a57509566e41e9299ecbbd54de"
+  },
+  "license": "Unlicense"
 }
