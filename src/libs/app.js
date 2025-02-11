@@ -115,8 +115,7 @@ class App {
      name: 'yellow',
     },
     log: {
-     level: 'trace',
-
+     level: 'info',
      stdout: {
       enabled: true,
       levels: [{ '*': 'info' }],
@@ -131,12 +130,12 @@ class App {
       level: 'debug',
      },
      json: {
-      enabled: true,
+      enabled: false,
       name: 'json.log',
       level: 'trace',
      },
      elasticsearch: {
-      enabled: true,
+      enabled: false,
      },
     },
     session: {
