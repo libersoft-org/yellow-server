@@ -25,10 +25,47 @@ class Modules {
    for (let i = 0; i < res.length; i++) {
     let mod = res[i];
     Log.info('Loading module:', mod);
-    await this.add(new Module(this.app, this.data, mod.name, mod.connection_string));
+    if (this.modules[mod.name]) {
+     Log.error('Module already loaded:', mod.name);
+    } else {
+     await this.add(new Module(this.app, this.data, mod.id, mod.name, mod.connection_string));
+    }
    }
   }
   Log.info('Modules loaded.');
+ }
+
+ async init_module(name) {
+  let res = await this.data.adminModulesList();
+  if (res) {
+   for (let i = 0; i < res.length; i++) {
+    let mod = res[i];
+    if (mod.name === name) {
+     if (this.modules[mod.name]) {
+      Log.error('Module already loaded:', mod.name);
+     } else {
+      await this.add(new Module(this.app, this.data, mod.id, mod.name, mod.connection_string));
+     }
+     break;
+    }
+   }
+  }
+ }
+
+ async deinit() {
+  for (let name in this.modules) {
+   await this.remove(this.modules[name].id);
+  }
+ }
+
+ /*async reinit() {
+  await this.deinit();
+  await this.init();
+ }*/
+
+ async reinit_module(id, new_name) {
+  await this.remove(id);
+  await this.init_module(new_name);
  }
 
  async add(m) {
@@ -38,6 +75,24 @@ class Modules {
 
  get(name) {
   return this.modules[name];
+ }
+
+ moduleById(id) {
+  for (let name in this.modules) {
+   let m = this.modules[name];
+   Log.debug('moduleById:', name, id, m);
+   if (m.id == id) return m;
+  }
+  return null;
+ }
+
+ async remove(id) {
+  let m = this.moduleById(id);
+  //Log.debug('Removing module:', id, m);
+  if (m) {
+   await m.disconnect();
+   delete this.modules[m.name];
+  }
  }
 
  async sendUserCmdToModule(corr, module_name, msg, wsGuid, requestID) {

@@ -2,11 +2,13 @@ import { newLogger } from 'yellow-server-common';
 let Log = newLogger('module');
 
 class Module {
- constructor(app, data, name, connection_string) {
+ constructor(app, data, id, name, connection_string) {
   Log.debug('Creating module: ', name);
+  this.ws = null;
   this.log = Log.child(name);
   this.app = app;
   this.data = data;
+  this.id = id;
   this.name = name;
   this.connection_string = connection_string;
   this.requests = {};
@@ -74,11 +76,8 @@ class Module {
    this.log.error(event);
   });
   this.ws.addEventListener('close', async () => {
-   this.log.info('Connection to module closed: ' + this.connection_string);
-   if (this.connected) {
-    this.connected = false;
-    await this.notifyModuleAvailable();
-   }
+   await this.onClose();
+
    setTimeout(() => {
     this.log.info('Reconnecting to module: ' + this.connection_string);
     this.connect();
@@ -86,11 +85,28 @@ class Module {
   });
  }
 
+ async disconnect() {
+  this.log.debug('Disconnecting from module: ' + this.connection_string);
+  await this.onClose();
+  if (this.ws) {
+   this.ws.close();
+   this.ws = null;
+  }
+ }
+
+ async onClose() {
+  this.log.info('Closing connection to module: ' + this.connection_string);
+  if (this.connected) {
+   this.connected = false;
+   await this.notifyModuleAvailable();
+  }
+ }
+
  async notifyModuleAvailable() {
   let ma = {};
   ma[this.name] = this.connected;
   this.app.webServer.clients.forEach(async (client, wsGuid) => {
-   this.log.debug('Notifying client of modules available:', wsGuid, client);
+   this.log.debug('Notifying client of modules available:', wsGuid, client, ma);
    await client.ws.send(JSON.stringify({ type: 'notify', event: 'modules_available', data: { modules_available: ma } }));
   });
  }

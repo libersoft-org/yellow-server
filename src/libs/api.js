@@ -450,6 +450,7 @@ class API {
   if (!c.params.connection_string) return { error: 4, message: 'Module connection string is missing' };
   c.params.connection_string = c.params.connection_string.toLowerCase();
   await this.data.adminModulesAdd(c.params.name, c.params.connection_string);
+  await this.modules.init_module(c.params.name);
   return { error: 0, data: { message: 'Module was created successfully' } };
  }
 
@@ -460,6 +461,7 @@ class API {
   if (!c.params.name) return { error: 4, message: 'Module name is missing' };
   if (!c.params.connection_string) return { error: 5, message: 'Connection string is missing' };
   await this.data.adminModulesEdit(c.params.moduleID, c.params.name, c.params.connection_string);
+  await this.modules.reinit_module(c.params.moduleID, c.params.name);
   return { error: 0, message: 'Module was edited successfully' };
  }
 
@@ -468,6 +470,7 @@ class API {
   if (!c.params.moduleID) return { error: 2, message: 'Module ID is missing' };
   if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 3, message: 'Wrong module ID' };
   await this.data.adminModulesDel(c.params.moduleID);
+  await this.modules.remove(c.params.moduleID);
   return { error: 0, message: 'Module was deleted successfully' };
  }
 
