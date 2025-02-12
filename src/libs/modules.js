@@ -44,7 +44,9 @@ class Modules {
      if (this.modules[mod.name]) {
       Log.error('Module already loaded:', mod.name);
      } else {
-      await this.add(new Module(this.app, this.data, mod.id, mod.name, mod.connection_string));
+      if (mod.enabled) {
+       await this.add(new Module(this.app, this.data, mod.id, mod.name, mod.connection_string));
+      }
      }
      break;
     }
@@ -63,9 +65,9 @@ class Modules {
   await this.init();
  }*/
 
- async reinit_module(id, new_name) {
+ async reinit_module(id, new_name, enabled) {
   await this.remove(id);
-  await this.init_module(new_name);
+  if (enabled) await this.init_module(new_name);
  }
 
  async add(m) {
@@ -80,7 +82,7 @@ class Modules {
  moduleById(id) {
   for (let name in this.modules) {
    let m = this.modules[name];
-   Log.debug('moduleById:', name, id, m);
+   //Log.debug('moduleById:', name, id, m);
    if (m.id == id) return m;
   }
   return null;

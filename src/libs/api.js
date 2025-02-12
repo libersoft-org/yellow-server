@@ -460,8 +460,8 @@ class API {
   if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 3, message: 'Wrong module ID' };
   if (!c.params.name) return { error: 4, message: 'Module name is missing' };
   if (!c.params.connection_string) return { error: 5, message: 'Connection string is missing' };
-  await this.data.adminModulesEdit(c.params.moduleID, c.params.name, c.params.connection_string);
-  await this.modules.reinit_module(c.params.moduleID, c.params.name);
+  await this.data.adminModulesEdit(c.params.moduleID, c.params.name, c.params.connection_string, c.params.enabled);
+  await this.modules.reinit_module(c.params.moduleID, c.params.name, c.params.enabled);
   return { error: 0, message: 'Module was edited successfully' };
  }
 

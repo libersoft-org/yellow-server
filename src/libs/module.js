@@ -76,9 +76,10 @@ class Module {
    this.log.error(event);
   });
   this.ws.addEventListener('close', async () => {
+   if (!this.ws) return;
    await this.onClose();
-
    setTimeout(() => {
+    if (!this.ws) return;
     this.log.info('Reconnecting to module: ' + this.connection_string);
     this.connect();
    }, 1000);
@@ -87,11 +88,11 @@ class Module {
 
  async disconnect() {
   this.log.debug('Disconnecting from module: ' + this.connection_string);
-  await this.onClose();
   if (this.ws) {
    this.ws.close();
    this.ws = null;
   }
+  await this.onClose();
  }
 
  async onClose() {

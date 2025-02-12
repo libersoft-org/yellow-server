@@ -17,7 +17,7 @@ class Data extends DataGeneric {
    await this.db.query('CREATE TABLE IF NOT EXISTS users (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(64) NOT NULL, id_domains INT, visible_name VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_domains) REFERENCES domains(id), UNIQUE (username, id_domains))');
    await this.db.query('CREATE TABLE IF NOT EXISTS users_logins (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(128) NULL, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
    await this.db.query('CREATE TABLE IF NOT EXISTS users_sessions (id INT PRIMARY KEY AUTO_INCREMENT, id_users INT, session VARCHAR(255) NOT NULL UNIQUE, last TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (id_users) REFERENCES users(id))');
-   await this.db.query('CREATE TABLE IF NOT EXISTS modules (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL UNIQUE, connection_string VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)');
+   await this.db.query('CREATE TABLE IF NOT EXISTS modules (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL UNIQUE, connection_string VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, enabled BOOLEAN NOT NULL DEFAULT TRUE)');
    await this.db.query('CREATE TABLE IF NOT EXISTS logs (id INT PRIMARY KEY AUTO_INCREMENT, level INT NOT NULL, topic TEXT NULL, message TEXT NULL, json JSON NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
   } catch (ex) {
    Log.error('createDB:', ex);
@@ -267,7 +267,7 @@ class Data extends DataGeneric {
  }
 
  async adminModulesList(count = 10, offset = 0, orderBy = 'id', direction = 'ASC', filterName = null) {
-  let query = 'SELECT id, name, connection_string, created FROM modules';
+  let query = 'SELECT id, name, connection_string, created, enabled FROM modules';
   const params = [];
   if (filterName !== null) {
    query += ' WHERE name LIKE ?';
@@ -289,9 +289,9 @@ class Data extends DataGeneric {
   await this.db.query('INSERT INTO modules (name, connection_string) VALUES (?, ?)', [name, connectionString]);
  }
 
- async adminModulesEdit(id, name, connectionString) {
-  //console.log(id, name, connectionString);
-  await this.db.query('UPDATE modules SET name = ?, connection_string = ? WHERE id = ?', [name, connectionString, id]);
+ async adminModulesEdit(id, name, connectionString, enabled) {
+  console.log('adminModulesEdit:', id, name, connectionString, enabled);
+  await this.db.query('UPDATE modules SET name = ?, connection_string = ?, enabled = ? WHERE id = ?', [name, connectionString, enabled, id]);
  }
 
  async moduleExistsByID(moduleID) {
@@ -309,7 +309,7 @@ class Data extends DataGeneric {
  }
 
  async getModuleInfoByID(moduleID) {
-  const res = await this.db.query('SELECT name, connection_string, created FROM modules WHERE id = ?', [moduleID]);
+  const res = await this.db.query('SELECT name, connection_string, created, enabled FROM modules WHERE id = ?', [moduleID]);
   return res.length === 1 ? res[0] : false;
  }
 
