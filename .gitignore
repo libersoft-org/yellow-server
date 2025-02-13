@@ -3,7 +3,6 @@ src/settings.json
 src/*.sock
 src/*.db
 src/*.log
-src/bun.lock
 src/bun.lockb
 src/bun.lockb.txt
 src/package-lock.json
