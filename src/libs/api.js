@@ -80,7 +80,7 @@ class API {
  }
 
  async processAPI(corr, ws, wsGuid, json) {
-  Log.debug(corr, 'API request:', json);
+  Log.trace(corr, 'API request:', json);
   let req;
   try {
    req = JSON.parse(json);
