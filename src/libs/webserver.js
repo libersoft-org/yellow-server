@@ -141,13 +141,13 @@ class WebServer {
  }
 
  async handleMessage(corr, ws, message) {
-  Log.debug(corr, 'WebSocket message from: ', ws.remoteAddress, ', message: ', message);
+  Log.trace(corr, 'WebSocket message from: ', ws.remoteAddress, ', message: ', message);
   let ws_guid = this.wsGuids.get(ws);
   if (!ws_guid) {
    throw new Error('No ws_guid for ws');
   }
   const res = JSON.stringify(await this.api.processAPI(corr, ws, ws_guid, message));
-  Log.debug(corr, 'WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
+  Log.trace(corr, 'WebSocket response to: ' + ws.remoteAddress + ', message: ' + res);
   ws.send(res);
  }
 
