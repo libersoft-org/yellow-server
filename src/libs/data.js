@@ -76,7 +76,7 @@ class Data extends DataGeneric {
   return res.length === 1 ? true : false;
  }
 
- async adminSessionExists(adminID, sessionName) {
+ async adminSessionExistsName(adminID, sessionName) {
   const res = await this.db.query('SELECT session FROM admins_sessions WHERE id_admins = ? AND session = ?', [adminID, sessionName]);
   return res.length === 1 ? true : false;
  }
