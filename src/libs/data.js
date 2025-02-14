@@ -64,11 +64,20 @@ class Data extends DataGeneric {
  }
 
  async adminSessionsDel(adminID, sessionID) {
-  await this.db.query('DELETE FROM admins_sessions WHERE id_admins = ? AND session = ?', [adminID, sessionID]);
+  await this.db.query('DELETE FROM admins_sessions WHERE id_admins = ? AND id = ?', [adminID, sessionID]);
+ }
+
+ async adminSessionsDelName(adminID, sessionName) {
+  await this.db.query('DELETE FROM admins_sessions WHERE id_admins = ? AND session = ?', [adminID, sessionName]);
  }
 
  async adminSessionExists(adminID, sessionID) {
-  const res = await this.db.query('SELECT session FROM admins_sessions WHERE id_admins = ? AND session = ?', [adminID, sessionID]);
+  const res = await this.db.query('SELECT session FROM admins_sessions WHERE id_admins = ? AND id = ?', [adminID, sessionID]);
+  return res.length === 1 ? true : false;
+ }
+
+ async adminSessionExists(adminID, sessionName) {
+  const res = await this.db.query('SELECT session FROM admins_sessions WHERE id_admins = ? AND session = ?', [adminID, sessionName]);
   return res.length === 1 ? true : false;
  }
 

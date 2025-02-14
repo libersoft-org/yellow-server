@@ -28,6 +28,7 @@ class API {
    admin_admins_add: { method: this.adminAdminsAdd, reqAdminSession: true },
    admin_admins_edit: { method: this.adminAdminsEdit, reqAdminSession: true },
    admin_admins_del: { method: this.adminAdminsDel, reqAdminSession: true },
+   admin_admins_del_name: { method: this.adminAdminsDelName, reqAdminSession: true },
    admin_admins_info: { method: this.adminAdminsInfo, reqAdminSession: true },
    admin_domains_list: { method: this.adminDomainsList, reqAdminSession: true },
    admin_domains_add: { method: this.adminDomainsAdd, reqAdminSession: true },
@@ -199,6 +200,18 @@ class API {
     message: 'Session ID to be deleted not found for this admin',
    };
   await this.data.adminSessionsDel(c.adminID, c.params.sessionID);
+  return { error: 0, message: 'Session was deleted' };
+ }
+
+ async adminSessionsDelName(c) {
+  if (!c.params) return { error: 1, message: 'Parameters are missing' };
+  if (!c.params.session_name) return { error: 2, message: 'Session name to be deleted not set' };
+  if (!(await this.data.adminSessionExistsName(c.adminID, c.params.session_name)))
+   return {
+    error: 3,
+    message: 'Session name to be deleted not found for this admin',
+   };
+  await this.data.adminSessionsDelName(c.adminID, c.params.session_name);
   return { error: 0, message: 'Session was deleted' };
  }
 
