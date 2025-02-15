@@ -105,21 +105,10 @@ class API {
   if (!command_name) return { ...resp, error: 999, message: 'Command not set' };
   const command_fn = this.commands[command_name];
   if (!command_fn) return { ...resp, error: 903, message: 'Unknown command' };
-
   if (command_fn.reqAdminSession) {
    if (!req.sessionID) return { ...resp, error: 995, message: 'Admin session is missing' };
-   if (!(await this.data.adminSessionCheck(req.sessionID)))
-    return {
-     ...resp,
-     error: 997,
-     message: 'Invalid admin session ID',
-    };
-   if (await this.data.adminSessionExpired(req.sessionID))
-    return {
-     ...resp,
-     error: 994,
-     message: 'Admin session is expired',
-    };
+   if (!(await this.data.adminSessionCheck(req.sessionID))) return { ...resp, error: 997, message: 'Invalid admin session ID' };
+   if (await this.data.adminSessionExpired(req.sessionID)) return { ...resp, error: 994, message: 'Admin session is expired' };
    await this.data.adminUpdateSessionTime(req.sessionID);
    const adminID = await this.data.getAdminIDBySession(req.sessionID);
    if (adminID) context.adminID = adminID;
@@ -157,19 +146,19 @@ class API {
  }
 
  async adminLogin(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.username) return { error: 2, message: 'Username is missing' };
-  if (!c.params.password) return { error: 3, message: 'Password is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.username) return { error: 'USERNAME_MISSING', message: 'Username is missing' };
+  if (!c.params.password) return { error: 'PASSWORD_MISSING', message: 'Password is missing' };
   c.params.username = c.params.username.toLowerCase();
   const adminCredentials = await this.data.getAdminCredentials(c.params.username);
-  if (!adminCredentials) return { error: 4, message: 'Wrong username' };
+  if (!adminCredentials) return { error: 'WRONG_USERNAME', message: 'Wrong username' };
   authLog.debug('adminCredentials:', adminCredentials);
   authLog.debug('c.params:', c.params);
   authLog.debug('c.params.password:', c.params.password);
-  if (!this.data.verifyHash(adminCredentials.password, c.params.password)) return { error: 5, message: 'Wrong password' };
+  if (!this.data.verifyHash(adminCredentials.password, c.params.password)) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.adminSetLogin(adminCredentials.id, sessionID);
-  return { error: 0, data: { sessionID } };
+  return { error: false, data: { sessionID } };
  }
 
  async adminSessionsList(c) {
@@ -177,42 +166,31 @@ class API {
   if (c.params?.orderBy) {
    const validOrderBy = ['id', 'session', 'last', 'created'];
    orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
+   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
   }
   let direction = 'ASC';
   if (c.params?.direction) {
    const validDirection = ['ASC', 'DESC'];
    direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
+   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
   }
-  return {
-   error: 0,
-   data: { sessions: await this.data.adminSessionsList(c.adminID, c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) },
-  };
+  return { error: false, data: { sessions: await this.data.adminSessionsList(c.adminID, c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
  }
 
  async adminSessionsDel(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.sessionID) return { error: 2, message: 'Session ID to be deleted not set' };
-  if (!(await this.data.adminSessionExists(c.adminID, c.params.sessionID)))
-   return {
-    error: 3,
-    message: 'Session ID to be deleted not found for this admin',
-   };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.sessionID) return { error: 'SESSION_ID_MISSING', message: 'Session ID to be deleted not set' };
+  if (!(await this.data.adminSessionExists(c.adminID, c.params.sessionID))) return { error: 'SESSION_ID_NOT_FOUND', message: 'Session ID to be deleted not found for this admin' };
   await this.data.adminSessionsDel(c.adminID, c.params.sessionID);
-  return { error: 0, message: 'Session was deleted' };
+  return { error: false, message: 'Session was deleted' };
  }
 
  async adminSessionsDelName(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.session_name) return { error: 2, message: 'Session name to be deleted not set' };
-  if (!(await this.data.adminSessionExistsName(c.adminID, c.params.session_name)))
-   return {
-    error: 3,
-    message: 'Session name to be deleted not found for this admin',
-   };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.session_name) return { error: 'SESSION_NAME_MISSING', message: 'Session name to be deleted not set' };
+  if (!(await this.data.adminSessionExistsName(c.adminID, c.params.session_name))) return { error: 'SESSION_NAME_NOT_FOUND', message: 'Session name to be deleted not found for this admin' };
   await this.data.adminSessionsDelName(c.adminID, c.params.session_name);
-  return { error: 0, message: 'Session was deleted' };
+  return { error: false, message: 'Session was deleted' };
  }
 
  async adminAdminsList(c) {
@@ -220,65 +198,66 @@ class API {
   if (c.params?.orderBy) {
    const validOrderBy = ['id', 'username', 'created'];
    orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
+   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN_NAME', message: 'Invalid column name in orderBy parameter' };
   }
   let direction = 'ASC';
   if (c.params?.direction) {
    const validDirection = ['ASC', 'DESC'];
    direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
+   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
   }
   return {
-   error: 0,
+   error: false,
    data: { admins: await this.data.adminAdminsList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) },
   };
  }
 
  async adminAdminsAdd(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.username) return { error: 2, message: 'Username is missing' };
-  if (!c.params.password) return { error: 3, message: 'Password is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.username) return { error: 'USERNAME_MISSING', message: 'Username is missing' };
+  if (!c.params.password) return { error: 'PASSWORD_MISSING', message: 'Password is missing' };
   c.params.username = c.params.username.toLowerCase();
-  if (await this.data.adminExistsByUsername(c.params.username)) return { error: 4, message: 'This admin already exists' };
-  if (c.params.username.length < 3 || c.params.username.length > 16 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username))
-   return {
-    error: 5,
-    message: 'Invalid username. Username must be 3-16 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row',
-   };
-  if (c.params.password.length < 8) return { error: 6, message: 'Password has to be 8 or more characters long' };
+  if (await this.data.adminExistsByUsername(c.params.username)) return { error: 'USERNAME_EXISTS', message: 'This admin already exists' };
+  const minChars = 3;
+  const maxChars = 16;
+  if (!this.usernameHasValidLength(c.params.username, minChars, maxChars) || !this.usernameHasValidCharacters(c.params.username)) return { error: 'INVALID_USERNAME', message: 'Invalid username. Username must be ' + minChars + ' - ' + maxChars + ' characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
+  if (c.params.password.length < 8) return { error: 'INVALID_PASSWORD_LENGTH', message: 'Password has to be 8 or more characters long' };
   await this.data.adminAdminsAdd(c.params.username, c.params.password);
-  return { error: 0, data: { message: 'Admin was created successfully' } };
+  return { error: false, data: { message: 'Admin was created successfully' } };
  }
 
  async adminAdminsEdit(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.adminID) return { error: 2, message: 'Admin ID is missing' };
-  if (!(await this.data.adminExistsByID(c.params.adminID))) return { error: 3, message: 'Wrong admin ID' };
-  if (!c.params.username && !c.params.password)
-   return {
-    error: 4,
-    message: 'Admin username or admin password has to be in parameters',
-   };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.adminID) return { error: 'USERNAME_MISSING', message: 'Admin ID is missing' };
+  if (!(await this.data.adminExistsByID(c.params.adminID))) return { error: 'INVALID_ID', message: 'Wrong admin ID' };
+  if (!c.params.username && !c.params.password) return { error: 'USERNAME_OR_PASSWORD_MISSING', message: 'Admin username or admin password has to be in parameters' };
+  if (c.params.username) {
+   c.params.username = c.params.username.toLowerCase();
+   const minChars = 3;
+   const maxChars = 16;
+   if (!this.usernameHasValidLength(c.params.username, minChars, maxChars) || !this.usernameHasValidCharacters(c.params.username)) return { error: 'INVALID_USERNAME', message: 'Invalid username. Username must be ' + minChars + ' - ' + maxChars + ' characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
+  }
   // TODO: check if another admin with the same username, but with a different user ID already exists, the following doesn't count with different user ID:
-  //if (await this.data.adminExistsByUsername(c.params.username)) return { error: 5, message: 'This admin already exists' };
+  //if (await this.data.adminExistsByUsername(c.params.username)) return { error: 'USER_EXISTS', message: 'This admin already exists' };
+  if (c.params.password && c.params.password.length < 8) return { error: 'INVALID_PASSWORD_LENGTH', message: 'Password has to be 8 or more characters long' };
   await this.data.adminAdminsEdit(c.params.adminID, c.params.username, c.params.password);
-  return { error: 0, message: 'Admin was edited successfully' };
+  return { error: false, message: 'Admin was edited successfully' };
  }
 
  async adminAdminsDel(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.adminID) return { error: 2, message: 'Admin ID is missing' };
-  if (!(await this.data.adminExistsByID(c.params.adminID))) return { error: 3, message: 'Wrong admin ID' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.adminID) return { error: 'ID_MISSING', message: 'Admin ID is missing' };
+  if (!(await this.data.adminExistsByID(c.params.adminID))) return { error: 'WRONG_ID', message: 'Wrong admin ID' };
   await this.data.adminAdminsDel(c.params.adminID);
-  return { error: 0, message: 'Admin was deleted successfully' };
+  return { error: false, message: 'Admin was deleted successfully' };
  }
 
  async adminAdminsInfo(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.adminID) return { error: 2, message: 'Admin ID is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.adminID) return { error: 'ID_MISSING', message: 'Admin ID is missing' };
   const res = await this.data.getAdminInfoByID(c.params.adminID);
-  if (!res) return { error: 3, message: 'Wrong admin ID' };
-  return { error: 0, data: res };
+  if (!res) return { error: 'WRONG_ID', message: 'Wrong admin ID' };
+  return { error: false, data: res };
  }
 
  async adminDomainsList(c) {
@@ -286,57 +265,53 @@ class API {
   if (c.params?.orderBy) {
    const validOrderBy = ['id', 'name', 'users_count', 'created'];
    orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
+   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
   }
   let direction = 'ASC';
   if (c.params?.direction) {
    const validDirection = ['ASC', 'DESC'];
    direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
+   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
   }
   return {
-   error: 0,
+   error: false,
    data: { domains: await this.data.adminDomainsList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) },
   };
  }
 
  async adminDomainsAdd(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.name) return { error: 2, message: 'Domain name is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.name) return { error: 'DOMAIN_NAME_MISSING', message: 'Domain name is missing' };
   c.params.name = c.params.name.toLowerCase();
-  if (await this.data.domainExistsByName(c.params.name)) return { error: 3, message: 'This domain already exists' };
+  if (await this.data.domainExistsByName(c.params.name)) return { error: 'DOMAIN_EXISTS', message: 'This domain already exists' };
   await this.data.adminDomainsAdd(c.params.name);
-  return { error: 0, data: { message: 'Domain was created successfully' } };
+  return { error: false, data: { message: 'Domain was created successfully' } };
  }
 
  async adminDomainsEdit(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
-  if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 3, message: 'Wrong domain ID' };
-  if (!c.params.name) return { error: 4, message: 'Domain name is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.domainID) return { error: 'ID_MISSING', message: 'Domain ID is missing' };
+  if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 'ID_WRONG', message: 'Wrong domain ID' };
+  if (!c.params.name) return { error: 'DOMAIN_NAME_MISSING', message: 'Domain name is missing' };
   await this.data.adminDomainsEdit(c.params.domainID, c.params.name);
-  return { error: 0, message: 'Domain was edited successfully' };
+  return { error: false, message: 'Domain was edited successfully' };
  }
 
  async adminDomainsDel(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
-  if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 3, message: 'Wrong domain ID' };
-  if ((await this.data.adminUsersCount(c.params.domainID)) > 0)
-   return {
-    error: 4,
-    message: 'Cannot delete this domain, as it still has some users',
-   };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.domainID) return { error: 'ID_MISSING', message: 'Domain ID is missing' };
+  if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 'WRONG_ID', message: 'Wrong domain ID' };
+  if ((await this.data.adminUsersCount(c.params.domainID)) > 0) return { error: 'DOMAIN_USED', message: 'Cannot delete this domain, as it still has some users' };
   await this.data.adminDomainsDel(c.params.domainID);
-  return { error: 0, message: 'Domain was deleted successfully' };
+  return { error: false, message: 'Domain was deleted successfully' };
  }
 
  async adminDomainsInfo(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.domainID) return { error: 2, message: 'Domain ID is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.domainID) return { error: 'ID_MISSING', message: 'Domain ID is missing' };
   const res = await this.data.getDomainInfoByID(c.params.domainID);
-  if (!res) return { error: 3, message: 'Wrong domain ID' };
-  return { error: 0, data: res };
+  if (!res) return { error: 'WRONG_ID', message: 'Wrong domain ID' };
+  return { error: false, data: res };
  }
 
  async adminUsersList(c) {
@@ -344,96 +319,83 @@ class API {
   if (c.params?.orderBy) {
    const validOrderBy = ['id', 'address', 'visible_name', 'created'];
    orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
+   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
   }
   let direction = 'ASC';
   if (c.params?.direction) {
    const validDirection = ['ASC', 'DESC'];
    direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
+   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
   }
-  return {
-   error: 0,
-   data: { users: await this.data.adminUsersList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterUsername, c.params?.filterDomainID) },
-  };
+  return { error: false, data: { users: await this.data.adminUsersList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterUsername, c.params?.filterDomainID) } };
  }
 
  async adminUsersAdd(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.username) return { error: 2, message: 'Username is missing' };
-  if (!c.params.domainID) return { error: 3, message: 'Domain ID is missing' };
-  if (!c.params.visible_name) return { error: 4, message: 'Visible name is missing' };
-  if (!c.params.password) return { error: 5, message: 'Password is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.username) return { error: 'USERNAME_MISSING', message: 'Username is missing' };
+  if (!c.params.domainID) return { error: 'DOMAIN_ID_MISSING', message: 'Domain ID is missing' };
+  if (!c.params.visible_name) return { error: 'VISIBLE_NAME_MISSING', message: 'Visible name is missing' };
+  if (!c.params.password) return { error: 'PASSWORD_MISSING', message: 'Password is missing' };
   c.params.username = c.params.username.toLowerCase();
-  if (c.params.username.length < 1 || c.params.username.length > 64 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username))
-   return {
-    error: 6,
-    message: 'Invalid username. Username must be 1-64 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row',
-   };
-
+  const minChars = 1;
+  const maxChars = 64;
+  if (!this.usernameHasValidLength(c.params.username, minChars, maxChars) || !this.usernameHasValidCharacters(c.params.username)) return { error: 'INVALID_USERNAME', message: 'Invalid username. Username must be ' + minChars + ' - ' + maxChars + ' characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
   // TRANSACTION BEGIN
-
-  if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 6, message: 'Wrong domain ID' };
-  if (await this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID))
-   return {
-    error: 7,
-    message: 'User already exists',
-   };
-  if (c.params.password.length < 8) return { error: 7, message: 'Password has to be 8 or more characters long' };
+  if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 'WRONG_DOMAIN_ID', message: 'Wrong domain ID' };
+  if (await this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID)) return { error: 'USER_EXISTS', message: 'User already exists' };
+  if (c.params.password.length < 8) return { error: 'INVALID_PASSWORD_LENGTH', message: 'Password has to be 8 or more characters long' };
   await this.data.adminUsersAdd(c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
   // TRANSACTION END
   this.signals.notify('new_user', { username: c.params.username, domainID: c.params.domainID });
-  return { error: 0, message: 'User was added successfully' };
+  return { error: false, message: 'User was added successfully' };
  }
 
  async adminUsersEdit(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.userID) return { error: 'ID_MISSING', message: 'User ID is missing' };
   if (!c.params.username && !c.params.domainID && !c.params.visible_name && !c.params.password)
    return {
-    error: 4,
+    error: 'USERNAME_DOMAIN_VISIBLE_NAME_PASSWORD_MISSING',
     message: 'Username, domain ID, visible_name or password has to be in parameters',
    };
   c.params.username = c.params.username.toLowerCase();
   if (c.params.username) {
-   if (c.params.username.length < 1 || c.params.username.length > 64 || !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(c.params.username))
-    return {
-     error: 5,
-     message: 'Invalid username. Username must be 1-64 characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row',
-    };
+   const minChars = 1;
+   const maxChars = 64;
+   if (!this.usernameHasValidLength(c.params.username, minChars, maxChars) || !this.usernameHasValidCharacters(c.params.username)) return { error: 'INVALID_USERNAME', message: 'Invalid username. Username must be ' + minChars + '- ' + maxChars + ' characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
   }
   // TRANSACTION BEGIN
-  if (!(await this.data.userExistsByID(c.params.userID))) return { error: 3, message: 'Wrong user ID' };
+  if (!(await this.data.userExistsByID(c.params.userID))) return { error: 'WRONG_USER_ID', message: 'Wrong user ID' };
   if (c.params.domainID) {
-   if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 6, message: 'Wrong domain ID' };
+   if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 'WRONG_DOMAIN_ID', message: 'Wrong domain ID' };
   }
   if (await this.data.userExistsByUserNameAndDomain(c.params.username, c.params.domainID, c.params.userID))
    return {
-    error: 7,
+    error: 'USER_EXISTS',
     message: 'User already exists',
    };
   if (c.params.password) {
-   if (c.params.password.length < 8) return { error: 8, message: 'Password has to be 8 or more characters long' };
+   if (c.params.password.length < 8) return { error: 'INVALID_PASSWORD_LENGTH', message: 'Password has to be 8 or more characters long' };
   }
   await this.data.adminUsersEdit(c.params.userID, c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
   // TRANSACTION END
-  return { error: 0, message: 'User was edited successfully' };
+  return { error: false, message: 'User was edited successfully' };
  }
 
  async adminUsersDel(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
-  if (!(await this.data.userExistsByID(c.params.userID))) return { error: 3, message: 'Wrong user ID' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.userID) return { error: 'ID_MISSING', message: 'User ID is missing' };
+  if (!(await this.data.userExistsByID(c.params.userID))) return { error: 'WRONG_ID', message: 'Wrong user ID' };
   await this.data.adminUsersDel(c.params.userID);
-  return { error: 0, message: 'User was deleted successfully' };
+  return { error: false, message: 'User was deleted successfully' };
  }
 
  async adminUsersInfo(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.userID) return { error: 2, message: 'User ID is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.userID) return { error: 'ID_MISSING', message: 'User ID is missing' };
   const res = await this.data.getUserInfoByID(c.params.userID);
-  if (!res) return { error: 3, message: 'Wrong user ID' };
-  return { error: 0, data: res };
+  if (!res) return { error: 'WRONG_ID', message: 'Wrong user ID' };
+  return { error: false, data: res };
  }
 
  async adminModulesList(c) {
@@ -441,58 +403,58 @@ class API {
   if (c.params?.orderBy) {
    const validOrderBy = ['id', 'name', 'connection_string', 'created'];
    orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 1, message: 'Invalid column name in orderBy parameter' };
+   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
   }
   let direction = 'ASC';
   if (c.params?.direction) {
    const validDirection = ['ASC', 'DESC'];
    direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 2, message: 'Invalid direction in direction parameter' };
+   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
   }
   return {
-   error: 0,
+   error: false,
    data: { modules: await this.data.adminModulesList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) },
   };
  }
 
  async adminModulesAdd(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.name) return { error: 2, message: 'Module name is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.name) return { error: 'MODULE_NAME_MISSING', message: 'Module name is missing' };
   c.params.name = c.params.name.toLowerCase();
-  if (await this.data.moduleExistsByName(c.params.name)) return { error: 3, message: 'This module already exists' };
-  if (!c.params.connection_string) return { error: 4, message: 'Module connection string is missing' };
+  if (await this.data.moduleExistsByName(c.params.name)) return { error: 'MODULE_EXISTS', message: 'This module already exists' };
+  if (!c.params.connection_string) return { error: 'CONNECTION_STRING_MISSING', message: 'Module connection string is missing' };
   c.params.connection_string = c.params.connection_string.toLowerCase();
   await this.data.adminModulesAdd(c.params.name, c.params.connection_string);
   await this.modules.init_module(c.params.name);
-  return { error: 0, data: { message: 'Module was created successfully' } };
+  return { error: false, data: { message: 'Module was created successfully' } };
  }
 
  async adminModulesEdit(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.moduleID) return { error: 2, message: 'Module ID is missing' };
-  if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 3, message: 'Wrong module ID' };
-  if (!c.params.name) return { error: 4, message: 'Module name is missing' };
-  if (!c.params.connection_string) return { error: 5, message: 'Connection string is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.moduleID) return { error: 'ID_MISSING', message: 'Module ID is missing' };
+  if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 'WRONG_ID', message: 'Wrong module ID' };
+  if (!c.params.name) return { error: 'NAME_MISSING', message: 'Module name is missing' };
+  if (!c.params.connection_string) return { error: 'CONNECTION_STRING_MISSING', message: 'Connection string is missing' };
   await this.data.adminModulesEdit(c.params.moduleID, c.params.name, c.params.connection_string, c.params.enabled);
   await this.modules.reinit_module(c.params.moduleID, c.params.name, c.params.enabled);
-  return { error: 0, message: 'Module was edited successfully' };
+  return { error: false, message: 'Module was edited successfully' };
  }
 
  async adminModulesDel(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.moduleID) return { error: 2, message: 'Module ID is missing' };
-  if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 3, message: 'Wrong module ID' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.moduleID) return { error: 'ID_MISSING', message: 'Module ID is missing' };
+  if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 'WRONG_ID', message: 'Wrong module ID' };
   await this.data.adminModulesDel(c.params.moduleID);
   await this.modules.remove(c.params.moduleID);
-  return { error: 0, message: 'Module was deleted successfully' };
+  return { error: false, message: 'Module was deleted successfully' };
  }
 
  async adminModulesInfo(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.moduleID) return { error: 2, message: 'Module ID is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.moduleID) return { error: 'ID_MISSING', message: 'Module ID is missing' };
   const res = await this.data.getModuleInfoByID(c.params.moduleID);
-  if (!res) return { error: 3, message: 'Wrong module ID' };
-  return { error: 0, data: res };
+  if (!res) return { error: 'WRONG_ID', message: 'Wrong module ID' };
+  return { error: false, data: res };
  }
 
  adminSysInfo() {
@@ -505,7 +467,7 @@ class API {
   }
 
   return {
-   error: 0,
+   error: false,
    data: {
     app: {
      name: Info.appName,
@@ -545,7 +507,7 @@ class API {
   });
   items = this.sortItems(items, c.params?.orderBy, c.params?.direction);
   items = items.slice(c.params.offset || 0, c.params.count || 10);
-  return { error: 0, data: { items } };
+  return { error: false, data: { items } };
  }
 
  sortItems(items, orderBy, direction) {
@@ -627,6 +589,14 @@ class API {
   if (!userID) return { error: 6, message: 'User name not found on this server' };
   const userInfo = await this.data.userGetUserInfo(userID);
   return { error: 0, data: userInfo };
+ }
+
+ usernameHasValidCharacters(username) {
+  return !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username);
+ }
+
+ usernameHasValidLength(username, min, max) {
+  return username.length >= min && username.length <= max;
  }
 
  userPing(c) {
