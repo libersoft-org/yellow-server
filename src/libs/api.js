@@ -3,7 +3,6 @@ import Data from './data.js';
 //import DNS from './dns.js';
 import { Info } from './info.js';
 import { newLogger, Signals } from 'yellow-server-common';
-
 let Log = newLogger('api');
 let authLog = newLogger('auth');
 
@@ -88,15 +87,11 @@ class API {
   } catch (ex) {
    return { error: 902, message: 'Invalid JSON command' };
   }
-
   let resp = {};
   if (req.requestID) resp.requestID = req.requestID;
-
   const context = { ws, requestID: req.requestID, wsGuid };
-
   const target = req.target || 'core';
   const command_name = req.command || req.data?.command;
-
   if (target === 'core') return await this.coreCmd(corr, command_name, resp, req, context);
   else return await this.moduleCmd(corr, wsGuid, target, command_name, req, resp);
  }
@@ -540,55 +535,55 @@ class API {
  }
 
  async userLogin(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.address) return { error: 2, message: 'Address is missing' };
-  if (!c.params.password) return { error: 3, message: 'Password is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.address) return { error: 'ADDRESS_MISSING', message: 'Address is missing' };
+  if (!c.params.password) return { error: 'PASSWORD_MISSING', message: 'Password is missing' };
   let [username, domain] = c.params.address.split('@');
-  if (!username || !domain) return { error: 4, message: 'Invalid address format' };
+  if (!username || !domain) return { error: 'INVALID_ADDRESS_FORMAT', message: 'Invalid address format' };
   username = username.toLowerCase();
   domain = domain.toLowerCase();
   const domainID = await this.data.getDomainIDByName(domain);
-  if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
+  if (!domainID) return { error: 'WRONG_DOMAIN', message: 'Domain name not found on this server' };
   const userCredentials = await this.data.getUserCredentials(username, domainID);
-  if (!userCredentials) return { error: 6, message: 'Wrong user address' };
+  if (!userCredentials) return { error: 'WRONG_ADDRESS', message: 'Wrong user address' };
   //console.log(userCredentials.password, c.params.password);
-  if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 7, message: 'Wrong password' };
+  if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.userSetLogin(userCredentials.id, sessionID);
-  return { error: 0, data: { sessionID, modules_available: this.modules.getAvailable() } };
+  return { error: false, data: { sessionID, modules_available: this.modules.getAvailable() } };
  }
 
  async userListSessions(c) {
   const res = await this.data.userSessionsList(c.userID, c.params?.count, c.params?.offset);
-  if (!res) return { error: 1, message: 'No sessions found for this user' };
-  return { error: 0, data: { sessions: res } };
+  if (!res) return { error: 'NO_SESSIONS', message: 'No sessions found for this user' };
+  return { error: false, data: { sessions: res } };
  }
 
  async userDelSession(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.sessionID) return { error: 2, message: 'Session ID to be deleted not set' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.sessionID) return { error: 'SESSION_MISSING', message: 'Session ID to be deleted not set' };
   if (!(await this.data.userSessionExists(c.userID, c.params.sessionID)))
    return {
-    error: 3,
+    error: 'SESSION_NOT_FOUND',
     message: 'Session ID to be deleted not found for this user',
    };
   await this.data.userSessionsDel(c.userID, c.sessionID);
-  return { error: 0, message: 'Session was deleted' };
+  return { error: false, message: 'Session was deleted' };
  }
 
  async userGetUserInfo(c) {
-  if (!c.params) return { error: 1, message: 'Parameters are missing' };
-  if (!c.params.address) return { error: 2, message: 'Address is missing' };
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.address) return { error: 'ADDRESS_MISSING', message: 'Address is missing' };
   let [username, domain] = c.params.address.split('@');
-  if (!username || !domain) return { error: 4, message: 'Invalid username format' };
+  if (!username || !domain) return { error: 'INVALID_USERNAME_FORMAT', message: 'Invalid username format' };
   username = username.toLowerCase();
   domain = domain.toLowerCase();
   const domainID = await this.data.getDomainIDByName(domain);
-  if (!domainID) return { error: 5, message: 'Domain name not found on this server' };
+  if (!domainID) return { error: 'WRONG_DOMAIN', message: 'Domain name not found on this server' };
   const userID = await this.data.getUserIDByUsernameAndDomainID(username, domainID);
-  if (!userID) return { error: 6, message: 'User name not found on this server' };
+  if (!userID) return { error: 'USER', message: 'User name not found on this server' };
   const userInfo = await this.data.userGetUserInfo(userID);
-  return { error: 0, data: userInfo };
+  return { error: false, data: userInfo };
  }
 
  usernameHasValidCharacters(username) {
@@ -601,7 +596,7 @@ class API {
 
  userPing(c) {
   //Log.debug('Ping from: ' + c.ws.remoteAddress);
-  return { error: 0, message: 'Pong' };
+  return { error: false, message: 'Pong' };
  }
 
  getUUID() {
