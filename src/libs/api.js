@@ -551,7 +551,7 @@ class API {
   if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.userSetLogin(userCredentials.id, sessionID);
-  const client = this.webServer.clients.get(c.params.guid);
+  const client = this.webServer.clients.get(c.wsGuid);
   client.userAddress = c.params.address;
   return { error: false, data: { sessionID, modules_available: this.modules.getAvailable() } };
  }

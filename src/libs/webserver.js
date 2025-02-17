@@ -177,7 +177,7 @@ class WebServer {
      try {
       await this.handleMessage(corr, ws, message);
      } catch (ex) {
-      Log.error('Error processing WebSocket message:', ex);
+      Log.error('Error processing WebSocket message:', ex.message);
      }
     }
    },
