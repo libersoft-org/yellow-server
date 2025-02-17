@@ -526,7 +526,7 @@ class API {
   /*console.log(this.webServer.clients);
   console.log(c.params.guid);*/
   const client = this.webServer.clients.get(c.params.guid);
-  console.log('adminClientsKick: ', client, 'c:', c);
+  //console.log('adminClientsKick: ', client, 'c:', c);
   client?.ws?.close();
  }
 
