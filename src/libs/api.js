@@ -496,6 +496,7 @@ class API {
      items.push({
       guid: key,
       ip: value.ws.remoteAddress,
+      userAddress: value.userAddress,
      });
     }
    }
@@ -550,6 +551,8 @@ class API {
   if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.userSetLogin(userCredentials.id, sessionID);
+  const client = this.webServer.clients.get(c.params.guid);
+  client.userAddress = c.params.address;
   return { error: false, data: { sessionID, modules_available: this.modules.getAvailable() } };
  }
 
@@ -587,7 +590,7 @@ class API {
  }
 
  usernameHasValidCharacters(username) {
-  return !/^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username);
+  return /^(?!.*[_.-]{2})[a-z0-9]+([_.-]?[a-z0-9]+)*$/.test(username);
  }
 
  usernameHasValidLength(username, min, max) {
