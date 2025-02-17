@@ -526,6 +526,7 @@ class API {
   /*console.log(this.webServer.clients);
   console.log(c.params.guid);*/
   const client = this.webServer.clients.get(c.params.guid);
+  console.log('adminClientsKick: ', client, 'c:', c);
   client?.ws?.close();
  }
 
@@ -553,6 +554,8 @@ class API {
   await this.data.userSetLogin(userCredentials.id, sessionID);
   const client = this.webServer.clients.get(c.wsGuid);
   client.userAddress = c.params.address;
+  client.userId = userCredentials.id;
+  //console.log(c);
   return { error: false, data: { sessionID, modules_available: this.modules.getAvailable() } };
  }
 
