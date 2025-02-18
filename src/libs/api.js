@@ -556,7 +556,7 @@ class API {
   client.userAddress = c.params.address;
   client.userId = userCredentials.id;
   //console.log(c);
-  return { error: false, data: { sessionID, modules_available: this.modules.getAvailable() } };
+  return { error: false, data: { sessionID, wsGuid: c.wsGuid, modules_available: this.modules.getAvailable() } };
  }
 
  async userListSessions(c) {
