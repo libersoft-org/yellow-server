@@ -490,14 +490,17 @@ class API {
 
  async adminClientsList(c) {
   let items = [];
+  console.log('c.params:', c.params);
   this.webServer.clients.forEach((value, key) => {
    if (!c.params?.filterIp || c.params?.filterIp === value.ws.remoteAddress) {
     if (!c.params?.filterGuid || c.params?.filterGuid === key) {
-     items.push({
-      guid: key,
-      ip: value.ws.remoteAddress,
-      userAddress: value.userAddress,
-     });
+     if (!c.params?.filterUserAddress || (value.userAddress && value.userAddress.toLowerCase().includes(c.params.filterUserAddress.toLowerCase()))) {
+      items.push({
+       guid: key,
+       ip: value.ws.remoteAddress,
+       userAddress: value.userAddress,
+      });
+     }
     }
    }
   });
