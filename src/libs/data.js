@@ -118,6 +118,11 @@ class Data extends DataGeneric {
   return res.length === 1 ? true : false;
  }
 
+ async adminsByUsername(username) {
+  const res = await this.db.query('SELECT id FROM admins WHERE username = ?', [username]);
+  return res;
+ }
+
  async adminAdminsEdit(id, username = null, password = null) {
   let query = 'UPDATE admins SET';
   let params = [];

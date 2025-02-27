@@ -232,9 +232,11 @@ class API {
    const maxChars = 16;
    if (!this.usernameHasValidLength(c.params.username, minChars, maxChars) || !this.usernameHasValidCharacters(c.params.username)) return { error: 'INVALID_USERNAME', message: 'Invalid username. Username must be ' + minChars + ' - ' + maxChars + ' characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
   }
-  // TODO: check if another admin with the same username, but with a different user ID already exists, the following doesn't count with different user ID:
-  //if (await this.data.adminExistsByUsername(c.params.username)) return { error: 'USER_EXISTS', message: 'This admin already exists' };
   if (c.params.password && c.params.password.length < 8) return { error: 'INVALID_PASSWORD_LENGTH', message: 'Password has to be 8 or more characters long' };
+  let admins = await this.data.adminsByUsername(c.params.username);
+  for (let admin of admins) {
+   if (admin.id !== c.params.adminID) return { error: 'USERNAME_EXISTS', message: 'This admin already exists' };
+  }
   await this.data.adminAdminsEdit(c.params.adminID, c.params.username, c.params.password);
   return { error: false, message: 'Admin was edited successfully' };
  }
@@ -359,7 +361,7 @@ class API {
    const maxChars = 64;
    if (!this.usernameHasValidLength(c.params.username, minChars, maxChars) || !this.usernameHasValidCharacters(c.params.username)) return { error: 'INVALID_USERNAME', message: 'Invalid username. Username must be ' + minChars + '- ' + maxChars + ' characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
   }
-  // TRANSACTION BEGIN
+  // todo TRANSACTION BEGIN
   if (!(await this.data.userExistsByID(c.params.userID))) return { error: 'WRONG_USER_ID', message: 'Wrong user ID' };
   if (c.params.domainID) {
    if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 'WRONG_DOMAIN_ID', message: 'Wrong domain ID' };
