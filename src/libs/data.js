@@ -299,8 +299,8 @@ class Data extends DataGeneric {
   return res;
  }
 
- async adminModulesAdd(name, connectionString) {
-  await this.db.query('INSERT INTO modules (name, connection_string) VALUES (?, ?)', [name, connectionString]);
+ async adminModulesAdd(name, connectionString, enabled) {
+  await this.db.query('INSERT INTO modules (name, connection_string, enabled) VALUES (?, ?, ?)', [name, connectionString, enabled]);
  }
 
  async adminModulesEdit(id, name, connectionString, enabled) {

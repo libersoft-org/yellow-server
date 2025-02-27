@@ -421,7 +421,7 @@ class API {
   if (await this.data.moduleExistsByName(c.params.name)) return { error: 'MODULE_EXISTS', message: 'This module already exists' };
   if (!c.params.connection_string) return { error: 'CONNECTION_STRING_MISSING', message: 'Module connection string is missing' };
   c.params.connection_string = c.params.connection_string.toLowerCase();
-  await this.data.adminModulesAdd(c.params.name, c.params.connection_string);
+  await this.data.adminModulesAdd(c.params.name, c.params.connection_string, c.params.enabled);
   await this.modules.init_module(c.params.name);
   return { error: false, data: { message: 'Module was created successfully' } };
  }
