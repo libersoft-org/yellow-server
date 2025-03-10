@@ -52,9 +52,9 @@ class Module {
     const cb = this.requests[wsGuid]?.[requestID]?.resolve;
     if (!cb) {
      this.log.warning('No callback for the request:', msg);
-     return;
+    } else {
+     cb(msg);
     }
-    cb(msg);
     delete this.requests[wsGuid]?.[requestID];
    } else if (msg.type === 'notify') {
     this.log.info('Notify from module', this.name, msg);
@@ -68,7 +68,7 @@ class Module {
     this.log.trace('Command from module', this.name, msg);
     await this.send({}, { type: 'response', requestID: msg.requestID, result: await this.processCommandFromModule(msg) });
    } else {
-    this.log.warning('Unknown message type from module', this.name, msg);
+    this.log.error('Unknown message type from module', this.name, msg);
    }
   });
   this.ws.addEventListener('error', event => {
@@ -150,15 +150,16 @@ class Module {
   return await this.ws.send(JSON.stringify({ ...msg, correlation: corr }));
  }
 
- async notify(notification) {
+ /*async notify(notification) {
   await this.send({}, { type: 'notify', data: notification });
- }
+ }*/
 
  async handleClientDisconnect(wsGuid) {
   for (let requestID in this.requests[wsGuid]) {
    this.requests[wsGuid][requestID].reject({ error: 1000, message: 'Client disconnected' });
   }
   delete this.requests[wsGuid];
+  this.send({}, { type: 'server_command', cmd: 'client_disconnect', wsGuid });
  }
 }
 
