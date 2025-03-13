@@ -558,6 +558,7 @@ class API {
   const sessionID = this.getUUID();
   await this.data.userSetLogin(userCredentials.id, sessionID);
   const client = this.webServer.clients.get(c.wsGuid);
+  Log.debug('c:', c);
   client.userAddress = c.params.address;
   client.userId = userCredentials.id;
   //console.log(c);

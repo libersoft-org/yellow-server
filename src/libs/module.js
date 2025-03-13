@@ -73,7 +73,7 @@ class Module {
   });
   this.ws.addEventListener('error', event => {
    this.log.error('Error in module connection to', this.name);
-   this.log.error(event);
+   this.log.debug(event);
   });
   this.ws.addEventListener('close', async () => {
    if (!this.ws) return;
@@ -147,6 +147,12 @@ class Module {
  }
 
  async send(corr, msg) {
+  this.log.trace(corr, 'Sending message to module:', this.name, msg);
+  this.log.trace('ws:', this.ws);
+  if (!this.ws) {
+   this.log.debug(corr, 'No websocket connection to module:', this.name);
+   return;
+  }
   return await this.ws.send(JSON.stringify({ ...msg, correlation: corr }));
  }
 
