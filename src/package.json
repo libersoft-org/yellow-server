@@ -5,7 +5,7 @@
     "pino-elasticsearch": "^8.1.0",
     "pino-filter": "^2.0.0",
     "pino-pretty": "^13.0.0",
-    "yellow-server-common": "git+https://github.com/libersoft-org/yellow-server-common#4d56fba7c2a20d7e51af45ccf9d85217a4c6c413"
+    "yellow-server-common": "git+https://github.com/libersoft-org/yellow-server-common#29cd019b9be8f992bb1f44c34090ffc68f4dc922"
   },
   "license": "Unlicense"
 }
