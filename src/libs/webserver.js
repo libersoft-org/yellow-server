@@ -114,8 +114,8 @@ class WebServer {
   }
   const url = new URL(req.url);
   let corr = { app: 'server', clientIP0, headers: req.headers, clientIP, url: req.url, method: req.method };
-  if (url.pathname === '/health') healthcheckLog.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
-  else Log.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
+  if (url.pathname === '/health') healthcheckLog.debug(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
+  else Log.debug(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
   if (server.protocol === 'https' || Info.settings.web.https_disabled) {
    if (server.upgrade(req, { data: { corr } })) return;
   }
