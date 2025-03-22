@@ -607,7 +607,7 @@ class API {
  }
 
  userPing(c) {
-  //Log.debug('Ping from: ' + c.ws.remoteAddress);
+  Log.trace('Ping from: ' + c.ws.remoteAddress);
   return { error: false, message: 'Pong' };
  }
 
