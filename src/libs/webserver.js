@@ -113,7 +113,7 @@ class WebServer {
    }
   }
   const url = new URL(req.url);
-  let corr = { clientIP0, headers: req.headers, clientIP, url: req.url, method: req.method };
+  let corr = { app: 'server', clientIP0, headers: req.headers, clientIP, url: req.url, method: req.method };
   if (url.pathname === '/health') healthcheckLog.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
   else Log.info(corr, req.method + ' request from: ' + clientIP + ', URL: ' + req.url);
   if (server.protocol === 'https' || Info.settings.web.https_disabled) {
@@ -141,7 +141,7 @@ class WebServer {
  }
 
  async handleMessage(corr, ws, message) {
-  Log.trace(corr, 'WebSocket message from: ', ws.remoteAddress, ', message: ', message);
+  Log.trace(corr, 'WebSocket message from: ', ws.remoteAddress, ', message: ', message); //, 'correlation:', corr);
   let ws_guid = this.wsGuids.get(ws);
   if (!ws_guid) {
    throw new Error('No ws_guid for ws');
@@ -170,7 +170,7 @@ class WebServer {
   return {
    ...websocketOptions(Info.settings),
    message: async (ws, message) => {
-    let corr = { ...ws.data, clientWsGuid: this.wsGuids[ws], messageGuid: message.guid, requestGuid: getGuid() };
+    let corr = { ...ws.data.corr, clientWsGuid: this.wsGuids[ws], messageGuid: message.guid, requestGuid: getGuid(), app: 'server' };
     if (import.meta.env.VITE_YELLOW_DEBUG) {
      await this.handleMessage(corr, ws, message);
     } else {

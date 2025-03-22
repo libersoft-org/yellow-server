@@ -1,10 +1,17 @@
-FROM oven/bun:latest
+FROM ubuntu:24.04
 
 ARG UID=1000
 ARG GID=1000
 
-RUN apt update && apt install -y curl tini
+RUN apt update && apt install -y curl tini unzip
 ENTRYPOINT ["/usr/bin/tini", "--"]
+
+# Install Node.js LTS (use setup script)
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt install -y nodejs
+
+# Verify installations
+RUN node -v
 
 RUN mkdir /var/log/yellow
 RUN chown $UID:$GID /var/log/yellow
@@ -14,5 +21,7 @@ RUN mkdir -p $APP_DIR
 RUN chown $UID:$GID $APP_DIR
 USER $UID:$GID
 WORKDIR $APP_DIR
+
+RUN curl -fsSL https://bun.sh/install | bash
 
 CMD ./start-docker-dev.sh

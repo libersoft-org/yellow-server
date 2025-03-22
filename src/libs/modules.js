@@ -24,6 +24,10 @@ class Modules {
   if (res) {
    for (let i = 0; i < res.length; i++) {
     let mod = res[i];
+    if (!mod.enabled) {
+     Log.info('Skipping disabled module:', mod);
+     continue;
+    }
     Log.info('Loading module:', mod);
     if (this.modules[mod.name]) {
      Log.error('Module already loaded:', mod.name);
@@ -98,7 +102,7 @@ class Modules {
  }
 
  async sendUserCmdToModule(corr, module_name, msg, wsGuid, requestID) {
-  Log.debug(corr, 'to module:', module_name, 'sending message:', msg);
+  Log.debug(corr, 'to module:', module_name, 'sending message:', msg); //, 'corr:', corr);
   let m = this.modules[module_name];
   if (!m) {
    Log.error(corr, 'Module not found:', module_name);

@@ -147,13 +147,12 @@ class Module {
  }
 
  async send(corr, msg) {
-  this.log.trace(corr, 'Sending message to module:', this.name, msg);
-  this.log.trace('ws:', this.ws);
   if (!this.ws) {
    this.log.debug(corr, 'No websocket connection to module:', this.name);
    return;
   }
-  return await this.ws.send(JSON.stringify({ ...msg, correlation: corr }));
+  this.log.trace(corr, 'Sending message to module:', this.name, msg, this.ws);
+  return await this.ws.send(JSON.stringify({ ...msg, corr: { ...corr, app: this.name } }));
  }
 
  /*async notify(notification) {
