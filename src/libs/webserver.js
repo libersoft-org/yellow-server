@@ -170,7 +170,7 @@ class WebServer {
   return {
    ...websocketOptions(Info.settings),
    message: async (ws, message) => {
-    let corr = { ...ws.data.corr, clientWsGuid: this.wsGuids[ws], messageGuid: message.guid, requestGuid: getGuid(), app: 'server' };
+    let corr = { ...ws.data.corr, clientWsGuid: this.wsGuids.get(ws), requestGuid: getGuid(), app: 'server' };
     if (import.meta.env.VITE_YELLOW_DEBUG) {
      await this.handleMessage(corr, ws, message);
     } else {

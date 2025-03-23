@@ -87,6 +87,7 @@ class API {
   } catch (ex) {
    return { error: 902, message: 'Invalid JSON command' };
   }
+  corr = { ...corr, clientRequestID: req.requestID };
   let resp = {};
   if (req.requestID) resp.requestID = req.requestID;
   const context = { ws, requestID: req.requestID, wsGuid };
@@ -343,7 +344,7 @@ class API {
   if (c.params.password.length < 8) return { error: 'INVALID_PASSWORD_LENGTH', message: 'Password has to be 8 or more characters long' };
   await this.data.adminUsersAdd(c.params.username, c.params.domainID, c.params.visible_name, c.params.password);
   // TRANSACTION END
-  this.signals.notify('new_user', { username: c.params.username, domainID: c.params.domainID });
+  this.signals.notify({}, 'new_user', { username: c.params.username, domainID: c.params.domainID });
   return { error: false, message: 'User was added successfully' };
  }
 

@@ -4,5 +4,5 @@
 rm -rf ./node_modules/yellow-server-common; ln -s ../../../yellow-server-common ./node_modules/yellow-server-common
 ~/.bun/bin/bun server.js --create-database
 while true; do
-  ~/.bun/bin/bun server.js
+  ~/.bun/bin/bun --watch server.js
 done
