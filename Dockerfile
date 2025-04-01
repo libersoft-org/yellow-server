@@ -19,6 +19,8 @@ RUN chown $UID:$GID /var/log/yellow
 ARG APP_DIR=/app/app/src/
 RUN mkdir -p $APP_DIR
 RUN chown $UID:$GID $APP_DIR
+RUN mkdir /.bun
+RUN chown $UID:$GID /.bun
 USER $UID:$GID
 WORKDIR $APP_DIR
 
