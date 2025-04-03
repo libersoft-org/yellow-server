@@ -153,6 +153,7 @@ class App {
   //console.log('checkDatabase0');
   const data = new Data();
   //console.log('checkDatabase1');
+  Log.info('Checking database...');
   if (!(await data.databaseExists())) {
    //console.log('checkDatabase2');
    Log.error('Database is not yet created. Please run "./start.sh --create-database" first.');
