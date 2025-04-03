@@ -96,7 +96,7 @@ class App {
       {
        domain: '{DOMAIN}',
        private: '/etc/letsencrypt/live/{DOMAIN}/privkey.pem',
-       public: '/etc/letsencrypt/live/{DOMAIN}/cert.pem',
+       public: '/etc/letsencrypt/live/{DOMAIN}/fullchain.pem',
       },
      ],
      socket_path: 'server.sock',
@@ -237,3 +237,4 @@ class App {
 }
 
 export default App;
+//
