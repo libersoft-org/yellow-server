@@ -25,7 +25,7 @@ class Modules {
    for (let i = 0; i < res.length; i++) {
     let mod = res[i];
     if (!mod.enabled) {
-     Log.info('Skipping disabled module:', mod);
+     Log.info('Skipping disabled module:', JSON.stringify(mod));
      continue;
     }
     Log.info('Loading module:', JSON.stringify(mod));

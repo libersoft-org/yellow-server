@@ -107,7 +107,7 @@ class Module {
   let ma = {};
   ma[this.name] = this.connected;
   this.app.webServer.clients.forEach(async (client, wsGuid) => {
-   this.log.debug('Notifying client of modules available:', wsGuid, client, ma);
+   this.log.trace('Notifying client of modules available:', wsGuid, client, ma);
    await client.ws.send(JSON.stringify({ type: 'notify', event: 'modules_available', data: { modules_available: ma } }));
   });
  }
