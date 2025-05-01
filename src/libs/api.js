@@ -118,7 +118,7 @@ class API {
   //Log.debug('req:', req);
   //Log.debug('command_fn:', command_fn);
   //Log.debug('context:', context);
-  Log.debug(corr, 'Executing core command:', command_name);
+  Log.trace(corr, 'Executing core command:', command_name);
   let method_result = await command_fn.method.call(this, context);
   return { ...resp, ...method_result };
  }
@@ -130,13 +130,13 @@ class API {
    requestID: req.requestID,
    wsGuid: wsGuid,
   };
-  authLog.debug(corr, 'authenticating user for module command:', target, command_name);
+  authLog.trace(corr, 'authenticating user for module command:', target, command_name);
   const auth_result = await this.authenticateUser(req, resp, msg);
   if (auth_result !== true) {
    authLog.warning(corr, 'User authentication failed for module command:', target, command_name);
    return auth_result;
   }
-  authLog.debug(corr, 'User authenticated for module command.');
+  authLog.trace(corr, 'User authenticated for module command.');
   let r = await this.modules.sendUserCmdToModule(corr, target, msg, wsGuid, req.requestID);
   return { ...resp, ...r };
  }
@@ -538,7 +538,7 @@ class API {
 
  async adminClientsKickByIp(c) {
   for (let client of this.webServer.clients) {
-   console.log(client);
+   Log.warn('TODO adminClientsKickBy', Ipclient);
   }
  }
 
@@ -559,10 +559,9 @@ class API {
   const sessionID = this.getUUID();
   await this.data.userSetLogin(userCredentials.id, sessionID);
   const client = this.webServer.clients.get(c.wsGuid);
-  Log.debug('c:', c);
+  Log.trace('userLogin c:', c);
   client.userAddress = c.params.address;
   client.userId = userCredentials.id;
-  //console.log(c);
   return { error: false, data: { sessionID, wsGuid: c.wsGuid, modules_available: this.modules.getAvailable() } };
  }
 

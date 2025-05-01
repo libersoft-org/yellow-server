@@ -28,7 +28,7 @@ class Modules {
      Log.info('Skipping disabled module:', mod);
      continue;
     }
-    Log.info('Loading module:', mod);
+    Log.info('Loading module:', JSON.stringify(mod));
     if (this.modules[mod.name]) {
      Log.error('Module already loaded:', mod.name);
     } else {
@@ -102,7 +102,7 @@ class Modules {
  }
 
  async sendUserCmdToModule(corr, module_name, msg, wsGuid, requestID) {
-  Log.debug(corr, 'to module:', module_name, 'sending message:', msg); //, 'corr:', corr);
+  Log.trace(corr, 'to module:', module_name, 'sending message:', msg); //, 'corr:', corr);
   let m = this.modules[module_name];
   if (!m) {
    Log.error(corr, 'Module not found:', module_name);
