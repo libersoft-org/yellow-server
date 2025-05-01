@@ -16,7 +16,7 @@ RUN node -v
 RUN mkdir /var/log/yellow
 RUN chown $UID:$GID /var/log/yellow
 
-ARG APP_DIR=/app/app/src/
+ARG APP_DIR=/app/app/
 RUN mkdir -p $APP_DIR
 RUN chown $UID:$GID $APP_DIR
 RUN mkdir /.bun

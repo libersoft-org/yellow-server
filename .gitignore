@@ -1,10 +1,10 @@
 **/node_modules/
-src/settings.json
-src/*.sock
-src/*.db
-src/*.log
+**/settings.json
+**/*.sock
+**/*.db
+**/*.log
 **/bun.lockb
 **/bun.lockb.txt
 **/package-lock.json
-.secret_git
+**/.secret_git
 .idea
