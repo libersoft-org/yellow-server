@@ -22,7 +22,7 @@ This is the server software implementation of [**Yellow**](https://github.com/li
 
 ## Server modules
 
-- Not yet implemented
+- [**Messages**](https://github.com/libersoft-org/yellow-server-module-messages)
 
 ## License
 
