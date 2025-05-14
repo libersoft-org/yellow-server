@@ -3,7 +3,7 @@ FROM ubuntu:24.04
 ARG UID=1000
 ARG GID=1000
 
-RUN apt update && apt install -y curl tini unzip
+RUN apt update && apt install -y curl tini unzip mariadb-client
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # Install Node.js LTS (use setup script)
