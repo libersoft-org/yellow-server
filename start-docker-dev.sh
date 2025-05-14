@@ -7,6 +7,7 @@ rm -rf ./node_modules/yellow-server-common; ln -s ../../yellow-server-common ./n
 echo "CI: $CI"
 echo "CI raw: |$CI|"
 if [ -n "$CI" ]; then
+ ~/.bun/bin/bun src/server.js --create-database
  echo dev_db_init...
   ./dev_db_init.py `hostname` |  mariadb --protocol=tcp --host=localhost --user=root --password=password --force
 fi
