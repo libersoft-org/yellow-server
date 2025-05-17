@@ -1,7 +1,9 @@
 #!/bin/sh
 
 ~/.bun/bin/bun i --frozen-lockfile
+
 if [ -n "$CI" ]; then
+ echo "link yellow-server-common for development"
  rm -rf ./node_modules/yellow-server-common; ln -s ../../yellow-server-common ./node_modules/yellow-server-common
 fi
 
@@ -31,4 +33,5 @@ fi
 
 while true; do
   ~/.bun/bin/bun $WATCH src/server.js
+  sleep 5
 done
