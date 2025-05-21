@@ -1,0 +1,9 @@
+# Copy package files first for better layer caching
+COPY --chown=$USER_ID:$GROUP_ID package*.json ./
+COPY --chown=$USER_ID:$GROUP_ID bun.lock ./
+
+# Install dependencies
+RUN ~/.bun/bin/bun i --frozen-lockfile
+
+# Copy application code
+COPY --chown=$USER_ID:$GROUP_ID . .

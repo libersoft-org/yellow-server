@@ -1,0 +1,42 @@
+FROM ubuntu:24.04
+
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+RUN apt update && apt install -y curl tini unzip mariadb-client
+ENTRYPOINT ["/usr/bin/tini", "--"]
+
+# Install Node.js LTS (use setup script)
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt install -y nodejs
+
+# Verify installations
+RUN node -v
+
+RUN mkdir /var/log/yellow
+RUN chown $USER_ID:$GROUP_ID /var/log/yellow
+
+ARG APP_DIR=/app/app/
+RUN mkdir -p $APP_DIR
+RUN chown $USER_ID:$GROUP_ID $APP_DIR
+RUN mkdir /.bun
+RUN chown $USER_ID:$GROUP_ID /.bun
+USER $USER_ID:$GROUP_ID
+WORKDIR $APP_DIR
+
+RUN curl -fsSL https://bun.sh/install | bash
+
+# BEGIN COPY FRAGMENT
+# Copy package files first for better layer caching
+COPY --chown=$USER_ID:$GROUP_ID package*.json ./
+COPY --chown=$USER_ID:$GROUP_ID bun.lock ./
+
+# Install dependencies
+RUN ~/.bun/bin/bun i --frozen-lockfile
+
+# Copy application code
+COPY --chown=$USER_ID:$GROUP_ID . .
+# END COPY FRAGMENT
+
+
+CMD ./start-docker-dev.sh
