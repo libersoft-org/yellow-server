@@ -1,0 +1,24 @@
+# Ignore node_modules in all directories
+**/node_modules
+node_modules
+
+# Version control
+.git
+.github
+.gitignore
+
+# Test results
+test-results
+playwright-report
+
+# Build artifacts
+**/build
+**/dist
+**/.svelte-kit
+
+# Temporary files
+**/tmp
+**/.tmp
+**/.temp
+**/*.log
+**/logs

@@ -1,7 +1,7 @@
 FROM ubuntu:24.04
 
-ARG UID=1000
-ARG GID=1000
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 
 RUN apt update && apt install -y curl tini unzip mariadb-client
 ENTRYPOINT ["/usr/bin/tini", "--"]
@@ -14,14 +14,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
 RUN node -v
 
 RUN mkdir /var/log/yellow
-RUN chown $UID:$GID /var/log/yellow
+RUN chown $USER_ID:$GROUP_ID /var/log/yellow
 
 ARG APP_DIR=/app/app/
 RUN mkdir -p $APP_DIR
-RUN chown $UID:$GID $APP_DIR
+RUN chown $USER_ID:$GROUP_ID $APP_DIR
 RUN mkdir /.bun
-RUN chown $UID:$GID /.bun
-USER $UID:$GID
+RUN chown $USER_ID:$GROUP_ID /.bun
+USER $USER_ID:$GROUP_ID
 WORKDIR $APP_DIR
 
 RUN curl -fsSL https://bun.sh/install | bash
