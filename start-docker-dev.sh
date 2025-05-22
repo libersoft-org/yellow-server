@@ -18,10 +18,7 @@ echo dev_db_init...
 #echo migrate...
 #~/.bun/bin/bun run knex:migrate || exit 1
 
-if [ -n "$CI" ]; then
-  echo populate...
-  ./dev_db_populate.py `hostname` |  mariadb --protocol=tcp --host=$MARIA_HOST --user=root --password=password --force
-fi
+./dev_db_populate.py `hostname` |  mariadb --protocol=tcp --host=$MARIA_HOST --user=root --password=password --force
 
 if [ -n "$CI" ]; then
   WATCH=""
