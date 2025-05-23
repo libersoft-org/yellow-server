@@ -40,6 +40,8 @@ COPY --chown=$USER_ID:$GROUP_ID . .
 RUN chown -R $USER_ID:$GROUP_ID /tmp/yellow; mkdir -p /tmp/yellow; chown -R $USER_ID:$GROUP_ID /tmp/yellow ;chmod 1777 /tmp/yellow; echo ok; mkdir -p /var/log/yellow; chown -R $USER_ID:$GROUP_ID /var/log/yellow ;chmod 1777 /var/log/yellow
 
 
+
+
 # END COPY FRAGMENT
 
 
