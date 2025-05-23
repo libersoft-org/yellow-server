@@ -12,7 +12,19 @@ fi
 
 #~/.bun/bin/bun --bun knex migrate:latest --migrations-directory migrations/
 echo dev_db_init...
-./dev_db_init.py `hostname` |  mariadb --protocol=tcp --host=$MARIA_HOST --user=root --password=password --force
+
+# Wait for database to be created and accessible
+echo "Waiting for database 'yellow' to be ready... at $MARIA_HOST"
+for i in $(seq 1 130); do
+  if mariadb --protocol=tcp --host=$MARIA_HOST --user=username --password=password --database=yellow -e "SELECT 1" >/dev/null 2>&1; then
+    echo "Database is ready!"
+    break
+  fi
+  ./dev_db_init.py `hostname` |  mariadb --protocol=tcp --host=$MARIA_HOST --user=root --password=password --force
+  echo "Attempt $i/130: Database not ready yet, waiting..."
+  sleep 1
+done
+
 ~/.bun/bin/bun src/server.js --create-database
 
 #echo migrate...
