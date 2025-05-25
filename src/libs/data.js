@@ -404,6 +404,42 @@ class Data extends DataGeneric {
   }
  }
 
+ async adminLogsList(count = 100, offset = 0, orderBy = 'id', direction = 'DESC', filterLevel = null, filterTopic = null, filterMessage = null, filterFromDate = null, filterToDate = null) {
+  let query = 'SELECT id, level, topic, message, json, created FROM logs';
+  const params = [];
+  const conditions = [];
+
+  if (filterLevel !== null) {
+   conditions.push('level = ?');
+   params.push(filterLevel);
+  }
+  if (filterTopic !== null) {
+   conditions.push('topic LIKE ?');
+   params.push('%' + filterTopic + '%');
+  }
+  if (filterMessage !== null) {
+   conditions.push('message LIKE ?');
+   params.push('%' + filterMessage + '%');
+  }
+  if (filterFromDate !== null) {
+   conditions.push('created >= ?');
+   params.push(filterFromDate);
+  }
+  if (filterToDate !== null) {
+   conditions.push('created <= ?');
+   params.push(filterToDate);
+  }
+
+  if (conditions.length > 0) query += ' WHERE ' + conditions.join(' AND ');
+
+  direction = direction.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+  query += ' ORDER BY ' + orderBy + ' ' + direction;
+  query += ' LIMIT ? OFFSET ?';
+  params.push(count, offset);
+
+  return await this.db.query(query, params);
+ }
+
  getHash(password, memoryCost = 65536, hashLength = 64, timeCost = 20, parallelism = 1) {
   // default: 64 MB RAM, 64 characters length, 20 difficulty to calculate, 1 thread needed
   return Bun.password.hashSync(password, { algorithm: 'argon2id', memoryCost, hashLength, timeCost, parallelism });

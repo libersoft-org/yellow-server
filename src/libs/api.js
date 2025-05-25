@@ -48,6 +48,7 @@ class API {
    admin_clients_list: { method: this.adminClientsList, reqAdminSession: true },
    admin_clients_kick: { method: this.adminClientsKick, reqAdminSession: true },
    admin_clients_kick_by_ip: { method: this.adminClientsKickByIp, reqAdminSession: true },
+   admin_logs_list: { method: this.adminLogsList, reqAdminSession: true },
    user_login: { method: this.userLogin },
    user_sessions_list: { method: this.userListSessions, reqUserSession: true },
    user_session_del: { method: this.userDelSession, reqUserSession: true },
@@ -540,6 +541,25 @@ class API {
   for (let client of this.webServer.clients) {
    Log.warn('TODO adminClientsKickBy', Ipclient);
   }
+ }
+
+ async adminLogsList(c) {
+  let orderBy = 'id';
+  if (c.params?.orderBy) {
+   const validOrderBy = ['id', 'level', 'topic', 'message', 'created'];
+   orderBy = c.params.orderBy.toLowerCase();
+   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
+  }
+  let direction = 'DESC'; // Default to DESC for logs to show newest first
+  if (c.params?.direction) {
+   const validDirection = ['ASC', 'DESC'];
+   direction = c.params.direction.toUpperCase();
+   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
+  }
+  return {
+   error: false,
+   data: { logs: await this.data.adminLogsList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterLevel, c.params?.filterTopic, c.params?.filterMessage, c.params?.filterFromDate, c.params?.filterToDate) },
+  };
  }
 
  async userLogin(c) {
