@@ -573,7 +573,7 @@ class API {
   const domainID = await this.data.getDomainIDByName(domain);
   if (!domainID) return { error: 'WRONG_DOMAIN', message: 'Domain name not found on this server' };
   const userCredentials = await this.data.getUserCredentials(username, domainID);
-  if (!userCredentials) return { error: 'WRONG_ADDRESS', message: 'Wrong user address' };
+  if (!userCredentials) return { error: 'WRONG_ADDRESS', message: 'Wrong user address', details: { 'address': c.params.address } };
   //console.log(userCredentials.password, c.params.password);
   if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
   const sessionID = this.getUUID();
