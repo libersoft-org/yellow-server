@@ -317,7 +317,6 @@ class Data extends DataGeneric {
  }
 
  async adminModulesEdit(id, name, connectionString, enabled) {
-  console.log('adminModulesEdit:', id, name, connectionString, enabled);
   await this.db.query('UPDATE modules SET name = ?, connection_string = ?, enabled = ? WHERE id = ?', [name, connectionString, enabled, id]);
  }
 
