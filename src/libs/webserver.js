@@ -229,7 +229,7 @@ class WebServer {
   Log.info('fsAbsPathBase:', fsAbsPathBase);
   /* if no matching item found in web_paths */
   if (!fsAbsPathBase) {
-   log.info('no matching item found in web_paths');
+   Log.info('no matching item found in web_paths');
    return await this.getNotFound(req, corr);
   }
   let fsAbsPathFull = path.join(fsAbsPathBase, url.pathname.replace(urlPathBase, ''));
