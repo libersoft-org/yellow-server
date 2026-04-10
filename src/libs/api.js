@@ -155,19 +155,9 @@ class API {
  }
 
  async adminSessionsList(c) {
-  let orderBy = 'id';
-  if (c.params?.orderBy) {
-   const validOrderBy = ['id', 'session', 'last', 'created'];
-   orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
-  }
-  let direction = 'ASC';
-  if (c.params?.direction) {
-   const validDirection = ['ASC', 'DESC'];
-   direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
-  }
-  return { error: false, data: { sessions: await this.data.adminSessionsList(c.adminID, c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) } };
+  const v = this.validateListParams(c.params, ['id', 'session', 'last', 'created']);
+  if (v.error) return v;
+  return { error: false, data: { sessions: await this.data.adminSessionsList(c.adminID, c.params?.count, c.params?.offset, v.orderBy, v.direction, c.params?.filterName) } };
  }
 
  async adminSessionsDel(c) {
@@ -187,21 +177,11 @@ class API {
  }
 
  async adminAdminsList(c) {
-  let orderBy = 'id';
-  if (c.params?.orderBy) {
-   const validOrderBy = ['id', 'username', 'created'];
-   orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN_NAME', message: 'Invalid column name in orderBy parameter' };
-  }
-  let direction = 'ASC';
-  if (c.params?.direction) {
-   const validDirection = ['ASC', 'DESC'];
-   direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
-  }
+  const v = this.validateListParams(c.params, ['id', 'username', 'created']);
+  if (v.error) return v;
   return {
    error: false,
-   data: { admins: await this.data.adminAdminsList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) },
+   data: { admins: await this.data.adminAdminsList(c.params?.count, c.params?.offset, v.orderBy, v.direction, c.params?.filterName) },
   };
  }
 
@@ -256,21 +236,11 @@ class API {
  }
 
  async adminDomainsList(c) {
-  let orderBy = 'id';
-  if (c.params?.orderBy) {
-   const validOrderBy = ['id', 'name', 'users_count', 'created'];
-   orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
-  }
-  let direction = 'ASC';
-  if (c.params?.direction) {
-   const validDirection = ['ASC', 'DESC'];
-   direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
-  }
+  const v = this.validateListParams(c.params, ['id', 'name', 'users_count', 'created']);
+  if (v.error) return v;
   return {
    error: false,
-   data: { domains: await this.data.adminDomainsList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) },
+   data: { domains: await this.data.adminDomainsList(c.params?.count, c.params?.offset, v.orderBy, v.direction, c.params?.filterName) },
   };
  }
 
@@ -310,19 +280,9 @@ class API {
  }
 
  async adminUsersList(c) {
-  let orderBy = 'id';
-  if (c.params?.orderBy) {
-   const validOrderBy = ['id', 'address', 'visible_name', 'created'];
-   orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
-  }
-  let direction = 'ASC';
-  if (c.params?.direction) {
-   const validDirection = ['ASC', 'DESC'];
-   direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
-  }
-  return { error: false, data: { users: await this.data.adminUsersList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterUsername, c.params?.filterDomainID) } };
+  const v = this.validateListParams(c.params, ['id', 'address', 'visible_name', 'created']);
+  if (v.error) return v;
+  return { error: false, data: { users: await this.data.adminUsersList(c.params?.count, c.params?.offset, v.orderBy, v.direction, c.params?.filterUsername, c.params?.filterDomainID) } };
  }
 
  async adminUsersAdd(c) {
@@ -394,21 +354,11 @@ class API {
  }
 
  async adminModulesList(c) {
-  let orderBy = 'id';
-  if (c.params?.orderBy) {
-   const validOrderBy = ['id', 'name', 'connection_string', 'created'];
-   orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
-  }
-  let direction = 'ASC';
-  if (c.params?.direction) {
-   const validDirection = ['ASC', 'DESC'];
-   direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
-  }
+  const v = this.validateListParams(c.params, ['id', 'name', 'connection_string', 'created']);
+  if (v.error) return v;
   return {
    error: false,
-   data: { modules: await this.data.adminModulesList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterName) },
+   data: { modules: await this.data.adminModulesList(c.params?.count, c.params?.offset, v.orderBy, v.direction, c.params?.filterName) },
   };
  }
 
@@ -547,21 +497,11 @@ class API {
  }
 
  async adminLogsList(c) {
-  let orderBy = 'id';
-  if (c.params?.orderBy) {
-   const validOrderBy = ['id', 'level', 'topic', 'message', 'created'];
-   orderBy = c.params.orderBy.toLowerCase();
-   if (!validOrderBy.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
-  }
-  let direction = 'DESC'; // Default to DESC for logs to show newest first
-  if (c.params?.direction) {
-   const validDirection = ['ASC', 'DESC'];
-   direction = c.params.direction.toUpperCase();
-   if (!validDirection.includes(direction)) return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
-  }
+  const v = this.validateListParams(c.params, ['id', 'level', 'topic', 'message', 'created'], 'DESC');
+  if (v.error) return v;
   return {
    error: false,
-   data: { logs: await this.data.adminLogsList(c.params?.count, c.params?.offset, orderBy, direction, c.params?.filterLevel, c.params?.filterTopic, c.params?.filterMessage, c.params?.filterFromDate, c.params?.filterToDate) },
+   data: { logs: await this.data.adminLogsList(c.params?.count, c.params?.offset, v.orderBy, v.direction, c.params?.filterLevel, c.params?.filterTopic, c.params?.filterMessage, c.params?.filterFromDate, c.params?.filterToDate) },
   };
  }
 
@@ -619,6 +559,20 @@ class API {
   if (!userID) return { error: 'USER', message: 'User name not found on this server' };
   const userInfo = await this.data.userGetUserInfo(userID);
   return { error: false, data: userInfo };
+ }
+
+ validateListParams(params, validColumns, defaultDirection = 'ASC') {
+  let orderBy = 'id';
+  if (params?.orderBy) {
+   orderBy = params.orderBy.toLowerCase();
+   if (!validColumns.includes(orderBy)) return { error: 'INVALID_ORDER_COLUMN', message: 'Invalid column name in orderBy parameter' };
+  }
+  let direction = defaultDirection;
+  if (params?.direction) {
+   direction = params.direction.toUpperCase();
+   if (direction !== 'ASC' && direction !== 'DESC') return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
+  }
+  return { orderBy, direction };
  }
 
  usernameHasValidCharacters(username) {
