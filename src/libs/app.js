@@ -143,6 +143,9 @@ class App {
      user: 2592000, // 30 days
      cleaner: 600, // 10 minutes
     },
+    modules: {
+     request_timeout: 30000, // 30 seconds
+    },
    };
    await Bun.write(Info.settingsFile, JSON.stringify(settings, null, 1));
    Log.info('Settings file was created sucessfully.');

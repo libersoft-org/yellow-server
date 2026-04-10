@@ -1,4 +1,5 @@
 import { newLogger } from 'yellow-server-common';
+import { Info } from './info.js';
 let Log = newLogger('module');
 
 class Module {
@@ -138,12 +139,21 @@ class Module {
    this.log.error(corr, 'Request already exists:', wsGuid, requestID);
    return;
   }
+  const timeoutMs = Info.settings.modules?.request_timeout || 30000;
+  let timer;
   let promise = new Promise((resolve, reject) => {
+   timer = setTimeout(() => {
+    delete this.requests[wsGuid]?.[requestID];
+    this.log.error(corr, 'Request to module timed out:', this.name, requestID);
+    resolve({ error: 'MODULE_TIMEOUT', message: 'Module request timed out after ' + timeoutMs + 'ms' });
+   }, timeoutMs);
    this.requests[wsGuid][requestID] = { resolve, reject };
    this.log.trace(corr, 'Request to module:', this.name, requestID);
    this.send(corr, { type: 'request', ...msg });
   });
-  return await promise;
+  const result = await promise;
+  clearTimeout(timer);
+  return result;
  }
 
  async send(corr, msg) {
