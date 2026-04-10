@@ -13,6 +13,5 @@
  "proseWrap": "preserve",
  "singleAttributePerLine": false,
  "vueIndentScriptAndStyle": true,
- "jsxSingleQuote": false,
- "svelteSortOrder": "scripts-options-styles-markup"
+ "jsxSingleQuote": false
 }
