@@ -19,39 +19,39 @@ class API {
    if (resAdmin.changes || resUser.changes) Log.info('Expired sessions cleaner: ' + (resAdmin.changes || 0) + ' admin sessions and ' + (resUser.changes || 0) + ' user sessions deleted.');
   }, Info.settings.session.cleaner * 1000);
   this.commands = {
-   admin_login: { method: this.adminLogin },
+   admin_login: { method: this.adminLogin, required: { username: 'USERNAME_MISSING', password: 'PASSWORD_MISSING' } },
    admin_sessions_list: { method: this.adminSessionsList, reqAdminSession: true },
-   admin_sessions_del: { method: this.adminSessionsDel, reqAdminSession: true },
-   admin_sessions_del_name: { method: this.adminSessionsDelName, reqAdminSession: true },
+   admin_sessions_del: { method: this.adminSessionsDel, reqAdminSession: true, required: { sessionID: 'SESSION_ID_MISSING' } },
+   admin_sessions_del_name: { method: this.adminSessionsDelName, reqAdminSession: true, required: { session_name: 'SESSION_NAME_MISSING' } },
    admin_admins_list: { method: this.adminAdminsList, reqAdminSession: true },
-   admin_admins_add: { method: this.adminAdminsAdd, reqAdminSession: true },
-   admin_admins_edit: { method: this.adminAdminsEdit, reqAdminSession: true },
-   admin_admins_del: { method: this.adminAdminsDel, reqAdminSession: true },
-   admin_admins_info: { method: this.adminAdminsInfo, reqAdminSession: true },
+   admin_admins_add: { method: this.adminAdminsAdd, reqAdminSession: true, required: { username: 'USERNAME_MISSING', password: 'PASSWORD_MISSING' } },
+   admin_admins_edit: { method: this.adminAdminsEdit, reqAdminSession: true, required: { adminID: 'ID_MISSING' } },
+   admin_admins_del: { method: this.adminAdminsDel, reqAdminSession: true, required: { adminID: 'ID_MISSING' } },
+   admin_admins_info: { method: this.adminAdminsInfo, reqAdminSession: true, required: { adminID: 'ID_MISSING' } },
    admin_domains_list: { method: this.adminDomainsList, reqAdminSession: true },
-   admin_domains_add: { method: this.adminDomainsAdd, reqAdminSession: true },
-   admin_domains_edit: { method: this.adminDomainsEdit, reqAdminSession: true },
-   admin_domains_del: { method: this.adminDomainsDel, reqAdminSession: true },
-   admin_domains_info: { method: this.adminDomainsInfo, reqAdminSession: true },
+   admin_domains_add: { method: this.adminDomainsAdd, reqAdminSession: true, required: { name: 'DOMAIN_NAME_MISSING' } },
+   admin_domains_edit: { method: this.adminDomainsEdit, reqAdminSession: true, required: { domainID: 'ID_MISSING', name: 'DOMAIN_NAME_MISSING' } },
+   admin_domains_del: { method: this.adminDomainsDel, reqAdminSession: true, required: { domainID: 'ID_MISSING' } },
+   admin_domains_info: { method: this.adminDomainsInfo, reqAdminSession: true, required: { domainID: 'ID_MISSING' } },
    admin_users_list: { method: this.adminUsersList, reqAdminSession: true },
-   admin_users_add: { method: this.adminUsersAdd, reqAdminSession: true },
-   admin_users_edit: { method: this.adminUsersEdit, reqAdminSession: true },
-   admin_users_del: { method: this.adminUsersDel, reqAdminSession: true },
-   admin_users_info: { method: this.adminUsersInfo, reqAdminSession: true },
+   admin_users_add: { method: this.adminUsersAdd, reqAdminSession: true, required: { username: 'USERNAME_MISSING', domainID: 'DOMAIN_ID_MISSING', visible_name: 'VISIBLE_NAME_MISSING', password: 'PASSWORD_MISSING' } },
+   admin_users_edit: { method: this.adminUsersEdit, reqAdminSession: true, required: { userID: 'ID_MISSING' } },
+   admin_users_del: { method: this.adminUsersDel, reqAdminSession: true, required: { userID: 'ID_MISSING' } },
+   admin_users_info: { method: this.adminUsersInfo, reqAdminSession: true, required: { userID: 'ID_MISSING' } },
    admin_modules_list: { method: this.adminModulesList, reqAdminSession: true },
-   admin_modules_add: { method: this.adminModulesAdd, reqAdminSession: true },
-   admin_modules_edit: { method: this.adminModulesEdit, reqAdminSession: true },
-   admin_modules_del: { method: this.adminModulesDel, reqAdminSession: true },
-   admin_modules_info: { method: this.adminModulesInfo, reqAdminSession: true },
+   admin_modules_add: { method: this.adminModulesAdd, reqAdminSession: true, required: { name: 'MODULE_NAME_MISSING', connection_string: 'CONNECTION_STRING_MISSING' } },
+   admin_modules_edit: { method: this.adminModulesEdit, reqAdminSession: true, required: { moduleID: 'ID_MISSING', name: 'NAME_MISSING', connection_string: 'CONNECTION_STRING_MISSING' } },
+   admin_modules_del: { method: this.adminModulesDel, reqAdminSession: true, required: { moduleID: 'ID_MISSING' } },
+   admin_modules_info: { method: this.adminModulesInfo, reqAdminSession: true, required: { moduleID: 'ID_MISSING' } },
    admin_sysinfo: { method: this.adminSysInfo, reqAdminSession: true },
    admin_clients_list: { method: this.adminClientsList, reqAdminSession: true },
    admin_clients_kick: { method: this.adminClientsKick, reqAdminSession: true },
-   admin_clients_kick_by_ip: { method: this.adminClientsKickByIp, reqAdminSession: true },
+   admin_clients_kick_by_ip: { method: this.adminClientsKickByIp, reqAdminSession: true, required: { ip: 'IP_MISSING' } },
    admin_logs_list: { method: this.adminLogsList, reqAdminSession: true },
-   user_login: { method: this.userLogin },
+   user_login: { method: this.userLogin, required: { address: 'ADDRESS_MISSING', password: 'PASSWORD_MISSING' } },
    user_sessions_list: { method: this.userListSessions, reqUserSession: true },
-   user_session_del: { method: this.userDelSession, reqUserSession: true },
-   user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true },
+   user_session_del: { method: this.userDelSession, reqUserSession: true, required: { sessionID: 'SESSION_MISSING' } },
+   user_userinfo_get: { method: this.userGetUserInfo, reqUserSession: true, required: { address: 'ADDRESS_MISSING' } },
    user_subscribe: { method: this.signals.subscribe.bind(this.signals), reqUserSession: true },
    user_unsubscribe: { method: this.signals.unsubscribe.bind(this.signals), reqUserSession: true },
    ping: { method: this.userPing },
@@ -114,10 +114,10 @@ class API {
   }
   if (req.sessionID) context.sessionID = req.sessionID;
   if (req.data?.params) context.params = req.data.params;
-  //Log.debug('coreCmd:');
-  //Log.debug('req:', req);
-  //Log.debug('command_fn:', command_fn);
-  //Log.debug('context:', context);
+  if (command_fn.required) {
+   const v = this.validateRequired(context.params, command_fn.required);
+   if (v) return { ...resp, ...v };
+  }
   Log.trace(corr, 'Executing core command:', command_name);
   let method_result = await command_fn.method.call(this, context);
   return { ...resp, ...method_result };
@@ -142,9 +142,6 @@ class API {
  }
 
  async adminLogin(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.username) return { error: 'USERNAME_MISSING', message: 'Username is missing' };
-  if (!c.params.password) return { error: 'PASSWORD_MISSING', message: 'Password is missing' };
   c.params.username = c.params.username.toLowerCase();
   const adminCredentials = await this.data.getAdminCredentials(c.params.username);
   if (!adminCredentials) return { error: 'WRONG_USERNAME', message: 'Wrong username' };
@@ -161,16 +158,12 @@ class API {
  }
 
  async adminSessionsDel(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.sessionID) return { error: 'SESSION_ID_MISSING', message: 'Session ID to be deleted not set' };
   if (!(await this.data.adminSessionExists(c.adminID, c.params.sessionID))) return { error: 'SESSION_ID_NOT_FOUND', message: 'Session ID to be deleted not found for this admin' };
   await this.data.adminSessionsDel(c.adminID, c.params.sessionID);
   return { error: false, message: 'Session was deleted' };
  }
 
  async adminSessionsDelName(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.session_name) return { error: 'SESSION_NAME_MISSING', message: 'Session name to be deleted not set' };
   if (!(await this.data.adminSessionExistsName(c.adminID, c.params.session_name))) return { error: 'SESSION_NAME_NOT_FOUND', message: 'Session name to be deleted not found for this admin' };
   await this.data.adminSessionsDelName(c.adminID, c.params.session_name);
   return { error: false, message: 'Session was deleted' };
@@ -186,9 +179,6 @@ class API {
  }
 
  async adminAdminsAdd(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.username) return { error: 'USERNAME_MISSING', message: 'Username is missing' };
-  if (!c.params.password) return { error: 'PASSWORD_MISSING', message: 'Password is missing' };
   c.params.username = c.params.username.toLowerCase();
   if (await this.data.adminExistsByUsername(c.params.username)) return { error: 'USERNAME_EXISTS', message: 'This admin already exists' };
   const minChars = 3;
@@ -200,8 +190,6 @@ class API {
  }
 
  async adminAdminsEdit(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.adminID) return { error: 'USERNAME_MISSING', message: 'Admin ID is missing' };
   if (!(await this.data.adminExistsByID(c.params.adminID))) return { error: 'INVALID_ID', message: 'Wrong admin ID' };
   if (!c.params.username && !c.params.password) return { error: 'USERNAME_OR_PASSWORD_MISSING', message: 'Admin username or admin password has to be in parameters' };
   if (c.params.username) {
@@ -220,16 +208,12 @@ class API {
  }
 
  async adminAdminsDel(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.adminID) return { error: 'ID_MISSING', message: 'Admin ID is missing' };
   if (!(await this.data.adminExistsByID(c.params.adminID))) return { error: 'WRONG_ID', message: 'Wrong admin ID' };
   await this.data.adminAdminsDel(c.params.adminID);
   return { error: false, message: 'Admin was deleted successfully' };
  }
 
  async adminAdminsInfo(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.adminID) return { error: 'ID_MISSING', message: 'Admin ID is missing' };
   const res = await this.data.getAdminInfoByID(c.params.adminID);
   if (!res) return { error: 'WRONG_ID', message: 'Wrong admin ID' };
   return { error: false, data: res };
@@ -245,8 +229,6 @@ class API {
  }
 
  async adminDomainsAdd(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.name) return { error: 'DOMAIN_NAME_MISSING', message: 'Domain name is missing' };
   c.params.name = c.params.name.toLowerCase();
   if (await this.data.domainExistsByName(c.params.name)) return { error: 'DOMAIN_EXISTS', message: 'This domain already exists' };
   await this.data.adminDomainsAdd(c.params.name);
@@ -254,17 +236,12 @@ class API {
  }
 
  async adminDomainsEdit(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.domainID) return { error: 'ID_MISSING', message: 'Domain ID is missing' };
   if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 'ID_WRONG', message: 'Wrong domain ID' };
-  if (!c.params.name) return { error: 'DOMAIN_NAME_MISSING', message: 'Domain name is missing' };
   await this.data.adminDomainsEdit(c.params.domainID, c.params.name);
   return { error: false, message: 'Domain was edited successfully' };
  }
 
  async adminDomainsDel(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.domainID) return { error: 'ID_MISSING', message: 'Domain ID is missing' };
   if (!(await this.data.domainExistsByID(c.params.domainID))) return { error: 'WRONG_ID', message: 'Wrong domain ID' };
   if ((await this.data.adminUsersCount(c.params.domainID)) > 0) return { error: 'DOMAIN_USED', message: 'Cannot delete this domain, as it still has some users' };
   await this.data.adminDomainsDel(c.params.domainID);
@@ -272,8 +249,6 @@ class API {
  }
 
  async adminDomainsInfo(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.domainID) return { error: 'ID_MISSING', message: 'Domain ID is missing' };
   const res = await this.data.getDomainInfoByID(c.params.domainID);
   if (!res) return { error: 'WRONG_ID', message: 'Wrong domain ID' };
   return { error: false, data: res };
@@ -286,11 +261,6 @@ class API {
  }
 
  async adminUsersAdd(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.username) return { error: 'USERNAME_MISSING', message: 'Username is missing' };
-  if (!c.params.domainID) return { error: 'DOMAIN_ID_MISSING', message: 'Domain ID is missing' };
-  if (!c.params.visible_name) return { error: 'VISIBLE_NAME_MISSING', message: 'Visible name is missing' };
-  if (!c.params.password) return { error: 'PASSWORD_MISSING', message: 'Password is missing' };
   c.params.username = c.params.username.toLowerCase();
   const minChars = 1;
   const maxChars = 64;
@@ -306,8 +276,6 @@ class API {
  }
 
  async adminUsersEdit(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.userID) return { error: 'ID_MISSING', message: 'User ID is missing' };
   if (!c.params.username && !c.params.domainID && !c.params.visible_name && !c.params.password)
    return {
     error: 'USERNAME_DOMAIN_VISIBLE_NAME_PASSWORD_MISSING',
@@ -338,16 +306,12 @@ class API {
  }
 
  async adminUsersDel(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.userID) return { error: 'ID_MISSING', message: 'User ID is missing' };
   if (!(await this.data.userExistsByID(c.params.userID))) return { error: 'WRONG_ID', message: 'Wrong user ID' };
   await this.data.adminUsersDel(c.params.userID);
   return { error: false, message: 'User was deleted successfully' };
  }
 
  async adminUsersInfo(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.userID) return { error: 'ID_MISSING', message: 'User ID is missing' };
   const res = await this.data.getUserInfoByID(c.params.userID);
   if (!res) return { error: 'WRONG_ID', message: 'Wrong user ID' };
   return { error: false, data: res };
@@ -363,11 +327,8 @@ class API {
  }
 
  async adminModulesAdd(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.name) return { error: 'MODULE_NAME_MISSING', message: 'Module name is missing' };
   c.params.name = c.params.name.toLowerCase();
   if (await this.data.moduleExistsByName(c.params.name)) return { error: 'MODULE_EXISTS', message: 'This module already exists' };
-  if (!c.params.connection_string) return { error: 'CONNECTION_STRING_MISSING', message: 'Module connection string is missing' };
   c.params.connection_string = c.params.connection_string.toLowerCase();
   await this.data.adminModulesAdd(c.params.name, c.params.connection_string, c.params.enabled);
   await this.modules.init_module(c.params.name);
@@ -375,19 +336,13 @@ class API {
  }
 
  async adminModulesEdit(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.moduleID) return { error: 'ID_MISSING', message: 'Module ID is missing' };
   if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 'WRONG_ID', message: 'Wrong module ID' };
-  if (!c.params.name) return { error: 'NAME_MISSING', message: 'Module name is missing' };
-  if (!c.params.connection_string) return { error: 'CONNECTION_STRING_MISSING', message: 'Connection string is missing' };
   await this.data.adminModulesEdit(c.params.moduleID, c.params.name, c.params.connection_string, c.params.enabled);
   await this.modules.reinit_module(c.params.moduleID, c.params.name, c.params.enabled);
   return { error: false, message: 'Module was edited successfully' };
  }
 
  async adminModulesDel(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.moduleID) return { error: 'ID_MISSING', message: 'Module ID is missing' };
   if (!(await this.data.moduleExistsByID(c.params.moduleID))) return { error: 'WRONG_ID', message: 'Wrong module ID' };
   await this.data.adminModulesDel(c.params.moduleID);
   await this.modules.remove(c.params.moduleID);
@@ -395,8 +350,6 @@ class API {
  }
 
  async adminModulesInfo(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.moduleID) return { error: 'ID_MISSING', message: 'Module ID is missing' };
   const res = await this.data.getModuleInfoByID(c.params.moduleID);
   if (!res) return { error: 'WRONG_ID', message: 'Wrong module ID' };
   return { error: false, data: res };
@@ -484,8 +437,6 @@ class API {
  }
 
  async adminClientsKickByIp(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.ip) return { error: 'IP_MISSING', message: 'IP address is missing' };
   let kicked = 0;
   for (const [wsGuid, client] of this.webServer.clients) {
    if (client.ws?.remoteAddress === c.params.ip) {
@@ -506,9 +457,6 @@ class API {
  }
 
  async userLogin(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.address) return { error: 'ADDRESS_MISSING', message: 'Address is missing' };
-  if (!c.params.password) return { error: 'PASSWORD_MISSING', message: 'Password is missing' };
   let [username, domain] = c.params.address.split('@');
   if (!username || !domain) return { error: 'INVALID_ADDRESS_FORMAT', message: 'Invalid address format' };
   username = username.toLowerCase();
@@ -535,8 +483,6 @@ class API {
  }
 
  async userDelSession(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.sessionID) return { error: 'SESSION_MISSING', message: 'Session ID to be deleted not set' };
   if (!(await this.data.userSessionExists(c.userID, c.params.sessionID)))
    return {
     error: 'SESSION_NOT_FOUND',
@@ -547,8 +493,6 @@ class API {
  }
 
  async userGetUserInfo(c) {
-  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
-  if (!c.params.address) return { error: 'ADDRESS_MISSING', message: 'Address is missing' };
   let [username, domain] = c.params.address.split('@');
   if (!username || !domain) return { error: 'INVALID_USERNAME_FORMAT', message: 'Invalid username format' };
   username = username.toLowerCase();
@@ -573,6 +517,14 @@ class API {
    if (direction !== 'ASC' && direction !== 'DESC') return { error: 'INVALID_DIRECTION', message: 'Invalid direction in direction parameter' };
   }
   return { orderBy, direction };
+ }
+
+ validateRequired(params, requiredFields) {
+  if (!params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  for (const [field, code] of Object.entries(requiredFields)) {
+   if (!params[field]) return { error: code, message: 'Parameter "' + field + '" is missing' };
+  }
+  return null;
  }
 
  usernameHasValidCharacters(username) {
