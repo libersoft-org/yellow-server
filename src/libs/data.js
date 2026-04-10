@@ -301,7 +301,6 @@ class Data extends DataGeneric {
    query += ' WHERE name LIKE ?';
    params.push('%' + filterName + '%');
   }
-  query += ' GROUP BY id';
   query += ' ORDER BY ' + orderBy + ' ' + direction;
   if (count !== null && offset !== null) {
    query += ' LIMIT ? OFFSET ?';
