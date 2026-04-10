@@ -1,5 +1,5 @@
 import WebServer from './webserver.js';
-import Data from './data';
+import Data from './data.js';
 import Modules from './modules.js';
 import { Info } from './info.js';
 import { newLogger, testLogging, reconfigureLogging } from 'yellow-server-common';

@@ -1,6 +1,6 @@
-import Data from './data';
+import Data from './data.js';
 import { newLogger } from 'yellow-server-common';
-import Module from './module';
+import Module from './module.js';
 let Log = newLogger('modules');
 
 class Modules {
