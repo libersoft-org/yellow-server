@@ -141,9 +141,16 @@ class Data extends DataGeneric {
  }
 
  async adminAdminsDel(id) {
-  await this.db.query('DELETE FROM admins_logins WHERE id_admins = ?', [id]);
-  await this.db.query('DELETE FROM admins_sessions WHERE id_admins = ?', [id]);
-  await this.db.query('DELETE FROM admins WHERE id = ?', [id]);
+  await this.db.query('BEGIN');
+  try {
+   await this.db.query('DELETE FROM admins_logins WHERE id_admins = ?', [id]);
+   await this.db.query('DELETE FROM admins_sessions WHERE id_admins = ?', [id]);
+   await this.db.query('DELETE FROM admins WHERE id = ?', [id]);
+   await this.db.query('COMMIT');
+  } catch (e) {
+   await this.db.query('ROLLBACK');
+   throw e;
+  }
  }
 
  async getAdminInfoByID(adminID) {
@@ -265,9 +272,16 @@ class Data extends DataGeneric {
  }
 
  async adminUsersDel(id) {
-  await this.db.query('DELETE FROM users_sessions WHERE id_users = ?', [id]);
-  await this.db.query('DELETE FROM users_logins WHERE id_users = ?', [id]);
-  await this.db.query('DELETE FROM users WHERE id = ?', [id]);
+  await this.db.query('BEGIN');
+  try {
+   await this.db.query('DELETE FROM users_sessions WHERE id_users = ?', [id]);
+   await this.db.query('DELETE FROM users_logins WHERE id_users = ?', [id]);
+   await this.db.query('DELETE FROM users WHERE id = ?', [id]);
+   await this.db.query('COMMIT');
+  } catch (e) {
+   await this.db.query('ROLLBACK');
+   throw e;
+  }
  }
 
  async getUserInfoByID(userID) {
