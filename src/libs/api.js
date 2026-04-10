@@ -357,8 +357,8 @@ class API {
     error: 'USERNAME_DOMAIN_VISIBLE_NAME_PASSWORD_MISSING',
     message: 'Username, domain ID, visible_name or password has to be in parameters',
    };
-  c.params.username = c.params.username.toLowerCase();
   if (c.params.username) {
+   c.params.username = c.params.username.toLowerCase();
    const minChars = 1;
    const maxChars = 64;
    if (!this.usernameHasValidLength(c.params.username, minChars, maxChars) || !this.usernameHasValidCharacters(c.params.username)) return { error: 'INVALID_USERNAME', message: 'Invalid username. Username must be ' + minChars + '- ' + maxChars + ' characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
