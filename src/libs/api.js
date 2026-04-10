@@ -606,7 +606,7 @@ class API {
     error: 'SESSION_NOT_FOUND',
     message: 'Session ID to be deleted not found for this user',
    };
-  await this.data.userSessionsDel(c.userID, c.sessionID);
+  await this.data.userSessionsDel(c.userID, c.params.sessionID);
   return { error: false, message: 'Session was deleted' };
  }
 
