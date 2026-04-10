@@ -1,12 +1,11 @@
-import Data from './data.js';
 import { newLogger } from 'yellow-server-common';
 import Module from './module.js';
 let Log = newLogger('modules');
 
 class Modules {
- constructor(app) {
+ constructor(app, data) {
   this.app = app;
-  this.data = new Data();
+  this.data = data;
   this.modules = {};
  }
 
@@ -29,11 +28,8 @@ class Modules {
      continue;
     }
     Log.info('Loading module:', JSON.stringify(mod));
-    if (this.modules[mod.name]) {
-     Log.error('Module already loaded:', mod.name);
-    } else {
-     await this.add(new Module(this.app, this.data, mod.id, mod.name, mod.connection_string));
-    }
+    if (this.modules[mod.name]) Log.error('Module already loaded:', mod.name);
+    else await this.add(new Module(this.app, this.data, mod.id, mod.name, mod.connection_string));
    }
   }
   Log.info('Modules loaded.');
@@ -45,12 +41,9 @@ class Modules {
    for (let i = 0; i < res.length; i++) {
     let mod = res[i];
     if (mod.name === name) {
-     if (this.modules[mod.name]) {
-      Log.error('Module already loaded:', mod.name);
-     } else {
-      if (mod.enabled) {
-       await this.add(new Module(this.app, this.data, mod.id, mod.name, mod.connection_string));
-      }
+     if (this.modules[mod.name]) Log.error('Module already loaded:', mod.name);
+     else {
+      if (mod.enabled) await this.add(new Module(this.app, this.data, mod.id, mod.name, mod.connection_string));
      }
      break;
     }

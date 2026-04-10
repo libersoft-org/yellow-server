@@ -1,5 +1,4 @@
 import os from 'os';
-import Data from './data.js';
 //import DNS from './dns.js';
 import { Info } from './info.js';
 import { newLogger, Signals } from 'yellow-server-common';
@@ -7,11 +6,11 @@ let Log = newLogger('api');
 let authLog = newLogger('auth');
 
 class API {
- constructor(webServer, modules) {
+ constructor(webServer, modules, data) {
   this.webServer = webServer;
   this.modules = modules;
   this.signals = new Signals(['new_user'], this.webServer.clients, (_wsGuid, clientData, msg) => clientData.ws?.send(JSON.stringify({ ...msg, type: 'notify' })));
-  this.data = new Data();
+  this.data = data;
   //this.dns = new DNS();
   this.allowedEvents = [];
   setInterval(async () => {

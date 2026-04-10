@@ -11,13 +11,13 @@ export function getGuid() {
 }
 
 class WebServer {
- constructor(modules) {
+ constructor(modules, data) {
   this.modules = modules;
   /* map from ws to ws_guid */
   this.wsGuids = new Map();
   /* map from ws_guid to client data, including ws and subscriptions */
   this.clients = new Map();
-  this.api = new API(this, modules);
+  this.api = new API(this, modules, data);
  }
 
  async start() {

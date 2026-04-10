@@ -41,8 +41,9 @@ class App {
   Log.info('app start');
   //testLogging();
 
-  this.modules = new Modules(this);
-  this.webServer = new WebServer(this.modules);
+  this.data = new Data();
+  this.modules = new Modules(this, this.data);
+  this.webServer = new WebServer(this.modules, this.data);
   await this.modules.init();
   await this.webServer.start(this.modules);
   Log.info('Server is running: ' + (Info.settings.web.standalone ? 'http://localhost:' + Info.settings.web.http_port : 'socket'));
