@@ -186,7 +186,7 @@ class API {
   if (!this.usernameHasValidLength(c.params.username, minChars, maxChars) || !this.usernameHasValidCharacters(c.params.username)) return { error: 'INVALID_USERNAME', message: 'Invalid username. Username must be ' + minChars + ' - ' + maxChars + ' characters long, can contain only English alphabet letters, numbers, and special characters (_ . -), but not at the beginning, end, or two in a row' };
   if (c.params.password.length < 8) return { error: 'INVALID_PASSWORD_LENGTH', message: 'Password has to be 8 or more characters long' };
   await this.data.adminAdminsAdd(c.params.username, c.params.password);
-  return { error: false, data: { message: 'Admin was created successfully' } };
+  return { error: false, message: 'Admin was created successfully' };
  }
 
  async adminAdminsEdit(c) {
@@ -232,7 +232,7 @@ class API {
   c.params.name = c.params.name.toLowerCase();
   if (await this.data.domainExistsByName(c.params.name)) return { error: 'DOMAIN_EXISTS', message: 'This domain already exists' };
   await this.data.adminDomainsAdd(c.params.name);
-  return { error: false, data: { message: 'Domain was created successfully' } };
+  return { error: false, message: 'Domain was created successfully' };
  }
 
  async adminDomainsEdit(c) {
@@ -332,7 +332,7 @@ class API {
   c.params.connection_string = c.params.connection_string.toLowerCase();
   await this.data.adminModulesAdd(c.params.name, c.params.connection_string, c.params.enabled);
   await this.modules.init_module(c.params.name);
-  return { error: false, data: { message: 'Module was created successfully' } };
+  return { error: false, message: 'Module was created successfully' };
  }
 
  async adminModulesEdit(c) {
