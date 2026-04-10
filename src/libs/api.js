@@ -149,9 +149,6 @@ class API {
   c.params.username = c.params.username.toLowerCase();
   const adminCredentials = await this.data.getAdminCredentials(c.params.username);
   if (!adminCredentials) return { error: 'WRONG_USERNAME', message: 'Wrong username' };
-  authLog.debug('adminCredentials:', adminCredentials);
-  authLog.debug('c.params:', c.params);
-  authLog.debug('c.params.password:', c.params.password);
   if (!(await this.data.verifyHash(adminCredentials.password, c.params.password))) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.adminSetLogin(adminCredentials.id, sessionID);
