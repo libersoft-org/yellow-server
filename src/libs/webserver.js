@@ -6,10 +6,8 @@ import { statSync, existsSync } from 'fs';
 const Log = newLogger('webserver');
 const healthcheckLog = newLogger('healthcheck');
 
-export function getGuid(length = 40) {
- let result = '';
- while (result.length < length) result += Math.random().toString(36);
- return result;
+export function getGuid() {
+ return crypto.randomUUID();
 }
 
 class WebServer {
