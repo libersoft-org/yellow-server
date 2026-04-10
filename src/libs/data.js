@@ -218,8 +218,8 @@ class Data extends DataGeneric {
  }
 
  async adminUsersCount(domainID) {
-  const res = await this.db.query('SELECT id FROM users WHERE id_domains = ?', [domainID]);
-  return res.length;
+  const res = await this.db.query('SELECT COUNT(*) AS count FROM users WHERE id_domains = ?', [domainID]);
+  return res[0].count;
  }
 
  async adminUsersAdd(username, domainID, visible_name, password) {
