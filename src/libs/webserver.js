@@ -233,8 +233,13 @@ class WebServer {
    Log.info('no matching item found in web_paths');
    return await this.getNotFound(req, corr);
   }
-  let fsAbsPathFull = path.join(fsAbsPathBase, url.pathname.replace(urlPathBase, ''));
+  let fsAbsPathFull = path.resolve(fsAbsPathBase, url.pathname.replace(urlPathBase, ''));
   Log.info('fsAbsPathFull:', fsAbsPathFull);
+  const resolvedBase = path.resolve(fsAbsPathBase);
+  if (!fsAbsPathFull.startsWith(resolvedBase + '/') && fsAbsPathFull !== resolvedBase) {
+   Log.warning(corr, 'Path traversal attempt blocked:', fsAbsPathFull);
+   return await this.getNotFound(req, corr);
+  }
   if (url.pathname.endsWith('/')) {
    fsAbsPathFull = path.join(fsAbsPathFull, 'index.html');
    Log.debug('redirect to index.html for directory -> fsAbsPathFull=', fsAbsPathFull);
