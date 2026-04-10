@@ -63,14 +63,15 @@ class WebServer {
   }
   let options = {
    websocket: this.getWebSocket(),
-   development: true,
+   development: !!import.meta.env.VITE_YELLOW_DEBUG,
    fetch: this.fetch.bind(this),
    port: Info.settings.web.http_port,
    error(error) {
     Log.error(error);
-    return new Response(`<pre>${error}\n${error.stack}</pre>`, {
+    return new Response('Internal Server Error', {
+     status: 500,
      headers: {
-      'Content-Type': 'text/html',
+      'Content-Type': 'text/plain',
      },
     });
    },
