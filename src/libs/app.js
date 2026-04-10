@@ -16,7 +16,7 @@ class App {
    case 1:
     if (args[0] === '--create-settings') await this.createSettings();
     else if (args[0] === '--create-database') await this.createDatabase();
-    else if (args[0] === '--create-admin') this.createAdmin();
+    else if (args[0] === '--create-admin') await this.createAdmin();
     //else if (args[0] === '--init-modules') this.initModules();
     else this.getHelp();
     break;
