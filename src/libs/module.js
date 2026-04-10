@@ -107,10 +107,14 @@ class Module {
  async notifyModuleAvailable() {
   let ma = {};
   ma[this.name] = this.connected;
-  this.app.webServer.clients.forEach(async (client, wsGuid) => {
-   this.log.trace('Notifying client of modules available:', wsGuid, client, ma);
-   await client.ws.send(JSON.stringify({ type: 'notify', event: 'modules_available', data: { modules_available: ma } }));
-  });
+  for (const [wsGuid, client] of this.app.webServer.clients) {
+   try {
+    this.log.trace('Notifying client of modules available:', wsGuid, client, ma);
+    await client.ws.send(JSON.stringify({ type: 'notify', event: 'modules_available', data: { modules_available: ma } }));
+   } catch (e) {
+    this.log.error('Failed to notify client:', wsGuid, e);
+   }
+  }
  }
 
  async processCommandFromModule(msg) {
