@@ -152,7 +152,7 @@ class API {
   authLog.debug('adminCredentials:', adminCredentials);
   authLog.debug('c.params:', c.params);
   authLog.debug('c.params.password:', c.params.password);
-  if (!this.data.verifyHash(adminCredentials.password, c.params.password)) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
+  if (!(await this.data.verifyHash(adminCredentials.password, c.params.password))) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.adminSetLogin(adminCredentials.id, sessionID);
   return { error: false, data: { sessionID } };
@@ -582,7 +582,7 @@ class API {
   const userCredentials = await this.data.getUserCredentials(username, domainID);
   if (!userCredentials) return { error: 'WRONG_ADDRESS', message: 'Wrong user address', details: { address: c.params.address } };
   //console.log(userCredentials.password, c.params.password);
-  if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
+  if (!(await this.data.verifyHash(userCredentials.password, c.params.password))) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
   const sessionID = this.getUUID();
   await this.data.userSetLogin(userCredentials.id, sessionID);
   const client = this.webServer.clients.get(c.wsGuid);

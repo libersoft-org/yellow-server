@@ -105,7 +105,7 @@ class Data extends DataGeneric {
  }
 
  async adminAdminsAdd(username, password) {
-  await this.db.query('INSERT INTO admins (username, password) VALUES (?, ?)', [username, this.getHash(password)]);
+  await this.db.query('INSERT INTO admins (username, password) VALUES (?, ?)', [username, await this.getHash(password)]);
  }
 
  async adminExistsByID(adminID) {
@@ -132,7 +132,7 @@ class Data extends DataGeneric {
   }
   if (password) {
    query += ' password = ?';
-   params.push(this.getHash(password));
+   params.push(await this.getHash(password));
   }
   if (query.endsWith(',')) query = query.slice(0, -1);
   query += ' WHERE id = ?';
@@ -216,7 +216,7 @@ class Data extends DataGeneric {
  }
 
  async adminUsersAdd(username, domainID, visible_name, password) {
-  await this.db.query('INSERT INTO users (username, id_domains, visible_name, password) VALUES (?, ?, ?, ?)', [username, domainID, visible_name, this.getHash(password)]);
+  await this.db.query('INSERT INTO users (username, id_domains, visible_name, password) VALUES (?, ?, ?, ?)', [username, domainID, visible_name, await this.getHash(password)]);
  }
 
  async userDelOldSessions() {
@@ -256,7 +256,7 @@ class Data extends DataGeneric {
   }
   if (password) {
    query += ' password = ?';
-   params.push(this.getHash(password));
+   params.push(await this.getHash(password));
   }
   if (query.endsWith(',')) query = query.slice(0, -1);
   query += ' WHERE id = ?';
@@ -440,13 +440,13 @@ class Data extends DataGeneric {
   return await this.db.query(query, params);
  }
 
- getHash(password, memoryCost = 65536, hashLength = 64, timeCost = 20, parallelism = 1) {
+ async getHash(password, memoryCost = 65536, hashLength = 64, timeCost = 20, parallelism = 1) {
   // default: 64 MB RAM, 64 characters length, 20 difficulty to calculate, 1 thread needed
-  return Bun.password.hashSync(password, { algorithm: 'argon2id', memoryCost, hashLength, timeCost, parallelism });
+  return await Bun.password.hash(password, { algorithm: 'argon2id', memoryCost, hashLength, timeCost, parallelism });
  }
 
- verifyHash(hash, password) {
-  return Bun.password.verifySync(password, hash);
+ async verifyHash(hash, password) {
+  return await Bun.password.verify(password, hash);
  }
 }
 
