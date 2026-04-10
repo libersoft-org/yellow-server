@@ -8,6 +8,20 @@ class Data extends DataGeneric {
   super(Info.settings.database);
  }
 
+ buildUpdate(table, fields, id) {
+  const setClauses = [];
+  const params = [];
+  for (const [column, value] of Object.entries(fields)) {
+   if (value !== null && value !== undefined) {
+    setClauses.push(column + ' = ?');
+    params.push(value);
+   }
+  }
+  const query = 'UPDATE ' + table + ' SET ' + setClauses.join(', ') + ' WHERE id = ?';
+  params.push(id);
+  return { query, params };
+ }
+
  async createDB() {
   try {
    await this.db.query('CREATE TABLE IF NOT EXISTS admins (id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(32) NOT NULL UNIQUE, password VARCHAR(255) NOT NULL, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)');
@@ -124,19 +138,14 @@ class Data extends DataGeneric {
  }
 
  async adminAdminsEdit(id, username = null, password = null) {
-  let query = 'UPDATE admins SET';
-  let params = [];
-  if (username) {
-   query += ' username = ?,';
-   params.push(username);
-  }
-  if (password) {
-   query += ' password = ?';
-   params.push(await this.getHash(password));
-  }
-  if (query.endsWith(',')) query = query.slice(0, -1);
-  query += ' WHERE id = ?';
-  params.push(id);
+  const { query, params } = this.buildUpdate(
+   'admins',
+   {
+    username,
+    password: password ? await this.getHash(password) : null,
+   },
+   id
+  );
   await this.db.query(query, params);
  }
 
@@ -247,27 +256,16 @@ class Data extends DataGeneric {
  }
 
  async adminUsersEdit(id, username, domainID, visible_name, password) {
-  let query = 'UPDATE users SET';
-  let params = [];
-  if (username) {
-   query += ' username = ?,';
-   params.push(username);
-  }
-  if (domainID) {
-   query += ' id_domains = ?,';
-   params.push(domainID);
-  }
-  if (visible_name) {
-   query += ' visible_name = ?,';
-   params.push(visible_name);
-  }
-  if (password) {
-   query += ' password = ?';
-   params.push(await this.getHash(password));
-  }
-  if (query.endsWith(',')) query = query.slice(0, -1);
-  query += ' WHERE id = ?';
-  params.push(id);
+  const { query, params } = this.buildUpdate(
+   'users',
+   {
+    username,
+    id_domains: domainID,
+    visible_name,
+    password: password ? await this.getHash(password) : null,
+   },
+   id
+  );
   await this.db.query(query, params);
  }
 
