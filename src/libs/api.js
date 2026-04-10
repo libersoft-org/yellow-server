@@ -538,9 +538,16 @@ class API {
  }
 
  async adminClientsKickByIp(c) {
-  for (let client of this.webServer.clients) {
-   Log.warn('TODO adminClientsKickBy', Ipclient);
+  if (!c.params) return { error: 'PARAMETERS_MISSING', message: 'Parameters are missing' };
+  if (!c.params.ip) return { error: 'IP_MISSING', message: 'IP address is missing' };
+  let kicked = 0;
+  for (const [wsGuid, client] of this.webServer.clients) {
+   if (client.ws?.remoteAddress === c.params.ip) {
+    client.ws.close();
+    kicked++;
+   }
   }
+  return { error: false, message: 'Kicked ' + kicked + ' client(s) with IP ' + c.params.ip };
  }
 
  async adminLogsList(c) {
@@ -573,7 +580,7 @@ class API {
   const domainID = await this.data.getDomainIDByName(domain);
   if (!domainID) return { error: 'WRONG_DOMAIN', message: 'Domain name not found on this server' };
   const userCredentials = await this.data.getUserCredentials(username, domainID);
-  if (!userCredentials) return { error: 'WRONG_ADDRESS', message: 'Wrong user address', details: { 'address': c.params.address } };
+  if (!userCredentials) return { error: 'WRONG_ADDRESS', message: 'Wrong user address', details: { address: c.params.address } };
   //console.log(userCredentials.password, c.params.password);
   if (!this.data.verifyHash(userCredentials.password, c.params.password)) return { error: 'WRONG_PASSWORD', message: 'Wrong password' };
   const sessionID = this.getUUID();
