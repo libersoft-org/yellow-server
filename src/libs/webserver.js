@@ -231,7 +231,7 @@ class WebServer {
    Log.info('no matching item found in web_paths');
    return await this.getNotFound(req, corr);
   }
-  let fsAbsPathFull = path.resolve(fsAbsPathBase, url.pathname.replace(urlPathBase, ''));
+  let fsAbsPathFull = path.resolve(fsAbsPathBase, '.' + url.pathname.substring(urlPathBase.length));
   Log.info('fsAbsPathFull:', fsAbsPathFull);
   const resolvedBase = path.resolve(fsAbsPathBase);
   if (!fsAbsPathFull.startsWith(resolvedBase + '/') && fsAbsPathFull !== resolvedBase) {
